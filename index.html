@@ -93,7 +93,6 @@
       font-size: 0.85rem;
       color: var(--subtext);
     }
-    /* Exactly two photos per row */
     .grid {
       max-width: 960px;
       margin: 0 auto;
@@ -185,16 +184,16 @@
   <script>
     const meps = [
       { id: 28229, name: "Manfred WEBER", role: "chair", roleLabel: "Chairman", group: "EPP", country: "Germany", flag: "🇩🇪", party: "CSU", isHead: false },
-      { id: 197533, name: "François-Xavier BELLAMY", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "France", flag: "🇫🇷", party: "Les Républicains", isHead: true },
+      { id: 197530, name: "François-Xavier BELLAMY", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "France", flag: "🇫🇷", party: "Les Républicains", isHead: true },
       { id: 197524, name: "Andrzej HALICKI", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Poland", flag: "🇵🇱", party: "Platforma Obywatelska", isHead: true },
       { id: 124747, name: "Jeroen LENAERS", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Netherlands", flag: "🇳🇱", party: "CDA", isHead: true },
-      { id: 197607, name: "Dolors MONTSERRAT", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Spain", flag: "🇪🇸", party: "Partido Popular", isHead: false },
+      { id: 197605, name: "Dolors MONTSERRAT", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Spain", flag: "🇪🇸", party: "Partido Popular", isHead: false },
       { id: 124802, name: "Siegfried MUREŞAN", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Romania", flag: "🇷🇴", party: "PNL", isHead: false },
       { id: 197647, name: "Lídia PEREIRA", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Portugal", flag: "🇵🇹", party: "PSD", isHead: false },
       { id: 124867, name: "Massimiliano SALINI", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Italy", flag: "🇮🇹", party: "Forza Italia", isHead: false },
       { id: 197395, name: "Tomas TOBÉ", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Sweden", flag: "🇸🇪", party: "Moderaterna", isHead: true },
-      { id: 197447, name: "Romana TOMC", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Slovenia", flag: "🇸🇮", party: "SDS", isHead: true },
-      { id: 119436, name: "Željana ZOVKO", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Croatia", flag: "🇭🇷", party: "HDZ", isHead: false },
+      { id: 124749, name: "Romana TOMC", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Slovenia", flag: "🇸🇮", party: "SDS", isHead: true },
+      { id: 185341, name: "Željana ZOVKO", role: "vp", roleLabel: "Vice-President", group: "EPP", country: "Croatia", flag: "🇭🇷", party: "HDZ", isHead: false },
       { id: 256801, name: "Mika AALTOLA", role: "member", roleLabel: "MEP", group: "EPP", country: "Finland", flag: "🇫🇮", party: "Kokoomus", isHead: true },
       { id: 257038, name: "Maravillas ABADÍA JOVER", role: "member", roleLabel: "MEP", group: "EPP", country: "Spain", flag: "🇪🇸", party: "Partido Popular", isHead: false },
       { id: 197525, name: "Magdalena ADAMOWICZ", role: "member", roleLabel: "MEP", group: "EPP", country: "Poland", flag: "🇵🇱", party: "Platforma Obywatelska", isHead: false },
@@ -205,7 +204,7 @@
       { id: 197640, name: "Alexander BERNHUBER", role: "member", roleLabel: "MEP", group: "EPP", country: "Austria", flag: "🇦🇹", party: "ÖVP", isHead: false },
       { id: 197668, name: "Ioan-Rareş BOGDAN", role: "member", roleLabel: "MEP", group: "EPP", country: "Romania", flag: "🇷🇴", party: "PNL", isHead: false },
       { id: 257077, name: "Csaba BOGDÁN", role: "member", roleLabel: "MEP", group: "EPP", country: "Hungary", flag: "🇭🇺", party: "TISZA", isHead: false },
-      { id: 257098, name: "Krzysztof BREJZA", role: "member", roleLabel: "MEP", group: "EPP", country: "Poland", flag: "🇵🇱", party: "Platforma Obywatelska", isHead: false },
+      { id: 197526, name: "Krzysztof BREJZA", role: "member", roleLabel: "MEP", group: "EPP", country: "Poland", flag: "🇵🇱", party: "Platforma Obywatelska", isHead: false },
       { id: 256880, name: "Nikolina BRNJAC", role: "member", roleLabel: "MEP", group: "EPP", country: "Croatia", flag: "🇭🇷", party: "HDZ", isHead: false },
       { id: 124803, name: "Daniel BUDA", role: "member", roleLabel: "MEP", group: "EPP", country: "Romania", flag: "🇷🇴", party: "PNL", isHead: true },
       { id: 257053, name: "Sebastião BUGALHO", role: "member", roleLabel: "MEP", group: "EPP", country: "Portugal", flag: "🇵🇹", party: "AD", isHead: false },
@@ -232,7 +231,7 @@
       { id: 257099, name: "Kamila GASIUK-PIHOWICZ", role: "member", roleLabel: "MEP", group: "EPP", country: "Poland", flag: "🇵🇱", party: "Platforma Obywatelska", isHead: false },
       { id: 219999, name: "Niels GEUKING", role: "member", roleLabel: "MEP", group: "EPP", country: "Germany", flag: "🇩🇪", party: "Familienpartei", isHead: false },
       { id: 124806, name: "Jens GIESEKE", role: "member", roleLabel: "MEP", group: "EPP", country: "Germany", flag: "🇩🇪", party: "CDU", isHead: false },
-      { id: 125204, name: "Borja GIMÉNEZ LARRAZ", role: "member", roleLabel: "MEP", group: "EPP", country: "Spain", flag: "🇪🇸", party: "Partido Popular", isHead: false },
+      { id: 257043, name: "Borja GIMÉNEZ LARRAZ", role: "member", roleLabel: "MEP", group: "EPP", country: "Spain", flag: "🇪🇸", party: "Partido Popular", isHead: false },
       { id: 202036, name: "Sunčana GLAVAK", role: "member", roleLabel: "MEP", group: "EPP", country: "Croatia", flag: "🇭🇷", party: "HDZ", isHead: false },
       { id: 256903, name: "Christophe GOMART", role: "member", roleLabel: "MEP", group: "EPP", country: "France", flag: "🇫🇷", party: "Les Républicains", isHead: false },
       { id: 256819, name: "Dirk GOTINK", role: "member", roleLabel: "MEP", group: "EPP", country: "Netherlands", flag: "🇳🇱", party: "NSC", isHead: false },
