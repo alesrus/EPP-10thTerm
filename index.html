@@ -278,9 +278,9 @@
       renderMEPs(filtered);
     }
 
-    // Official Google Visualization API URL using your public Spreadsheet ID
-    const sheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS9DAjndQCrudBFwkMbIvvJOgiAI_v4MndaBOXywrQbTFQkPxFmL3TupQSDMmrBF0SpaocHPCTcPdAH/pub?output=csv`;
+    // Official Google Visualization API URL using your new 185-MEP public Spreadsheet ID
+    const sheetId = "1rLqzvggXP2rwRaQCUY10HkMGuVwhtlJGrpe4SRj7dc0";
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
     fetch(gvizUrl)
       .then(response => response.text())
