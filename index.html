@@ -4,254 +4,425 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
+
   <title>EPP Group in the European Parliament</title>
+  <meta property="og:title" content="EPP Group in the European Parliament">
+  <meta property="og:site_name" content="EPP Group">
+  <meta property="og:description" content="Official Directory of the EPP Group in the European Parliament">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #003399;
       --accent: #2e60c8;
-      --bg: #f4f6fa;
+      --body-bg: #f4f6fa;
       --card-bg: #ffffff;
-      --text: #1a202c;
-      --subtext: #4a5568;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
       --border: #e2e8f0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 2px 6px rgba(0, 35, 102, 0.05);
+      --shadow-md: 0 8px 24px rgba(0, 35, 102, 0.08);
+      --transition: all 0.2s ease-in-out;
       --badge-chair: #f59e0b;
       --badge-vp: #3b82f6;
       --badge-head: #10b981;
       --badge-coord: #8b5cf6;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 24px 16px;
+      font-family: 'Inter', sans-serif;
+      background: var(--body-bg);
+      color: var(--text-main);
+      line-height: 1.4;
     }
-    .header {
-      max-width: 960px;
-      margin: 0 auto 24px;
+
+    header {
+      background: linear-gradient(135deg, #05142b 0%, #003399 60%, #0d47a1 100%);
+      color: #fff;
+      padding: 34px 14px 26px;
       text-align: center;
+      border-bottom: 4px solid #FFCC00;
+    }
+    .badge-top {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 204, 0, 0.4);
+      color: #ffe066;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
     }
     h1 {
-      font-size: 1.85rem;
-      color: var(--primary);
+      font-size: clamp(1.6rem, 3.2vw, 2.4rem);
       margin-bottom: 6px;
     }
-    p.subtitle {
-      color: var(--subtext);
-      font-size: 0.95rem;
-      margin-bottom: 16px;
+    .subtitle {
+      font-size: clamp(0.85rem, 1.4vw, 1.02rem);
+      color: #e0e7ff;
+      max-width: 780px;
+      margin: 0 auto;
     }
-    .toolbar {
-      max-width: 960px;
-      margin: 0 auto 20px;
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 10px 50px;
+    }
+
+    /* CONTROLS BAR */
+    .controls-wrapper {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 20px;
       display: flex;
+      flex-direction: column;
       gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
-    .search-input {
-      flex: 1;
-      min-width: 220px;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      background: #fff;
-    }
     .btn-toggle {
-      padding: 10px 14px;
-      border: 1px solid var(--primary);
+      padding: 8px 14px;
+      border: 1.5px solid var(--primary);
       background: #fff;
       color: var(--primary);
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      font-size: 0.82rem;
+      transition: var(--transition);
     }
+    .btn-toggle:hover { background: #f0f4ff; }
     .btn-toggle.active {
       background: var(--primary);
       color: #fff;
     }
-    .stats {
-      max-width: 960px;
-      margin: 0 auto 16px;
-      font-size: 0.85rem;
-      color: var(--subtext);
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
     }
-    /* Desktop / Tablet Grid: 2 cards per row */
-    .grid {
-      max-width: 960px;
-      margin: 0 auto;
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+      background: #f8fafc;
+    }
+    .search-box input:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.12);
+    }
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+    .counter {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .counter strong { color: var(--primary); }
+
+    /* GRID SYSTEM */
+    .mep-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 16px;
     }
-    .card {
+
+    .mep-card {
       background: var(--card-bg);
-      border-radius: 10px;
       border: 1px solid var(--border);
-      padding: 14px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .card.chair { border-left: 4px solid var(--badge-chair); }
-    .card.vp { border-left: 4px solid var(--badge-vp); }
-    .photo {
-      width: 80px;
-      height: 105px;
-      object-fit: cover;
-      border-radius: 6px;
-      background: #e2e8f0;
-      flex-shrink: 0;
-    }
-    .info {
-      flex: 1;
-      min-width: 0;
-    }
-    .name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.25;
-      margin-bottom: 4px;
-      text-overflow: ellipsis;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
     }
-    .country {
-      font-size: 0.85rem;
-      color: var(--subtext);
-      margin-bottom: 6px;
+    .mep-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .mep-card.chair { border-left: 4px solid var(--badge-chair); }
+    .mep-card.vp { border-left: 4px solid var(--badge-vp); }
+
+    .card-photo-container {
+      width: 100%;
+      height: 220px;
+      position: relative;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-    .badges {
+    .card-photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .initials-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #94a3b8;
+      background: #e2e8f0;
+    }
+
+    .mep-details {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .badges-row {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
+      margin-bottom: 6px;
     }
     .badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
     }
-    .badge-role-chair { background: #fef3c7; color: #b45309; }
-    .badge-role-vp { background: #dbeafe; color: #1e40af; }
-    .badge-role-member { background: #f1f5f9; color: #475569; }
+    .badge-chair { background: #fef3c7; color: #b45309; }
+    .badge-vp { background: #dbeafe; color: #1e40af; }
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
     .badge-coord { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; }
+    .badge-role { background: #f1f5f9; color: #475569; }
 
-    /* Mobile: 3 photos per row */
-    @media (max-width: 650px) {
-      body { padding: 12px 6px; }
-      .header h1 { font-size: 1.4rem; }
-      .header p.subtitle { font-size: 0.85rem; margin-bottom: 12px; }
-      .toolbar { gap: 6px; margin-bottom: 14px; }
-      .search-input { min-width: 100%; padding: 8px 10px; font-size: 0.85rem; }
-      .btn-toggle { padding: 8px 10px; font-size: 0.75rem; flex: 1; }
-      .grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-      .card { flex-direction: column; align-items: center; text-align: center; padding: 6px 4px; gap: 6px; }
-      .photo { width: 100%; height: auto; aspect-ratio: 80 / 105; max-height: 140px; object-fit: cover; }
-      .info { width: 100%; }
-      .name { font-size: 0.75rem; white-space: normal; line-height: 1.15; margin-bottom: 3px; word-break: break-word; }
-      .country { font-size: 0.68rem; margin-bottom: 4px; line-height: 1.1; }
-      .badges { justify-content: center; gap: 2px; }
-      .badge { font-size: 0.58rem; padding: 1px 4px; }
+    .mep-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 5px;
+      line-height: 1.25;
+    }
+    .mep-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    #loadingState {
+      text-align: center;
+      padding: 50px 14px;
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      background: #0b1a30;
+      color: #94a3b8;
+      text-align: center;
+      padding: 22px 14px;
+      font-size: 0.78rem;
+      border-top: 1px solid #1e293b;
+    }
+    footer a { color: #FFCC00; text-decoration: none; }
+
+    /* MOBILE: 3 CARDS PER ROW */
+    @media (max-width: 640px) {
+      .container { padding: 12px 6px 40px; }
+      .mep-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .card-photo-container { height: 130px; }
+      .mep-details { padding: 6px 4px; }
+      .mep-name {
+        font-size: 0.72rem;
+        margin-bottom: 3px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .badge { font-size: 0.52rem; padding: 1px 3px; }
+      .mep-meta { font-size: 0.65rem; }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
+  <header>
+    <div class="badge-top">★ European Parliament ★</div>
     <h1>EPP Group</h1>
     <p class="subtitle">European People's Party in the European Parliament</p>
+  </header>
+
+  <div class="container">
+
+    <div class="controls-wrapper">
+      <div class="filter-buttons">
+        <button id="headFilterBtn" class="btn-toggle" onclick="setFilter('heads')">Heads of Delegations</button>
+        <button id="coordCtteeBtn" class="btn-toggle" onclick="setFilter('coordCttee')">Coordinators CTTEE</button>
+        <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="mepSearch" placeholder="Search by name, country, party, committee..." onkeyup="applyFilters()">
+        </div>
+        <div class="counter">
+          Showing <strong id="visibleCount">0</strong> of <span id="totalCount">0</span> MEPs
+        </div>
+      </div>
+    </div>
+
+    <div id="loadingState">Loading MEP directory...</div>
+
+    <div class="mep-grid" id="mepGrid" style="display: none;"></div>
+
   </div>
 
-  <div class="toolbar">
-    <input type="text" id="search" class="search-input" placeholder="Search by name, country, party, committee..." oninput="applyFilters()">
-    <button id="headFilterBtn" class="btn-toggle" onclick="setFilter('heads')">Heads of Delegations</button>
-    <button id="coordCtteeBtn" class="btn-toggle" onclick="setFilter('coordCttee')">Coordinators CTTEE</button>
-    <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
-  </div>
+  <footer>
+    <p>Group of the European People's Party • European Parliament</p>
+  </footer>
 
-  <div class="stats" id="counter">Connecting to Google Spreadsheet API...</div>
-  <div class="grid" id="mepGrid"></div>
+<script>
+    // Live CSV export link from your Google Sheet using the exact spreadsheet ID
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A/export?format=csv";
 
-  <script>
     let meps = [];
-    let currentFilter = 'all'; 
+    let currentFilter = 'all';
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length === 0) return [];
+      const headers = lines[0].split(',').map(h => h.trim());
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = [];
+        let insideQuote = false;
+        let entry = '';
+
+        for (let char of lines[i]) {
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === ',' && !insideQuote) {
+            values.push(entry.trim());
+            entry = '';
+          } else {
+            entry += char;
+          }
+        }
+        values.push(entry.trim());
+
+        const obj = {};
+        headers.forEach((h, index) => {
+          obj[h] = (values[index] || '').replace(/^"|"$/g, '');
+        });
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function getInitials(name) {
+      return (name || '').split(' ').map(n => n[0]).filter((_, i) => i < 2).join('');
+    }
+
+    function showFallback(img) {
+      img.style.display = 'none';
+      const fb = img.parentElement.querySelector('.initials-fallback');
+      if (fb) fb.style.display = 'flex';
+    }
 
     function setFilter(filterType) {
-      if (currentFilter === filterType) {
-        currentFilter = 'all';
-      } else {
-        currentFilter = filterType;
-      }
+      currentFilter = (currentFilter === filterType) ? 'all' : filterType;
 
-      const btnHeads = document.getElementById('headFilterBtn');
-      const btnCttee = document.getElementById('coordCtteeBtn');
-      const btnAbc = document.getElementById('coordAbcBtn');
-
-      if (btnHeads) btnHeads.classList.toggle('active', currentFilter === 'heads');
-      if (btnCttee) btnCttee.classList.toggle('active', currentFilter === 'coordCttee');
-      if (btnAbc) btnAbc.classList.toggle('active', currentFilter === 'coordAbc');
+      document.getElementById('headFilterBtn').classList.toggle('active', currentFilter === 'heads');
+      document.getElementById('coordCtteeBtn').classList.toggle('active', currentFilter === 'coordCttee');
+      document.getElementById('coordAbcBtn').classList.toggle('active', currentFilter === 'coordAbc');
 
       applyFilters();
     }
 
     function renderMEPs(list) {
       const container = document.getElementById('mepGrid');
-      const counter = document.getElementById('counter');
-      if (!container || !counter) return;
+      document.getElementById('visibleCount').innerText = list.length;
 
-      container.innerHTML = "";
-      counter.innerText = `Showing ${list.length} of ${meps.length} MEPs`;
+      container.innerHTML = list.map(m => {
+        let roleBadge = '';
+        if (m.role === 'chair') roleBadge = `<span class="badge badge-chair">Chairman</span>`;
+        else if (m.role === 'vp') roleBadge = `<span class="badge badge-vp">Vice-President</span>`;
+        else roleBadge = `<span class="badge badge-role">MEP</span>`;
 
-      list.forEach(m => {
-        const card = document.createElement('div');
-        card.className = `card ${m.role}`;
+        const headBadge = m.isHead ? `<span class="badge badge-head">Head of Delegation</span>` : '';
+        const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` : '';
 
-        const roleBadge = m.role === 'chair' 
-          ? `<span class="badge badge-role-chair">Chairman</span>`
-          : m.role === 'vp'
-          ? `<span class="badge badge-role-vp">Vice-President</span>`
-          : `<span class="badge badge-role-member">MEP</span>`;
-
-        const headBadge = m.isHead 
-          ? `<span class="badge badge-head">Head of Delegation</span>` 
-          : '';
-
-        const coordBadge = m.coordinator 
-          ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` 
-          : '';
-
-        const photoUrl = `https://www.europarl.europa.eu/mepphoto/${m.id}.jpg`;
-        const fallbackSvg = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='105' viewBox='0 0 80 105'><rect width='80' height='105' fill='%23cbd5e1'/><circle cx='40' cy='40' r='20' fill='%2394a3b8'/><path d='M15,95 C15,70 65,70 65,95 Z' fill='%2394a3b8'/></svg>`;
-
-        card.innerHTML = `
-          <img class="photo" src="${photoUrl}" alt="${m.name}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallbackSvg}';">
-          <div class="info">
-            <div class="name" title="${m.name}">${m.name}</div>
-            <div class="country">${m.flag} ${m.country} ${m.party ? '• ' + m.party : ''}</div>
-            <div class="badges">
-              ${roleBadge}
-              ${headBadge}
-              ${coordBadge}
+        return `
+          <div class="mep-card ${m.role}">
+            <div class="card-photo-container">
+              <img src="https://www.europarl.europa.eu/mepphoto/${m.id}.jpg" alt="${m.name}" referrerpolicy="no-referrer" onerror="showFallback(this)">
+              <div class="initials-fallback">${getInitials(m.name)}</div>
+            </div>
+            <div class="mep-details">
+              <div class="badges-row">
+                ${roleBadge}
+                ${headBadge}
+                ${coordBadge}
+              </div>
+              <div class="mep-name">${m.name}</div>
+              <div class="mep-meta">
+                <span>${m.flag || ''} ${m.country}</span>
+                ${m.party ? `<span>• ${m.party}</span>` : ''}
+              </div>
             </div>
           </div>
         `;
-        container.appendChild(card);
-      });
+      }).join('');
     }
 
     function applyFilters() {
-      const searchEl = document.getElementById('search');
-      const q = searchEl ? searchEl.value.toLowerCase().trim() : "";
-      
+      const q = document.getElementById('mepSearch').value.toLowerCase().trim();
+
       let filtered = meps.filter(m => {
         let matchesFilter = true;
         if (currentFilter === 'heads') {
@@ -272,66 +443,57 @@
       });
 
       if (currentFilter === 'coordAbc') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        filtered.sort((a, b) => {
+          const lastA = a.name.split(' ').pop();
+          const lastB = b.name.split(' ').pop();
+          return lastA.localeCompare(lastB);
+        });
+      } else if (currentFilter === 'coordCttee') {
+        filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       }
 
       renderMEPs(filtered);
     }
 
-    // Official Google Visualization API URL using your public Spreadsheet ID
-    const sheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
-
-    fetch(gvizUrl)
-      .then(response => response.text())
-      .then(text => {
-        // Failsafe: If Google returns an HTML redirect/login page, stop parsing immediately
-        if (text.trim().startsWith('<')) {
-          document.getElementById('counter').innerText = "Error: Received an HTML redirect page instead of data. Please verify spreadsheet sharing settings.";
-          return;
-        }
-
-        // Extract and parse the pure JSON data from the API response
-        const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
-        const json = JSON.parse(jsonString);
+    async function loadDelegation() {
+      try {
+        const res = await fetch(SHEET_CSV_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         
-        let headers = json.table.cols.map(c => c ? c.label : '');
-        let dataRows = json.table.rows;
+        const csvText = await res.text();
+        const rawRows = parseCSV(csvText);
 
-        // Failsafe: In case Google categorizes headers into the first data row
-        if (!headers.includes('name') && dataRows.length > 0) {
-          headers = dataRows[0].c.map(cell => cell ? cell.v : '');
-          dataRows.shift(); 
-        }
+        meps = rawRows.map(obj => ({
+          id: parseInt(obj.id),
+          name: obj.name,
+          role: obj.role,
+          roleLabel: obj.roleLabel,
+          group: obj.group,
+          country: obj.country,
+          flag: obj.flag,
+          party: obj.party,
+          isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
+          coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
+          coordinatorOrder: parseInt(obj.coordinatorOrder) || 999
+        })).filter(m => !isNaN(m.id) && m.name);
 
-        meps = dataRows.map(r => {
-          let obj = {};
-          headers.forEach((colName, idx) => {
-            if (colName) {
-              obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
-            }
-          });
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('mepGrid').style.display = 'grid';
+        document.getElementById('totalCount').innerText = meps.length;
 
-          return {
-            id: parseInt(obj.id),
-            name: obj.name,
-            role: obj.role,
-            roleLabel: obj.roleLabel,
-            group: obj.group,
-            country: obj.country,
-            flag: obj.flag,
-            party: obj.party,
-            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === true,
-            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
-          };
-        }).filter(m => !isNaN(m.id) && m.name); // Filter out any empty rows
+        applyFilters();
 
-        renderMEPs(meps);
-      })
-      .catch(err => {
-        console.error("Error loading data:", err);
-        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet API.";
-      });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('loadingState').innerHTML = `
+          <p style="color: #dc2626; font-weight: 600;">Could not load data from Google Spreadsheet.</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+            Please ensure your spreadsheet is set to "Anyone with the link can view".
+          </p>`;
+      }
+    }
+
+    loadDelegation();
   </script>
 </body>
 </html>
