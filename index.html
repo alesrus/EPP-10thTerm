@@ -278,37 +278,27 @@
       renderMEPs(filtered);
     }
 
-    function parseCSV(text) {
-      let lines = text.split('\n');
-      if (lines.length === 0) return;
-      let headers = lines[0].split(',').map(h => h.trim());
+    // Fetch live data directly from Google Spreadsheet GViz JSON API
+    const spreadsheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
 
-      for (let i = 1; i < lines.length; i++) {
-        let line = lines[i].trim();
-        if (!line) continue;
+    fetch(gvizUrl)
+      .then(response => response.text())
+      .then(data => {
+        // GViz returns a JSON-p wrapper function call, parse the inner JSON
+        const jsonString = data.substring(data.indexOf("{"), data.lastIndexOf("}") + 1);
+        const json = JSON.parse(jsonString);
         
-        let row = [];
-        let inQuotes = false;
-        let currentVal = '';
-        for (let char of line) {
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            row.push(currentVal.trim());
-            currentVal = '';
-          } else {
-            currentVal += char;
-          }
-        }
-        row.push(currentVal.trim());
+        const cols = json.table.cols.map(c => c ? c.label : '');
+        const rows = json.table.rows;
 
-        if (row.length >= headers.length) {
+        meps = rows.map(r => {
           let obj = {};
-          headers.forEach((h, idx) => {
-            obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
+          cols.forEach((colName, idx) => {
+            obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
           });
-          
-          meps.push({
+
+          return {
             id: parseInt(obj.id),
             name: obj.name,
             role: obj.role,
@@ -317,28 +307,16 @@
             country: obj.country,
             flag: obj.flag,
             party: obj.party,
-            isHead: obj.headOfDelegation === 'Yes',
-            coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null
-          });
-        }
-      }
-    }
+            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes',
+            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
+          };
+        }).filter(m => !isNaN(m.id));
 
-    // Direct fetch using Google Sheets published CSV web export URL
-    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRByvzJyPvorwTUcvqldrJYy84TdKOhmwmx29VyxX3JEYUFHWGcou5de-sVkIGjXzoFZ5LWxIQqoqr/pub?output=csv";
-
-    fetch(sheetCsvUrl)
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to fetch Google Spreadsheet");
-        return response.text();
-      })
-      .then(text => {
-        parseCSV(text);
         renderMEPs(meps);
       })
       .catch(err => {
-        console.error(err);
-        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet. Please ensure the sheet is published to the web.";
+        console.error("Error loading from Google Spreadsheet:", err);
+        document.getElementById('counter').innerText = "Could not load data. Please ensure the Google Spreadsheet sharing is set to 'Anyone with the link can view'.";
       });
   </script>
 </body>
