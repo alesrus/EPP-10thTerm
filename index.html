@@ -272,8 +272,14 @@
       });
 
       if (currentFilter === 'coordAbc') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        // Sort alphabetically by Last Name
+        filtered.sort((a, b) => {
+          const lastNameA = a.name.split(' ').pop();
+          const lastNameB = b.name.split(' ').pop();
+          return lastNameA.localeCompare(lastNameB);
+        });
       } else if (currentFilter === 'coordCttee') {
+        // Sort by the committee order number from Column K
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       }
 
@@ -327,7 +333,7 @@
       }
     }
 
-    // PASTE YOUR "PUBLISHED TO THE WEB" CSV LINK BETWEEN THE QUOTES BELOW:
+    // Published to the web CSV link for the new master spreadsheet
     const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9DAjndQCrudBFwkMbIvvJOgiAI_v4MndaBOXywrQbTFQkPxFmL3TupQSDMmrBFOspaochPCTcPdAH/pub?output=csv";
 
     fetch(sheetCsvUrl)
