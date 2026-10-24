@@ -178,12 +178,12 @@
     <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
   </div>
 
-  <div class="stats" id="counter">Connecting to Google Spreadsheet...</div>
+  <div class="stats" id="counter">Connecting to Google Spreadsheet API...</div>
   <div class="grid" id="mepGrid"></div>
 
   <script>
     let meps = [];
-    let currentFilter = 'all';
+    let currentFilter = 'all'; 
 
     function setFilter(filterType) {
       if (currentFilter === filterType) {
@@ -278,37 +278,41 @@
       renderMEPs(filtered);
     }
 
-    function parseCSV(text) {
-      let lines = text.split('\n');
-      if (lines.length === 0) return;
-      let headers = lines[0].split(',').map(h => h.trim());
+    // Official Google Visualization API URL using your public Spreadsheet ID
+    const sheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
-      for (let i = 1; i < lines.length; i++) {
-        let line = lines[i].trim();
-        if (!line) continue;
-        
-        let row = [];
-        let inQuotes = false;
-        let currentVal = '';
-        for (let char of line) {
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            row.push(currentVal.trim());
-            currentVal = '';
-          } else {
-            currentVal += char;
-          }
+    fetch(gvizUrl)
+      .then(response => response.text())
+      .then(text => {
+        // Failsafe: If Google returns an HTML redirect/login page, stop parsing immediately
+        if (text.trim().startsWith('<')) {
+          document.getElementById('counter').innerText = "Error: Received an HTML redirect page instead of data. Please verify spreadsheet sharing settings.";
+          return;
         }
-        row.push(currentVal.trim());
 
-        if (row.length >= headers.length) {
+        // Extract and parse the pure JSON data from the API response
+        const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+        const json = JSON.parse(jsonString);
+        
+        let headers = json.table.cols.map(c => c ? c.label : '');
+        let dataRows = json.table.rows;
+
+        // Failsafe: In case Google categorizes headers into the first data row
+        if (!headers.includes('name') && dataRows.length > 0) {
+          headers = dataRows[0].c.map(cell => cell ? cell.v : '');
+          dataRows.shift(); 
+        }
+
+        meps = dataRows.map(r => {
           let obj = {};
-          headers.forEach((h, idx) => {
-            obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
+          headers.forEach((colName, idx) => {
+            if (colName) {
+              obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
+            }
           });
-          
-          meps.push({
+
+          return {
             id: parseInt(obj.id),
             name: obj.name,
             role: obj.role,
@@ -317,28 +321,16 @@
             country: obj.country,
             flag: obj.flag,
             party: obj.party,
-            isHead: obj.headOfDelegation === 'Yes',
-            coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null
-          });
-        }
-      }
-    }
+            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === true,
+            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
+          };
+        }).filter(m => !isNaN(m.id) && m.name); // Filter out any empty rows
 
-    // Direct fetch using the exact Google Sheets published CSV web URL you generated
-    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRByvzJyPvorwTUcvqIdrjYy8y4TdKOhwmwx29VyxX3JEYUFHWGcou5de-sVklGjXzoFZ5LWxIQqoqr/pub?output=csv";
-
-    fetch(sheetCsvUrl)
-      .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.text();
-      })
-      .then(text => {
-        parseCSV(text);
         renderMEPs(meps);
       })
       .catch(err => {
-        console.error(err);
-        document.getElementById('counter').innerText = "Could not load live data from Google Spreadsheet.";
+        console.error("Error loading data:", err);
+        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet API.";
       });
   </script>
 </body>
