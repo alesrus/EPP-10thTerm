@@ -450,6 +450,26 @@
         });
       } else if (currentFilter === 'coordCttee') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
+      } else {
+        // Default sort: Chair first (priority 1), VPs next in ABC order by last name (priority 2), Members last in ABC order by last name (priority 3)
+        filtered.sort((a, b) => {
+          const getPriority = (role) => {
+            if (role === 'chair') return 1;
+            if (role === 'vp') return 2;
+            return 3;
+          };
+
+          const pA = getPriority(a.role);
+          const pB = getPriority(b.role);
+
+          if (pA !== pB) {
+            return pA - pB;
+          }
+
+          const lastA = a.name.split(' ').pop();
+          const lastB = b.name.split(' ').pop();
+          return lastA.localeCompare(lastB);
+        });
       }
 
       renderMEPs(filtered);
