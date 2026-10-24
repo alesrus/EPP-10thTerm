@@ -183,7 +183,7 @@
 
   <script>
     let meps = [];
-    let currentFilter = 'all'; // 'all', 'heads', 'coordCttee', 'coordAbc'
+    let currentFilter = 'all';
 
     function setFilter(filterType) {
       if (currentFilter === filterType) {
@@ -278,27 +278,37 @@
       renderMEPs(filtered);
     }
 
-    // Fetch live data directly from Google Spreadsheet GViz JSON API
-    const spreadsheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
+    function parseCSV(text) {
+      let lines = text.split('\n');
+      if (lines.length === 0) return;
+      let headers = lines[0].split(',').map(h => h.trim());
 
-    fetch(gvizUrl)
-      .then(response => response.text())
-      .then(data => {
-        // GViz returns a JSON-p wrapper function call, parse the inner JSON
-        const jsonString = data.substring(data.indexOf("{"), data.lastIndexOf("}") + 1);
-        const json = JSON.parse(jsonString);
+      for (let i = 1; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) continue;
         
-        const cols = json.table.cols.map(c => c ? c.label : '');
-        const rows = json.table.rows;
+        let row = [];
+        let inQuotes = false;
+        let currentVal = '';
+        for (let char of line) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            row.push(currentVal.trim());
+            currentVal = '';
+          } else {
+            currentVal += char;
+          }
+        }
+        row.push(currentVal.trim());
 
-        meps = rows.map(r => {
+        if (row.length >= headers.length) {
           let obj = {};
-          cols.forEach((colName, idx) => {
-            obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
+          headers.forEach((h, idx) => {
+            obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
           });
-
-          return {
+          
+          meps.push({
             id: parseInt(obj.id),
             name: obj.name,
             role: obj.role,
@@ -307,16 +317,28 @@
             country: obj.country,
             flag: obj.flag,
             party: obj.party,
-            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes',
-            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
-          };
-        }).filter(m => !isNaN(m.id));
+            isHead: obj.headOfDelegation === 'Yes',
+            coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null
+          });
+        }
+      }
+    }
 
+    // Direct fetch using the exact Google Sheets published CSV web URL you generated
+    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRByvzJyPvorwTUcvqldrJYy84TdKOhmwmx29VyxX3JEYUFHWGcou5de-sVkIGjXzoFZ5LWxIQqoqr/pub?output=csv";
+
+    fetch(sheetCsvUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.text();
+      })
+      .then(text => {
+        parseCSV(text);
         renderMEPs(meps);
       })
       .catch(err => {
-        console.error("Error loading from Google Spreadsheet:", err);
-        document.getElementById('counter').innerText = "Could not load data. Please ensure the Google Spreadsheet sharing is set to 'Anyone with the link can view'.";
+        console.error(err);
+        document.getElementById('counter').innerText = "Could not load live data from Google Spreadsheet.";
       });
   </script>
 </body>
