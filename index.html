@@ -182,195 +182,6 @@
   <div class="grid" id="mepGrid"></div>
 
   <script>
-    // Fallback embedded dataset in case offline
-    const csvDatabase = `id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator
-28229,Manfred WEBER,chair,Chairman,EPP,Germany,🇩🇪,CSU,False,
-197514,Andrzej HALICKI,vp,Vice-President,EPP,Poland,🇵🇱,Platforma Obywatelska,True,
-197711,Dolors MONTSERRAT,vp,Vice-President,EPP,Spain,🇪🇸,Partido Popular,False,
-256865,Eszter LAKOS,vp,Vice-President,EPP,Hungary,🇭🇺,TISZA,True,
-197534,François-Xavier BELLAMY,vp,Vice-President,EPP,France,🇫🇷,Les Républicains,True,
-95074,Jeroen LENAERS,vp,Vice-President,EPP,Netherlands,🇳🇱,CDA,True,
-125670,Massimiliano SALINI,vp,Vice-President,EPP,Italy,🇮🇹,Forza Italia,False,
-125104,Romana TOMC,vp,Vice-President,EPP,Slovenia,🇸🇮,SDS,True,
-124802,Siegfried MUREŞAN,vp,Vice-President,EPP,Romania,🇷🇴,PNL,False,
-197402,Tomas TOBÉ,vp,Vice-President,EPP,Sweden,🇸🇪,Moderaterna,True,
-185341,Željana ZOVKO,vp,Vice-President,EPP,Croatia,🇭🇷,HDZ,False,
-197517,Adam JARUBAS,member,MEP,EPP,Poland,🇵🇱,PSL,True,
-37324,Adina VĂLEAN,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-204400,Adrián VÁZQUEZ LÁZARA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197648,Alexander BERNHUBER,member,MEP,EPP,Austria,🇦🇹,ÖVP,False,
-256980,Alexandra MEHNERT,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-257089,Alice TEODORESCU MÅWE,member,MEP,EPP,Sweden,🇸🇪,Kristdemokraterna,False,
-257035,Alma EZCURRA ALMANSA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,PETI
-110673,Ana Miguel PEDRO,member,MEP,EPP,Portugal,🇵🇹,CDS-PP,True,
-256977,Andrea WECHSLER,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-28223,Andreas SCHWAB,member,MEP,EPP,Germany,🇩🇪,CDU,False,IMCO
-97968,Andrey KOVATCHEV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,True,
-107212,Andrey NOVAKOV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,False,REGI
-257051,Andrzej BUŁA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-256864,András Tivadar KULJA,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-4289,Angelika NIEBLER,member,MEP,EPP,Germany,🇩🇪,CSU,False,
-197652,Angelika WINZIG,member,MEP,EPP,Austria,🇦🇹,ÖVP,False,
-28399,Antonio LÓPEZ-ISTÚRIZ WHITE,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197406,Arba KOKALARI,member,MEP,EPP,Sweden,🇸🇪,Moderaterna,False,
-98219,Aura SALLA,member,MEP,EPP,Finland,🇫🇮,Kokoomus,False,
-96761,Axel VOSS,member,MEP,EPP,Germany,🇩🇪,CDU,False,JURI
-197492,Bartosz ARŁUKOWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-86057,Bartłomiej SIENKIEWICZ,member,MEP,EPP,Poland,🇵🇱,KO,False,
-124893,Bogdan Andrzej ZDROJEWSKI,member,MEP,EPP,Poland,🇵🇱,KO,False,
-125204,Borja GIMÉNEZ LARRAZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-257047,Borys BUDKA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-5565,Brice HORTEFEUX,member,MEP,EPP,France,🇫🇷,Les Républicains,False,
-257034,Carmen CRESPO DÍAZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-124861,Caterina CHINNICI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-197473,Christian DOLESCHAL,member,MEP,EPP,Germany,🇩🇪,CSU,True,
-28226,Christian EHLER,member,MEP,EPP,Germany,🇩🇪,CDU,False,ITRE
-256919,Christophe GOMART,member,MEP,EPP,France,🇫🇷,Les Républicains,False,
-277777,Csaba BOGDÁN,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-256918,Céline IMART,member,MEP,EPP,France,🇫🇷,Les Républicains,False,
-197647,Dan-Ştefan MOTREANU,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-125012,Daniel BUDA,member,MEP,EPP,Romania,🇷🇴,PNL,True,
-256847,Danuše NERUDOVÁ,member,MEP,EPP,Czechia,🇨🇿,STAN,True,
-257031,Dariusz JOŃSKI,member,MEP,EPP,Poland,🇵🇱,KO,False,
-28122,David CASA,member,MEP,EPP,Malta,🇲🇹,Partit Nazzjonalista,True,
-124806,David MCALLISTER,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-119435,Davor Ivo STIER,member,MEP,EPP,Croatia,🇭🇷,HDZ,False,
-188945,Dennis RADTKE,member,MEP,EPP,Germany,🇩🇪,CDU,False,EMPL
-256950,Dimitris TSIODRAS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,
-97399,Dirk GOTINK,member,MEP,EPP,Netherlands,🇳🇱,NSC,False,
-256862,Dóra DÁVID,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-257039,Elena NEVADO DEL CAMPO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-256943,Eleonora MELETI,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,FEMM
-125065,Elissavet VOZEMBERG-VRIONIDI,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,True,
-96791,Elżbieta Katarzyna ŁUKACIJEWSKA,member,MEP,EPP,Poland,🇵🇱,KO,False,
-124850,Emil RADEV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,False,
-125068,Emmanouil KEFALOGIANNIS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,
-125027,Esteban GONZÁLEZ PONS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,True,
-22418,Esther HERRANZ GARCÍA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-98341,Eva MAYDELL,member,MEP,EPP,Bulgaria,🇧🇬,GERB,False,
-197525,Ewa KOPACZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-257027,Fernando NAVARRETE ROJAS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,FISC
-124795,Flavio TOSI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-28400,Francisco José MILLÁN MON,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-256947,Fredis BELERIS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,
-124828,Fulvio MARTUSCIELLO,member,MEP,EPP,Italy,🇮🇹,Forza Italia,True,
-96936,Gabriel MATO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,PECH
-257088,Gabriela FIREA,member,MEP,EPP,Romania,🇷🇴,PSD,False,
-256866,Gabriella GERZSENYI,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-256820,Georgios AFTIAS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,
-197649,Gheorghe FALCĂ,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-257128,Giusi PRINCI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-262021,Hanna GRONKIEWICZ-WALTZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-257028,Henrik DAHL,member,MEP,EPP,Denmark,🇩🇰,Liberal Alliance,True,
-96787,Herbert DORFMANN,member,MEP,EPP,Italy,🇮🇹,SVP,True,AGRI
-197408,Hildegard BENTELE,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-257068,Hélder SOUSA SILVA,member,MEP,EPP,Portugal,🇵🇹,PSD,False,
-257261,Ilia LAZAROV,member,MEP,EPP,Bulgaria,🇧🇬,SDS,False,
-28617,Inese VAIDERE,member,MEP,EPP,Latvia,🇱🇻,Vienotība,False,
-256968,Ingeborg TER LAAK,member,MEP,EPP,Netherlands,🇳🇱,CDA,False,
-197636,Ioan-Rareş BOGDAN,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-197679,Isabel BENJUMEA BENJUMEA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197421,Isabel WISELER-LIMA,member,MEP,EPP,Luxembourg,🇱🇺,CSV,True,DROI
-256920,Isabelle LE CALLENNEC,member,MEP,EPP,France,🇫🇷,Les Républicains,False,
-39725,Iuliu WINKLER,member,MEP,EPP,Romania,🇷🇴,RMDSZ,True,
-257041,Jacek PROTAS,member,MEP,EPP,Poland,🇵🇱,KO,False,
-257082,Jagna MARCZUŁAJTIS-WALCZAK,member,MEP,EPP,Poland,🇵🇱,KO,False,
-256840,Jan FARSKÝ,member,MEP,EPP,Czechia,🇨🇿,STAN,False,
-23781,Janusz LEWANDOWSKI,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,BUDG (Sub-C BUDG)
-197606,Javier ZARZALEJOS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-124807,Jens GIESEKE,member,MEP,EPP,Germany,🇩🇪,CDU,False,TRAN
-197404,Jessica POLFJÄRD,member,MEP,EPP,Sweden,🇸🇪,Moderaterna,False,
-197621,Juan Ignacio ZOIDO ÁLVAREZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197405,Jörgen WARBORN,member,MEP,EPP,Sweden,🇸🇪,Moderaterna,False,INTA
-188096,Jüri RATAS,member,MEP,EPP,Estonia,🇪🇪,Isamaa,False,
-257032,Kamila GASIUK-PIHOWICZ,member,MEP,EPP,Poland,🇵🇱,KO,False,
-197413,Karlo RESSLER,member,MEP,EPP,Croatia,🇭🇷,HDZ,True,BUDG
-256861,Kinga KOLLÁR,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-251324,Krzysztof BREJZA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,False,
-124895,Krzysztof HETMAN,member,MEP,EPP,Poland,🇵🇱,PSL,False,
-99945,Lena DÜPONT,member,MEP,EPP,Germany,🇩🇪,CDU,False,LIBE
-257151,Letizia MORATTI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-256889,Liesbet SOMMEN,member,MEP,EPP,Belgium,🇧🇪,CD&V,False,
-197841,Liudas MAŽYLIS,member,MEP,EPP,Lithuania,🇱🇹,TS-LKD,False,
-98582,Loránt VINCZE,member,MEP,EPP,Romania,🇷🇴,RMDSZ,False,AFCO
-197414,Loucas FOURLAS,member,MEP,EPP,Cyprus,🇨🇾,DISY,True,
-124701,Luděk NIEDERMAYER,member,MEP,EPP,Czechia,🇨🇿,TOP 09,True,
-190713,Lukas MANDL,member,MEP,EPP,Austria,🇦🇹,ÖVP,False,DEVE
-197738,Lídia PEREIRA,member,MEP,EPP,Portugal,🇵🇹,PSD,False,
-197490,Magdalena ADAMOWICZ,member,MEP,EPP,Poland,🇵🇱,Independent,False,
-206158,Manuela RIPA,member,MEP,EPP,Germany,🇩🇪,ÖDP,False,
-257043,Maravillas ABADÍA JOVER,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-257137,Marco FALCONE,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-197863,Maria WALSH,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,False,
-277057,Marie-Sophie CHRIST,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-197429,Marion WALSMANN,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-1917,Markus FERBER,member,MEP,EPP,Germany,🇩🇪,CSU,False,ECON
-257046,Marta WCISŁO,member,MEP,EPP,Poland,🇵🇱,KO,False,
-249603,Martine KEMP,member,MEP,EPP,Luxembourg,🇱🇺,CSV,False,
-219652,Matej TONIN,member,MEP,EPP,Slovenia,🇸🇮,NSi,True,
-2341,Michael GAHLER,member,MEP,EPP,Germany,🇩🇪,CDU,False,AFET
-256985,Michalis HADJIPANTELA,member,MEP,EPP,Cyprus,🇨🇾,DISY,False,
-257026,Michał SZCZERBA,member,MEP,EPP,Poland,🇵🇱,KO,False,
-257045,Michał WAWRYKIEWICZ,member,MEP,EPP,Poland,🇵🇱,KO,False,
-256810,Mika AALTOLA,member,MEP,EPP,Finland,🇫🇮,Kokoomus,True,
-96933,Milan ZVER,member,MEP,EPP,Slovenia,🇸🇮,SDS,False,
-197646,Mircea-Gheorghe HAVA,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-204336,Miriam LEXMANN,member,MEP,EPP,Slovakia,🇸🇰,KDH,True,
-257049,Mirosława NYKIEL,member,MEP,EPP,Poland,🇵🇱,KO,False,
-96780,Monika HOHLMEIER,member,MEP,EPP,Germany,🇩🇪,CSU,False,
-72779,Nadine MORANO,member,MEP,EPP,France,🇫🇷,Les Républicains,False,
-197412,Niclas HERBST,member,MEP,EPP,Germany,🇩🇪,CDU,True,BUDG
-257040,Nicolás PASCUAL DE LA PARTE,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,SEDE
-257033,Niels Flemming HANSEN,member,MEP,EPP,Denmark,🇩🇰,Det Konservative,True,
-251874,Niels GEUKING,member,MEP,EPP,Germany,🇩🇪,Familienpartei,False,
-204129,Nikolina BRNJAC,member,MEP,EPP,Croatia,🇭🇷,HDZ,False,
-257296,Nina CARBERRY,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,False,
-278406,Norbert HERHAMMER,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-124808,Norbert LINS,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-256979,Oliver SCHENK,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-256846,Ondřej KOLÁŘ,member,MEP,EPP,Czechia,🇨🇿,TOP 09,False,
-96808,Pablo ARIAS ECHEVERRÍA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,AGRI (Sub-C AGRI)
-24922,Pascal ARIMONT,member,MEP,EPP,Belgium,🇧🇪,CSP,False,EMPL
-256809,Paulius SAUDARGAS,member,MEP,EPP,Lithuania,🇱🇹,TS-LKD,False,
-257078,Paulo CUNHA,member,MEP,EPP,Portugal,🇵🇹,PSD,True,
-257048,Paulo DO NASCIMENTO CABRAL,member,MEP,EPP,Portugal,🇵🇹,PSD,False,
-256804,Pekka TOVERI,member,MEP,EPP,Finland,🇫🇮,Kokoomus,False,
-113523,Peter AGIUS,member,MEP,EPP,Malta,🇲🇹,Partit Nazzjonalista,False,
-1927,Peter LIESE,member,MEP,EPP,Germany,🇩🇪,CDU,False,ENVI
-28390,Pilar DEL CASTILLO VERA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197839,Radan KANEV,member,MEP,EPP,Bulgaria,🇧🇬,DSB,False,
-197425,Ralf SEEKATZ,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-197840,Rasa JUKNEVIČIENĖ,member,MEP,EPP,Lithuania,🇱🇹,TS-LKD,True,
-257030,Raúl DE LA HOZ QUINTANO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-257237,Regina DOHERTY,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,False,
-220896,Reinhold LOPATKA,member,MEP,EPP,Austria,🇦🇹,ÖVP,True,
-204449,Riho TERRAS,member,MEP,EPP,Estonia,🇪🇪,Isamaa,True,
-118859,Roberta METSOLA,member,MEP,EPP,Malta,🇲🇹,Partit Nazzjonalista,False,
-96811,Rosa ESTARÀS FERRAGUT,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-96756,Sabine VERHEYEN,member,MEP,EPP,Germany,🇩🇪,CDU,False,CULT
-204333,Salvatore DE MEO,member,MEP,EPP,Italy,🇮🇹,Forza Italia,False,
-96934,Sandra KALNIETE,member,MEP,EPP,Latvia,🇱🇻,Vienotība,True,
-257081,Sebastião BUGALHO,member,MEP,EPP,Portugal,🇵🇹,AD,False,
-96668,Seán KELLY,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,True,
-40599,Sirpa PIETIKÄINEN,member,MEP,EPP,Finland,🇫🇮,Kokoomus,False,
-256831,Sophia KIRCHER,member,MEP,EPP,Austria,🇦🇹,ÖVP,False,
-197410,Stefan BERGER,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-256973,Stefan KÖHLER,member,MEP,EPP,Germany,🇩🇪,CSU,False,
-202036,Sunčana GLAVAK,member,MEP,EPP,Croatia,🇭🇷,HDZ,False,
-197784,Susana SOLÍS PÉREZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,False,
-197426,Sven SIMON,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-257065,Sérgio HUMBERTO,member,MEP,EPP,Portugal,🇵🇹,PSD,False,
-197417,Tomislav SOKOL,member,MEP,EPP,Croatia,🇭🇷,HDZ,False,SANT
-124713,Tomáš ZDECHOVSKÝ,member,MEP,EPP,Czechia,🇨🇿,KDU-ČSL,False,CONT
-197662,Vangelis MEIMARAKIS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,False,
-256974,Verena MERTENS,member,MEP,EPP,Germany,🇩🇪,CDU,False,
-260695,Viktor WEISZ,member,MEP,EPP,Hungary,🇭🇺,TISZA,False,
-257107,Virgil-Daniel POPESCU,member,MEP,EPP,Romania,🇷🇴,PNL,False,
-276060,Willemien KONING,member,MEP,EPP,Netherlands,🇳🇱,CDA,False,
-256887,Wouter BEKE,member,MEP,EPP,Belgium,🇧🇪,CD&V,True,
-256814,Zala ČERNILEC TOMAŠIČ,member,MEP,EPP,Slovenia,🇸🇮,SDS,False,
-197523,Łukasz KOHUT,member,MEP,EPP,Poland,🇵🇱,KO,False,`;
-
     let meps = [];
     let currentFilter = 'all'; // 'all', 'heads', 'coordCttee', 'coordAbc'
 
@@ -467,7 +278,6 @@
       renderMEPs(filtered);
     }
 
-    // Parse the CSV database table on startup
     function parseCSV(text) {
       let lines = text.split('\n');
       if (lines.length === 0) return;
@@ -514,23 +324,19 @@
       }
     }
 
-    // Fetch live from Google Spreadsheet CSV export, fallback to embedded CSV if offline/CORS blocked
-    const spreadsheetCsvUrl = "https://docs.google.com/spreadsheets/d/1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A/export?format=csv";
-
-    fetch(spreadsheetCsvUrl)
+    // Fetch directly from live Google Spreadsheet CSV export
+    fetch('https://docs.google.com/spreadsheets/d/1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A/export?format=csv')
       .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok");
+        if (!response.ok) throw new Error("Failed to fetch Google Spreadsheet");
         return response.text();
       })
       .then(text => {
         parseCSV(text);
-        if (meps.length === 0) parseCSV(csvDatabase);
         renderMEPs(meps);
       })
       .catch(err => {
-        console.warn("Using embedded CSV fallback due to network/CORS error:", err);
-        parseCSV(csvDatabase);
-        renderMEPs(meps);
+        console.error(err);
+        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet.";
       });
   </script>
 </body>
