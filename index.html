@@ -279,7 +279,7 @@
     }
 
     // Simple robust CSV parser
-        function parseCSV(text) {
+    function parseCSV(text) {
       let lines = text.split('\n');
       if (lines.length === 0) return;
       let headers = lines[0].split(',').map(h => h.trim());
@@ -305,7 +305,7 @@
 
         if (row.length >= headers.length) {
           let obj = {};
-          headers.forEach((h, idx) => {
+          headers.headers_forEach = headers.forEach((h, idx) => {
             obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
           });
           
@@ -325,7 +325,368 @@
       }
     }
 
-    // Try fetching CSV, fallback to embedded data
+    // Fallback embedded dataset so it renders instantly even if opened directly as file:// or if CSV fetch fails
+    const embeddedMeps = [
+      {"id": 28229, "name": "Manfred WEBER", "role": "chair", "roleLabel": "Chairman", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": null},
+      {"id": 197514, "name": "Andrzej HALICKI", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": true, "coordinator": null},
+      {"id": 197711, "name": "Dolors MONTSERRAT", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 256865, "name": "Eszter LAKOS", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": true, "coordinator": null},
+      {"id": 197534, "name": "François-Xavier BELLAMY", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": true, "coordinator": null},
+      {"id": 95074, "name": "Jeroen LENAERS", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Netherlands", "flag": "🇳🇱", "party": "CDA", "isHead": true, "coordinator": null},
+      {"id": 125670, "name": "Massimiliano SALINI", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 125104, "name": "Romana TOMC", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Slovenia", "flag": "🇸🇮", "party": "SDS", "isHead": true, "coordinator": null},
+      {"id": 124802, "name": "Siegfried MUREŞAN", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 197402, "name": "Tomas TOBÉ", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Moderaterna", "isHead": true, "coordinator": null},
+      {"id": 185341, "name": "Željana ZOVKO", "role": "vp", "roleLabel": "Vice-President", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": null},
+      {"id": 2341, "name": "Michael GAHLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "AFET"},
+      {"id": 190713, "name": "Lukas MANDL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": false, "coordinator": "DEVE"},
+      {"id": 197405, "name": "Jörgen WARBORN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Moderaterna", "isHead": false, "coordinator": "INTA"},
+      {"id": 197413, "name": "Karlo RESSLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": true, "coordinator": "BUDG"},
+      {"id": 1917, "name": "Markus FERBER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": "ECON"},
+      {"id": 257027, "name": "Fernando NAVARRETE ROJAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": "FISC"},
+      {"id": 188945, "name": "Dennis RADTKE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "EMPL"},
+      {"id": 1927, "name": "Peter LIESE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "ENVI"},
+      {"id": 197417, "name": "Tomislav SOKOL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": "SANT"},
+      {"id": 28226, "name": "Christian EHLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "ITRE"},
+      {"id": 28223, "name": "Andreas SCHWAB", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "IMCO"},
+      {"id": 124807, "name": "Jens GIESEKE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "TRAN"},
+      {"id": 107212, "name": "Andrey NOVAKOV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "GERB", "isHead": false, "coordinator": "REGI"},
+      {"id": 96787, "name": "Herbert DORFMANN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "SVP", "isHead": true, "coordinator": "AGRI"},
+      {"id": 96756, "name": "Sabine VERHEYEN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "CULT"},
+      {"id": 96761, "name": "Axel VOSS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "JURI"},
+      {"id": 99945, "name": "Lena DÜPONT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": "LIBE"},
+      {"id": 98582, "name": "Loránt VINCZE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "RMDSZ", "isHead": false, "coordinator": "AFCO"},
+      {"id": 96936, "name": "Gabriel MATO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": "PECH"},
+      {"id": 124713, "name": "Tomáš ZDECHOVSKÝ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "KDU-ČSL", "isHead": false, "coordinator": "CONT"},
+      {"id": 256943, "name": "Eleonora MELETI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": "FEMM"},
+      {"id": 257035, "name": "Alma EZCURRA ALMANSA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": "PETI"},
+      {"id": 257040, "name": "Nicolás PASCUAL DE LA PARTE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": "SEDE"},
+      {"id": 197421, "name": "Isabel WISELER-LIMA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Luxembourg", "flag": "🇱🇺", "party": "CSV", "isHead": true, "coordinator": "DROI"},
+      {"id": 197412, "name": "Niclas HERBST", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": true, "coordinator": "BUDG"},
+      {"id": 23781, "name": "Janusz LEWANDOWSKI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": "BUDG (Sub-C BUDG)"},
+      {"id": 256848, "name": "Regina DOHERTY", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Ireland", "flag": "🇮🇪", "party": "Fine Gael", "isHead": false, "coordinator": "EMPL (Sub-C EMPL)"},
+      {"id": 96808, "name": "Pablo ARIAS ECHEVERRÍA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": "AGRI (Sub-C AGRI)"},
+      {"id": 24922, "name": "Pascal ARIMONT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Belgium", "flag": "🇧🇪", "party": "CSP", "isHead": false, "coordinator": "EMPL"},
+      {"id": 197517, "name": "Adam JARUBAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "PSL", "isHead": true, "coordinator": null},
+      {"id": 37324, "name": "Adina VĂLEAN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 204400, "name": "Adrián VÁZQUEZ LÁZARA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197648, "name": "Alexander BERNHUBER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": false, "coordinator": null},
+      {"id": 256980, "name": "Alexandra MEHNERT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 257089, "name": "Alice TEODORESCU MÅWE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Kristdemokraterna", "isHead": false, "coordinator": null},
+      {"id": 110673, "name": "Ana Miguel PEDRO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "CDS-PP", "isHead": true, "coordinator": null},
+      {"id": 256821, "name": "Anastasia SAKELLARIOU", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 257081, "name": "András Tivadar KULJA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 256977, "name": "Andrea WECHSLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 97968, "name": "Andrey KOVATCHEV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "GERB", "isHead": true, "coordinator": null},
+      {"id": 107212, "name": "Andrey NOVAKOV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "GERB", "isHead": false, "coordinator": null},
+      {"id": 257051, "name": "Andrzej BUŁA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 4289, "name": "Angelika NIEBLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": null},
+      {"id": 197652, "name": "Angelika WINZIG", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": false, "coordinator": null},
+      {"id": 256857, "name": "Anikó GERZSENYI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 28399, "name": "Antonio LÓPEZ-ISTÚRIZ WHITE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197406, "name": "Arba KOKALARI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Moderaterna", "isHead": false, "coordinator": null},
+      {"id": 98219, "name": "Aura SALLA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Finland", "flag": "🇫🇮", "party": "Kokoomus", "isHead": false, "coordinator": null},
+      {"id": 96761, "name": "Axel VOSS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 197492, "name": "Bartosz ARŁUKOWICZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 86057, "name": "Bartłomiej SIENKIEWICZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 124893, "name": "Bogdan Andrzej ZDROJEWSKI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 125204, "name": "Borja GIMÉNEZ LARRAZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 257047, "name": "Borys BUDKA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 5565, "name": "Brice HORTEFEUX", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": false, "coordinator": null},
+      {"id": 257034, "name": "Carmen CRESPO DÍAZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 124861, "name": "Caterina CHINNICI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 197473, "name": "Christian DOLESCHAL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": true, "coordinator": null},
+      {"id": 256919, "name": "Christophe GOMART", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": false, "coordinator": null},
+      {"id": 277777, "name": "Csaba BOGDÁN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 256918, "name": "Céline IMART", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": false, "coordinator": null},
+      {"id": 197647, "name": "Dan-Ştefan MOTREANU", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 125012, "name": "Daniel BUDA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": true, "coordinator": null},
+      {"id": 256847, "name": "Danuše NERUDOVÁ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "STAN", "isHead": true, "coordinator": null},
+      {"id": 257031, "name": "Dariusz JOŃSKI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 28122, "name": "David CASA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Malta", "flag": "🇲🇹", "party": "Partit Nazzjonalista", "isHead": true, "coordinator": null},
+      {"id": 124806, "name": "David MCALLISTER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 119435, "name": "Davor Ivo STIER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": null},
+      {"id": 188945, "name": "Dennis RADTKE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 256950, "name": "Dimitris TSIODRAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 97399, "name": "Dirk GOTINK", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Netherlands", "flag": "🇳🇱", "party": "NSC", "isHead": false, "coordinator": null},
+      {"id": 256862, "name": "Dóra DÁVID", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 257039, "name": "Elena NEVADO DEL CAMPO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 125065, "name": "Elissavet VOZEMBERG-VRIONIDI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": true, "coordinator": null},
+      {"id": 96791, "name": "Elżbieta Katarzyna ŁUKACIJEWSKA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 124850, "name": "Emil RADEV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "GERB", "isHead": false, "coordinator": null},
+      {"id": 125068, "name": "Emmanouil KEFALOGIANNIS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 125027, "name": "Esteban GONZÁLEZ PONS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": true, "coordinator": null},
+      {"id": 22418, "name": "Esther HERRANZ GARCÍA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 98341, "name": "Eva MAYDELL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "GERB", "isHead": false, "coordinator": null},
+      {"id": 197525, "name": "Ewa KOPACZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 124795, "name": "Flavio TOSI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 28400, "name": "Francisco José MILLÁN MON", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 256947, "name": "Fredis BELERIS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 124828, "name": "Fulvio MARTUSCIELLO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": true, "coordinator": null},
+      {"id": 96936, "name": "Gabriel MATO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 257088, "name": "Gabriela FIREA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PSD", "isHead": false, "coordinator": null},
+      {"id": 256866, "name": "Gabriella GERZSENYI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 256820, "name": "Georgios AFTIAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 197649, "name": "Gheorghe FALCĂ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 257128, "name": "Giusi PRINCI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 262021, "name": "Hanna GRONKIEWICZ-WALTZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 257028, "name": "Henrik DAHL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Denmark", "flag": "🇩🇰", "party": "Liberal Alliance", "isHead": true, "coordinator": null},
+      {"id": 197408, "name": "Hildegard BENTELE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 257068, "name": "Hélder SOUSA SILVA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "PSD", "isHead": false, "coordinator": null},
+      {"id": 257261, "name": "Ilia LAZAROV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "SDS", "isHead": false, "coordinator": null},
+      {"id": 28617, "name": "Inese VAIDERE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Latvia", "flag": "🇱🇻", "party": "Vienotība", "isHead": false, "coordinator": null},
+      {"id": 256968, "name": "Ingeborg TER LAAK", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Netherlands", "flag": "🇳🇱", "party": "CDA", "isHead": false, "coordinator": null},
+      {"id": 197636, "name": "Ioan-Rareş BOGDAN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 197679, "name": "Isabel BENJUMEA BENJUMEA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197421, "name": "Isabel WISELER-LIMA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Luxembourg", "flag": "🇱🇺", "party": "CSV", "isHead": true, "coordinator": null},
+      {"id": 256920, "name": "Isabelle LE CALLENNEC", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": false, "coordinator": null},
+      {"id": 39725, "name": "Iuliu WINKLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "RMDSZ", "isHead": true, "coordinator": null},
+      {"id": 257041, "name": "Jacek PROTAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 257082, "name": "Jagna MARCZUŁAJTIS-WALCZAK", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 256840, "name": "Jan FARSKÝ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "STAN", "isHead": false, "coordinator": null},
+      {"id": 23781, "name": "Janusz LEWANDOWSKI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 197606, "name": "Javier ZARZALEJOS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 124807, "name": "Jens GIESEKE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 197404, "name": "Jessica POLFJÄRD", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Moderaterna", "isHead": false, "coordinator": null},
+      {"id": 197621, "name": "Juan Ignacio ZOIDO ÁLVAREZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197405, "name": "Jörgen WARBORN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Sweden", "flag": "🇸🇪", "party": "Moderaterna", "isHead": false, "coordinator": null},
+      {"id": 188096, "name": "Jüri RATAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Estonia", "flag": "🇪🇪", "party": "Isamaa", "isHead": false, "coordinator": null},
+      {"id": 257032, "name": "Kamila GASIUK-PIHOWICZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 197413, "name": "Karlo RESSLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": true, "coordinator": null},
+      {"id": 256861, "name": "Kinga KOLLÁR", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 251324, "name": "Krzysztof BREJZA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Platforma Obywatelska", "isHead": false, "coordinator": null},
+      {"id": 124895, "name": "Krzysztof HETMAN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "PSL", "isHead": false, "coordinator": null},
+      {"id": 99945, "name": "Lena DÜPONT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 257151, "name": "Letizia MORATTI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 256889, "name": "Liesbet SOMMEN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Belgium", "flag": "🇧🇪", "party": "CD&V", "isHead": false, "coordinator": null},
+      {"id": 197841, "name": "Liudas MAŽYLIS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Lithuania", "flag": "🇱🇹", "party": "TS-LKD", "isHead": false, "coordinator": null},
+      {"id": 98582, "name": "Loránt VINCZE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "RMDSZ", "isHead": false, "coordinator": null},
+      {"id": 197414, "name": "Loucas FOURLAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Cyprus", "flag": "🇨🇾", "party": "DISY", "isHead": true, "coordinator": null},
+      {"id": 124701, "name": "Luděk NIEDERMAYER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "TOP 09", "isHead": true, "coordinator": null},
+      {"id": 190713, "name": "Lukas MANDL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": false, "coordinator": null},
+      {"id": 197738, "name": "Lídia PEREIRA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "PSD", "isHead": false, "coordinator": null},
+      {"id": 197490, "name": "Magdalena ADAMOWICZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "Independent", "isHead": false, "coordinator": null},
+      {"id": 206158, "name": "Manuela RIPA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "ÖDP", "isHead": false, "coordinator": null},
+      {"id": 257043, "name": "Maravillas ABADÍA JOVER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 257137, "name": "Marco FALCONE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 197863, "name": "Maria WALSH", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Ireland", "flag": "🇮🇪", "party": "Fine Gael", "isHead": false, "coordinator": null},
+      {"id": 277057, "name": "Marie-Sophie CHRIST", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 197429, "name": "Marion WALSMANN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 1917, "name": "Markus FERBER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": null},
+      {"id": 257046, "name": "Marta WCISŁO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 249603, "name": "Martine KEMP", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Luxembourg", "flag": "🇱🇺", "party": "CSV", "isHead": false, "coordinator": null},
+      {"id": 219652, "name": "Matej TONIN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Slovenia", "flag": "🇸🇮", "party": "NSi", "isHead": true, "coordinator": null},
+      {"id": 2341, "name": "Michael GAHLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 256985, "name": "Michalis HADJIPANTELA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Cyprus", "flag": "🇨🇾", "party": "DISY", "isHead": false, "coordinator": null},
+      {"id": 257026, "name": "Michał SZCZERBA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 257045, "name": "Michał WAWRYKIEWICZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 256810, "name": "Mika AALTOLA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Finland", "flag": "🇫🇮", "party": "Kokoomus", "isHead": true, "coordinator": null},
+      {"id": 96933, "name": "Milan ZVER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Slovenia", "flag": "🇸🇮", "party": "SDS", "isHead": false, "coordinator": null},
+      {"id": 197646, "name": "Mircea-Gheorghe HAVA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 204336, "name": "Miriam LEXMANN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Slovakia", "flag": "🇸🇰", "party": "KDH", "isHead": true, "coordinator": null},
+      {"id": 257049, "name": "Mirosława NYKIEL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null},
+      {"id": 96780, "name": "Monika HOHLMEIER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": null},
+      {"id": 72779, "name": "Nadine MORANO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "France", "flag": "🇫🇷", "party": "Les Républicains", "isHead": false, "coordinator": null},
+      {"id": 197412, "name": "Niclas HERBST", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": true, "coordinator": null},
+      {"id": 257040, "name": "Nicolás PASCUAL DE LA PARTE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 257033, "name": "Niels Flemming HANSEN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Denmark", "flag": "🇩🇰", "party": "Det Konservative", "isHead": true, "coordinator": null},
+      {"id": 251874, "name": "Niels GEUKING", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "Familienpartei", "isHead": false, "coordinator": null},
+      {"id": 204129, "name": "Nikolina BRNJAC", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": null},
+      {"id": 257296, "name": "Nina CARBERRY", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Ireland", "flag": "🇮🇪", "party": "Fine Gael", "isHead": false, "coordinator": null},
+      {"id": 278406, "name": "Norbert HERHAMMER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 124808, "name": "Norbert LINS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 256979, "name": "Oliver SCHENK", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 256846, "name": "Ondřej KOLÁŘ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "TOP 09", "isHead": false, "coordinator": null},
+      {"id": 96808, "name": "Pablo ARIAS ECHEVERRÍA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 24922, "name": "Pascal ARIMONT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Belgium", "flag": "🇧🇪", "party": "CSP", "isHead": false, "coordinator": null},
+      {"id": 256809, "name": "Paulius SAUDARGAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Lithuania", "flag": "🇱🇹", "party": "TS-LKD", "isHead": false, "coordinator": null},
+      {"id": 257078, "name": "Paulo CUNHA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "PSD", "isHead": true, "coordinator": null},
+      {"id": 257048, "name": "Paulo DO NASCIMENTO CABRAL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "PSD", "isHead": false, "coordinator": null},
+      {"id": 256804, "name": "Pekka TOVERI", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Finland", "flag": "🇫🇮", "party": "Kokoomus", "isHead": false, "coordinator": null},
+      {"id": 113523, "name": "Peter AGIUS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Malta", "flag": "🇲🇹", "party": "Partit Nazzjonalista", "isHead": false, "coordinator": null},
+      {"id": 1927, "name": "Peter LIESE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 28390, "name": "Pilar DEL CASTILLO VERA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197839, "name": "Radan KANEV", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Bulgaria", "flag": "🇧🇬", "party": "DSB", "isHead": false, "coordinator": null},
+      {"id": 197425, "name": "Ralf SEEKATZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 197840, "name": "Rasa JUKNEVIČIENĖ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Lithuania", "flag": "🇱🇹", "party": "TS-LKD", "isHead": true, "coordinator": null},
+      {"id": 257030, "name": "Raúl DE LA HOZ QUINTANO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 257237, "name": "Regina DOHERTY", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Ireland", "flag": "🇮🇪", "party": "Fine Gael", "isHead": false, "coordinator": null},
+      {"id": 220896, "name": "Reinhold LOPATKA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": true, "coordinator": null},
+      {"id": 204449, "name": "Riho TERRAS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Estonia", "flag": "🇪🇪", "party": "Isamaa", "isHead": true, "coordinator": null},
+      {"id": 118859, "name": "Roberta METSOLA", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Malta", "flag": "🇲🇹", "party": "Partit Nazzjonalista", "isHead": false, "coordinator": null},
+      {"id": 96811, "name": "Rosa ESTARÀS FERRAGUT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 96756, "name": "Sabine VERHEYEN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 204333, "name": "Salvatore DE MEO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Italy", "flag": "🇮🇹", "party": "Forza Italia", "isHead": false, "coordinator": null},
+      {"id": 96934, "name": "Sandra KALNIETE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Latvia", "flag": "🇱🇻", "party": "Vienotība", "isHead": true, "coordinator": null},
+      {"id": 257081, "name": "Sebastião BUGALHO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "AD", "isHead": false, "coordinator": null},
+      {"id": 96668, "name": "Seán KELLY", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Ireland", "flag": "🇮🇪", "party": "Fine Gael", "isHead": true, "coordinator": null},
+      {"id": 40599, "name": "Sirpa PIETIKÄINEN", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Finland", "flag": "🇫🇮", "party": "Kokoomus", "isHead": false, "coordinator": null},
+      {"id": 256831, "name": "Sophia KIRCHER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Austria", "flag": "🇦🇹", "party": "ÖVP", "isHead": false, "coordinator": null},
+      {"id": 197410, "name": "Stefan BERGER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 256973, "name": "Stefan KÖHLER", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CSU", "isHead": false, "coordinator": null},
+      {"id": 202036, "name": "Sunčana GLAVAK", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": null},
+      {"id": 197784, "name": "Susana SOLÍS PÉREZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Spain", "flag": "🇪🇸", "party": "Partido Popular", "isHead": false, "coordinator": null},
+      {"id": 197426, "name": "Sven SIMON", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 257065, "name": "Sérgio HUMBERTO", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Portugal", "flag": "🇵🇹", "party": "PSD", "isHead": false, "coordinator": null},
+      {"id": 197417, "name": "Tomislav SOKOL", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Croatia", "flag": "🇭🇷", "party": "HDZ", "isHead": false, "coordinator": null},
+      {"id": 124713, "name": "Tomáš ZDECHOVSKÝ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Czechia", "flag": "🇨🇿", "party": "KDU-ČSL", "isHead": false, "coordinator": null},
+      {"id": 197662, "name": "Vangelis MEIMARAKIS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Greece", "flag": "🇬🇷", "party": "Nea Demokratia", "isHead": false, "coordinator": null},
+      {"id": 256974, "name": "Verena MERTENS", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Germany", "flag": "🇩🇪", "party": "CDU", "isHead": false, "coordinator": null},
+      {"id": 260695, "name": "Viktor WEISZ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Hungary", "flag": "🇭🇺", "party": "TISZA", "isHead": false, "coordinator": null},
+      {"id": 257107, "name": "Virgil-Daniel POPESCU", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Romania", "flag": "🇷🇴", "party": "PNL", "isHead": false, "coordinator": null},
+      {"id": 276060, "name": "Willemien KONING", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Netherlands", "flag": "🇳🇱", "party": "CDA", "isHead": false, "coordinator": null},
+      {"id": 256887, "name": "Wouter BEKE", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Belgium", "flag": "🇧🇪", "party": "CD&V", "isHead": true, "coordinator": null},
+      {"id": 256814, "name": "Zala ČERNILEC TOMAŠIČ", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Slovenia", "flag": "🇸🇮", "party": "SDS", "isHead": false, "coordinator": null},
+      {"id": 197523, "name": "Łukasz KOHUT", "role": "member", "roleLabel": "MEP", "group": "EPP", "country": "Poland", "flag": "🇵🇱", "party": "KO", "isHead": false, "coordinator": null}
+    ];
+
+    let currentFilter = 'all'; // 'all', 'heads', 'coordCttee', 'coordAbc'
+
+    function setFilter(filterType) {
+      if (currentFilter === filterType) {
+        currentFilter = 'all';
+      } else {
+        currentFilter = filterType;
+      }
+
+      const btnHeads = document.getElementById('headFilterBtn');
+      const btnCttee = document.getElementById('coordCtteeBtn');
+      const btnAbc = document.getElementById('coordAbcBtn');
+
+      if (btnHeads) btnHeads.classList.toggle('active', currentFilter === 'heads');
+      if (btnCttee) btnCttee.classList.toggle('active', currentFilter === 'coordCttee');
+      if (btnAbc) btnAbc.classList.toggle('active', currentFilter === 'coordAbc');
+
+      applyFilters();
+    }
+
+    function renderMEPs(list) {
+      const container = document.getElementById('mepGrid');
+      const counter = document.getElementById('counter');
+      if (!container || !counter) return;
+
+      container.innerHTML = "";
+      counter.innerText = `Showing ${list.length} of ${meps.length} MEPs`;
+
+      list.forEach(m => {
+        const card = document.createElement('div');
+        card.className = `card ${m.role}`;
+
+        const roleBadge = m.role === 'chair' 
+          ? `<span class="badge badge-role-chair">Chairman</span>`
+          : m.role === 'vp'
+          ? `<span class="badge badge-role-vp">Vice-President</span>`
+          : `<span class="badge badge-role-member">MEP</span>`;
+
+        const headBadge = m.isHead 
+          ? `<span class="badge badge-head">Head of Delegation</span>` 
+          : '';
+
+        const coordBadge = m.coordinator 
+          ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` 
+          : '';
+
+        const photoUrl = `https://www.europarl.europa.eu/mepphoto/${m.id}.jpg`;
+        const fallbackSvg = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='105' viewBox='0 0 80 105'><rect width='80' height='105' fill='%23cbd5e1'/><circle cx='40' cy='40' r='20' fill='%2394a3b8'/><path d='M15,95 C15,70 65,70 65,95 Z' fill='%2394a3b8'/></svg>`;
+
+        card.innerHTML = `
+          <img class="photo" src="${photoUrl}" alt="${m.name}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallbackSvg}';">
+          <div class="info">
+            <div class="name" title="${m.name}">${m.name}</div>
+            <div class="country">${m.flag} ${m.country} ${m.party ? '• ' + m.party : ''}</div>
+            <div class="badges">
+              ${roleBadge}
+              ${headBadge}
+              ${coordBadge}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      const searchEl = document.getElementById('search');
+      const q = searchEl ? searchEl.value.toLowerCase().trim() : "";
+      
+      let filtered = meps.filter(m => {
+        let matchesFilter = true;
+        if (currentFilter === 'heads') {
+          matchesFilter = m.isHead;
+        } else if (currentFilter === 'coordCttee' || currentFilter === 'coordAbc') {
+          matchesFilter = !!m.coordinator;
+        }
+
+        const matchesQuery = !q || 
+          m.name.toLowerCase().includes(q) || 
+          m.country.toLowerCase().includes(q) || 
+          (m.party && m.party.toLowerCase().includes(q)) ||
+          (m.roleLabel && m.roleLabel.toLowerCase().includes(q)) ||
+          (m.coordinator && m.coordinator.toLowerCase().includes(q)) ||
+          (m.isHead && "head of delegation".includes(q));
+
+        return matchesFilter && matchesQuery;
+      });
+
+      if (currentFilter === 'coordAbc') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      renderMEPs(filtered);
+    }
+
+    // Robust CSV parser tailored for GitHub Pages relative path subfolders (like /EPP-10thTerm/)
+    function parseCSV(text) {
+      let lines = text.split('\n');
+      if (lines.length === 0) return;
+      let headers = lines[0].split(',').map(h => h.trim());
+
+      let parsed = [];
+      for (let i = 1; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) continue;
+        
+        let row = [];
+        let inQuotes = false;
+        let currentVal = '';
+        for (let char of line) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            row.push(currentVal.trim());
+            currentVal = '';
+          } else {
+            currentVal += char;
+          }
+        }
+        row.push(currentVal.trim());
+
+        if (row.length >= headers.length) {
+          let obj = {};
+          headers.forEach((h, idx) => {
+            obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
+          });
+          
+          parsed.push({
+            id: parseInt(obj.id),
+            name: obj.name,
+            role: obj.role,
+            roleLabel: obj.roleLabel,
+            group: obj.group,
+            country: obj.country,
+            flag: obj.flag,
+            party: obj.party,
+            isHead: obj.headOfDelegation === 'Yes',
+            coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null
+          });
+        }
+      }
+      if (parsed.length > 0) {
+        meps = parsed;
+      }
+    }
+
+    // Load CSV database dynamically from repository root, fallback to embedded data if offline/local
     fetch('EPP_MEPs_Full_List.csv')
       .then(response => {
         if (!response.ok) throw new Error("Network response was not ok");
@@ -337,7 +698,7 @@
         renderMEPs(meps);
       })
       .catch(err => {
-        console.warn("Could not fetch CSV, using embedded database:", err);
+        console.warn("Using embedded fallback database:", err);
         meps = embeddedMeps;
         renderMEPs(meps);
       });
