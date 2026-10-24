@@ -325,7 +325,6 @@
   </footer>
 
 <script>
-    // Live CSV export link from your Google Sheet using the exact spreadsheet ID
     const SHEET_CSV_URL = "EPP Group MEPs.csv";
 
     let meps = [];
@@ -442,7 +441,8 @@
         return matchesFilter && matchesQuery;
       });
 
-      if (currentFilter === 'coordAbc') {
+      if (currentFilter === 'coordAbc' || currentFilter === 'heads') {
+        // Sort alphabetically by Last Name for both Coordinators ABC and Heads of Delegation
         filtered.sort((a, b) => {
           const lastA = a.name.split(' ').pop();
           const lastB = b.name.split(' ').pop();
