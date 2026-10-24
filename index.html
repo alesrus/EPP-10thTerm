@@ -178,7 +178,7 @@
     <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
   </div>
 
-  <div class="stats" id="counter">Loading MEPs from Google Sheet...</div>
+  <div class="stats" id="counter">Connecting to Google Spreadsheet...</div>
   <div class="grid" id="mepGrid"></div>
 
   <script>
@@ -324,8 +324,10 @@
       }
     }
 
-    // Fetch directly from live Google Spreadsheet CSV export
-    fetch('https://docs.google.com/spreadsheets/d/1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A/export?format=csv')
+    // Direct fetch using Google Sheets published CSV web export URL
+    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A/gviz/tq?tqx=out:csv";
+
+    fetch(sheetCsvUrl)
       .then(response => {
         if (!response.ok) throw new Error("Failed to fetch Google Spreadsheet");
         return response.text();
@@ -336,7 +338,7 @@
       })
       .catch(err => {
         console.error(err);
-        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet.";
+        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet. Please ensure the sheet is published to the web.";
       });
   </script>
 </body>
