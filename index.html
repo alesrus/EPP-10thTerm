@@ -272,82 +272,66 @@
       });
 
       if (currentFilter === 'coordAbc') {
-        // Sort alphabetically by Last Name
-        filtered.sort((a, b) => {
-          const lastNameA = a.name.split(' ').pop();
-          const lastNameB = b.name.split(' ').pop();
-          return lastNameA.localeCompare(lastNameB);
-        });
-      } else if (currentFilter === 'coordCttee') {
-        // Sort by the committee order number from Column K
-        filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
       }
 
       renderMEPs(filtered);
     }
 
+    // Official Google Visualization API URL using your public Spreadsheet ID
     const sheetId = "1IUkgiAjBj3WQ4dwMCIjBWym5wx4LbSIRJK9cqsXx75A";
     const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
-    function loadData(retries = 3) {
-      fetch(gvizUrl)
-        .then(response => {
-          if (!response.ok) throw new Error("Network response was not ok");
-          return response.text();
-        })
-        .then(text => {
-          if (text.trim().startsWith('<')) {
-            throw new Error("Received HTML instead of JSON");
-          }
+    fetch(gvizUrl)
+      .then(response => response.text())
+      .then(text => {
+        // Failsafe: If Google returns an HTML redirect/login page, stop parsing immediately
+        if (text.trim().startsWith('<')) {
+          document.getElementById('counter').innerText = "Error: Received an HTML redirect page instead of data. Please verify spreadsheet sharing settings.";
+          return;
+        }
 
-          const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
-          const json = JSON.parse(jsonString);
-          
-          let headers = json.table.cols.map(c => c ? c.label : '');
-          let dataRows = json.table.rows;
+        // Extract and parse the pure JSON data from the API response
+        const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+        const json = JSON.parse(jsonString);
+        
+        let headers = json.table.cols.map(c => c ? c.label : '');
+        let dataRows = json.table.rows;
 
-          if (!headers.includes('name') && dataRows.length > 0) {
-            headers = dataRows[0].c.map(cell => cell ? cell.v : '');
-            dataRows.shift(); 
-          }
+        // Failsafe: In case Google categorizes headers into the first data row
+        if (!headers.includes('name') && dataRows.length > 0) {
+          headers = dataRows[0].c.map(cell => cell ? cell.v : '');
+          dataRows.shift(); 
+        }
 
-          meps = dataRows.map(r => {
-            let obj = {};
-            headers.forEach((colName, idx) => {
-              if (colName) {
-                obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
-              }
-            });
+        meps = dataRows.map(r => {
+          let obj = {};
+          headers.forEach((colName, idx) => {
+            if (colName) {
+              obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
+            }
+          });
 
-            return {
-              id: parseInt(obj.id),
-              name: obj.name,
-              role: obj.role,
-              roleLabel: obj.roleLabel,
-              group: obj.group,
-              country: obj.country,
-              flag: obj.flag,
-              party: obj.party,
-              isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
-              coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
-              coordinatorOrder: parseInt(obj.coordinatorOrder) || 999
-            };
-          }).filter(m => !isNaN(m.id) && m.name);
+          return {
+            id: parseInt(obj.id),
+            name: obj.name,
+            role: obj.role,
+            roleLabel: obj.roleLabel,
+            group: obj.group,
+            country: obj.country,
+            flag: obj.flag,
+            party: obj.party,
+            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === true,
+            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
+          };
+        }).filter(m => !isNaN(m.id) && m.name); // Filter out any empty rows
 
-          renderMEPs(meps);
-        })
-        .catch(err => {
-          console.warn("Fetch attempt failed, retries left: ", retries, err);
-          if (retries > 0) {
-            setTimeout(() => loadData(retries - 1), 600);
-          } else {
-            console.error(err);
-            document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet API.";
-          }
-        });
-    }
-
-    loadData();
+        renderMEPs(meps);
+      })
+      .catch(err => {
+        console.error("Error loading data:", err);
+        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet API.";
+      });
   </script>
 </body>
 </html>
