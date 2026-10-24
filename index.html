@@ -178,7 +178,7 @@
     <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
   </div>
 
-  <div class="stats" id="counter">Connecting to Google Spreadsheet API...</div>
+  <div class="stats" id="counter">Loading MEPs from Google Sheet...</div>
   <div class="grid" id="mepGrid"></div>
 
   <script>
@@ -273,46 +273,44 @@
 
       if (currentFilter === 'coordAbc') {
         filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (currentFilter === 'coordCttee') {
+        filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       }
 
       renderMEPs(filtered);
     }
 
-    // Official Google Visualization API URL using your new 185-MEP public Spreadsheet ID
-    const sheetId = "1rLqzvggXP2rwRaQCUY10HkMGuVwhtlJGrpe4SRj7dc0";
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+    function parseCSV(text) {
+      let lines = text.split('\n');
+      if (lines.length === 0) return;
+      let headers = lines[0].split(',').map(h => h.trim());
 
-    fetch(gvizUrl)
-      .then(response => response.text())
-      .then(text => {
-        // Failsafe: If Google returns an HTML redirect/login page, stop parsing immediately
-        if (text.trim().startsWith('<')) {
-          document.getElementById('counter').innerText = "Error: Received an HTML redirect page instead of data. Please verify spreadsheet sharing settings.";
-          return;
-        }
-
-        // Extract and parse the pure JSON data from the API response
-        const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
-        const json = JSON.parse(jsonString);
+      for (let i = 1; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) continue;
         
-        let headers = json.table.cols.map(c => c ? c.label : '');
-        let dataRows = json.table.rows;
-
-        // Failsafe: In case Google categorizes headers into the first data row
-        if (!headers.includes('name') && dataRows.length > 0) {
-          headers = dataRows[0].c.map(cell => cell ? cell.v : '');
-          dataRows.shift(); 
+        let row = [];
+        let inQuotes = false;
+        let currentVal = '';
+        for (let char of line) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            row.push(currentVal.trim());
+            currentVal = '';
+          } else {
+            currentVal += char;
+          }
         }
+        row.push(currentVal.trim());
 
-        meps = dataRows.map(r => {
+        if (row.length >= headers.length) {
           let obj = {};
-          headers.forEach((colName, idx) => {
-            if (colName) {
-              obj[colName] = r.c[idx] ? (r.c[idx].v !== null ? r.c[idx].v : '') : '';
-            }
+          headers.forEach((h, idx) => {
+            obj[h] = row[idx] ? row[idx].replace(/^"|"$/g, '') : '';
           });
-
-          return {
+          
+          meps.push({
             id: parseInt(obj.id),
             name: obj.name,
             role: obj.role,
@@ -321,16 +319,29 @@
             country: obj.country,
             flag: obj.flag,
             party: obj.party,
-            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === true,
-            coordinator: (obj.coordinator && String(obj.coordinator).trim() !== '' && String(obj.coordinator).toLowerCase() !== 'nan') ? String(obj.coordinator).trim() : null
-          };
-        }).filter(m => !isNaN(m.id) && m.name); // Filter out any empty rows
+            isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
+            coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
+            coordinatorOrder: parseInt(obj.coordinatorOrder) || 999
+          });
+        }
+      }
+    }
 
+    // PASTE YOUR "PUBLISHED TO THE WEB" CSV LINK BETWEEN THE QUOTES BELOW:
+    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9DAjndQCrudBFwkMbIvvJOgiAI_v4MndaBOXywrQbTFQkPxFmL3TupQSDMmrBFOspaochPCTcPdAH/pub?output=csv";
+
+    fetch(sheetCsvUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.text();
+      })
+      .then(text => {
+        parseCSV(text);
         renderMEPs(meps);
       })
       .catch(err => {
-        console.error("Error loading data:", err);
-        document.getElementById('counter').innerText = "Could not load data from Google Spreadsheet API.";
+        console.error(err);
+        document.getElementById('counter').innerText = "Could not load live data from Google Spreadsheet.";
       });
   </script>
 </body>
