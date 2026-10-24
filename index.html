@@ -298,7 +298,8 @@
 
     <div class="controls-wrapper">
       <div class="filter-buttons">
-        <button id="headFilterBtn" class="btn-toggle" onclick="setFilter('heads')">Heads of Delegations</button>
+        <button id="hondAbcBtn" class="btn-toggle" onclick="setFilter('hondAbc')">HoND ABC</button>
+        <button id="hondSizeBtn" class="btn-toggle" onclick="setFilter('hondSize')">HoND Size</button>
         <button id="coordCtteeBtn" class="btn-toggle" onclick="setFilter('coordCttee')">Coordinators CTTEE</button>
         <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
       </div>
@@ -376,7 +377,8 @@
     function setFilter(filterType) {
       currentFilter = (currentFilter === filterType) ? 'all' : filterType;
 
-      document.getElementById('headFilterBtn').classList.toggle('active', currentFilter === 'heads');
+      document.getElementById('hondAbcBtn').classList.toggle('active', currentFilter === 'hondAbc');
+      document.getElementById('hondSizeBtn').classList.toggle('active', currentFilter === 'hondSize');
       document.getElementById('coordCtteeBtn').classList.toggle('active', currentFilter === 'coordCttee');
       document.getElementById('coordAbcBtn').classList.toggle('active', currentFilter === 'coordAbc');
 
@@ -424,7 +426,7 @@
 
       let filtered = meps.filter(m => {
         let matchesFilter = true;
-        if (currentFilter === 'heads') {
+        if (currentFilter === 'hondAbc' || currentFilter === 'hondSize') {
           matchesFilter = m.isHead;
         } else if (currentFilter === 'coordCttee' || currentFilter === 'coordAbc') {
           matchesFilter = !!m.coordinator;
@@ -441,17 +443,18 @@
         return matchesFilter && matchesQuery;
       });
 
-      if (currentFilter === 'coordAbc' || currentFilter === 'heads') {
-        // Sort alphabetically by Last Name for both Coordinators ABC and Heads of Delegation
+      if (currentFilter === 'hondAbc' || currentFilter === 'coordAbc') {
         filtered.sort((a, b) => {
           const lastA = a.name.split(' ').pop();
           const lastB = b.name.split(' ').pop();
           return lastA.localeCompare(lastB);
         });
+      } else if (currentFilter === 'hondSize') {
+        filtered.sort((a, b) => a.hondOrder - b.hondOrder);
       } else if (currentFilter === 'coordCttee') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       } else {
-        // Default sort: Chair first (priority 1), VPs next in ABC order by last name (priority 2), Members last in ABC order by last name (priority 3)
+        // Default main page sort: Chair first, then VPs ABC by last name, then MEPs ABC by last name
         filtered.sort((a, b) => {
           const getPriority = (role) => {
             if (role === 'chair') return 1;
@@ -494,7 +497,8 @@
           party: obj.party,
           isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
           coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
-          coordinatorOrder: parseInt(obj.coordinatorOrder) || 999
+          coordinatorOrder: parseInt(obj.coordinatorOrder) || 999,
+          hondOrder: parseInt(obj.hondOrder) || 999
         })).filter(m => !isNaN(m.id) && m.name);
 
         document.getElementById('loadingState').style.display = 'none';
