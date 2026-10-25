@@ -519,7 +519,7 @@
         const csvText = await res.text();
         const rawRows = parseCSV(csvText);
 
-        meps = rawRows.app(obj => ({
+        meps = rawRows.map(obj => ({
           id: parseInt(obj.id),
           name: obj.name,
           role: obj.role,
@@ -528,7 +528,7 @@
           country: obj.country,
           flag: obj.flag,
           party: obj.party,
-          isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
+          isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || String(obj.headOfDelegation).toLowerCase() === 'true',
           coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
           coordinatorOrder: parseFloat(obj.coordinatorOrder) || 999,
           hondOrder: parseFloat(obj.hondOrder) || 999
@@ -543,9 +543,9 @@
       } catch (err) {
         console.error(err);
         document.getElementById('loadingState').innerHTML = `
-          <p style="color: #dc2626; font-weight: 600;">Could not load data from Google Spreadsheet.</p>
+          <p style="color: #dc2626; font-weight: 600;">Could not load data from CSV file (${SHEET_CSV_URL}).</p>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
-            Please ensure your spreadsheet is set to "Anyone with the link can view".
+            Please ensure both index.html and ${SHEET_CSV_URL} are in the root of your GitHub repository.
           </p>`;
       }
     }
