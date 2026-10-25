@@ -450,7 +450,14 @@
           return lastA.localeCompare(lastB);
         });
       } else if (currentFilter === 'hondSize') {
-        filtered.sort((a, b) => a.hondOrder - b.hondOrder);
+        filtered.sort((a, b) => {
+          if (a.hondOrder !== b.hondOrder) {
+            return a.hondOrder - b.hondOrder;
+          }
+          const lastA = a.name.split(' ').pop();
+          const lastB = b.name.split(' ').pop();
+          return lastA.localeCompare(lastB);
+        });
       } else if (currentFilter === 'coordCttee') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       } else {
