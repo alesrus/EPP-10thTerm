@@ -421,8 +421,8 @@
           }
         }
 
-        const headBadge = m.isHead ? `<span class="badge badge-head">Head of Delegation</span>` : '';
-        const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` : '';
+        const headBadge = m.isHead ? `<span class="badge badge-head">HoND</span>` : '';
+        const coordBadge = m.coordinator ? `<span class="badge badge-coord">COORD-${m.coordinator}</span>` : '';
 
         return `
           <div class="mep-card ${cardClass}">
@@ -464,6 +464,7 @@
           (m.party && m.party.toLowerCase().includes(q)) ||
           (m.roleLabel && m.roleLabel.toLowerCase().includes(q)) ||
           (m.coordinator && m.coordinator.toLowerCase().includes(q)) ||
+          (m.isHead && "hond".includes(q)) ||
           (m.isHead && "head of delegation".includes(q));
 
         return matchesFilter && matchesQuery;
@@ -511,14 +512,12 @@
             return pA - pB;
           }
 
-          // If both are Group VPs (Priority 2), sort by exact GROUP_VP_ORDER index
           if (pA === 2) {
             const indexA = GROUP_VP_ORDER.indexOf(a.name);
             const indexB = GROUP_VP_ORDER.indexOf(b.name);
             return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
           }
 
-          // If both are EP VPs (Priority 3), sort strictly by roleLabel ('EP VP 1' -> 'EP VP 2' -> 'EP VP 3')
           if (pA === 3) {
             return (a.roleLabel || '').localeCompare(b.roleLabel || '');
           }
