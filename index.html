@@ -31,6 +31,7 @@
       --transition: all 0.2s ease-in-out;
       --badge-chair: #f59e0b;
       --badge-vp: #3b82f6;
+      --badge-ep-vp: #8b5cf6;
       --badge-head: #10b981;
       --badge-coord: #8b5cf6;
     }
@@ -176,6 +177,7 @@
     .mep-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .mep-card.chair { border-left: 4px solid var(--badge-chair); }
     .mep-card.vp { border-left: 4px solid var(--badge-vp); }
+    .mep-card.ep-vp { border-left: 4px solid var(--badge-ep-vp); }
 
     .card-photo-container {
       width: 100%;
@@ -227,6 +229,7 @@
     }
     .badge-chair { background: #fef3c7; color: #b45309; }
     .badge-vp { background: #dbeafe; color: #1e40af; }
+    .badge-ep-vp { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; }
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
     .badge-coord { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; }
 
@@ -392,17 +395,24 @@
 
       container.innerHTML = list.map(m => {
         let roleBadge = '';
-        if (m.role === 'chair') roleBadge = `<span class="badge badge-chair">Chairman</span>`;
-        else if (m.role === 'vp') {
-          let label = (m.roleLabel && m.roleLabel.startsWith('EP VP')) ? m.roleLabel : 'Vice-President';
-          roleBadge = `<span class="badge badge-vp">${label}</span>`;
+        let cardClass = m.role;
+        
+        if (m.role === 'chair') {
+          roleBadge = `<span class="badge badge-chair">Chairman</span>`;
+        } else if (m.role === 'vp') {
+          if (m.roleLabel && m.roleLabel.startsWith('EP VP')) {
+            cardClass = 'ep-vp';
+            roleBadge = `<span class="badge badge-ep-vp">${m.roleLabel}</span>`;
+          } else {
+            roleBadge = `<span class="badge badge-vp">Vice-President</span>`;
+          }
         }
 
         const headBadge = m.isHead ? `<span class="badge badge-head">Head of Delegation</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` : '';
 
         return `
-          <div class="mep-card ${m.role}">
+          <div class="mep-card ${cardClass}">
             <div class="card-photo-container">
               <img src="https://www.europarl.europa.eu/mepphoto/${m.id}.jpg" alt="${m.name}" referrerpolicy="no-referrer" onerror="showFallback(this)">
               <div class="initials-fallback">${getInitials(m.name)}</div>
@@ -488,7 +498,6 @@
             return pA - pB;
           }
 
-          // If both are EP VPs (Priority 3), sort strictly by roleLabel ('EP VP 1' -> 'EP VP 2' -> 'EP VP 3')
           if (pA === 3) {
             return (a.roleLabel || '').localeCompare(b.roleLabel || '');
           }
@@ -510,7 +519,7 @@
         const csvText = await res.text();
         const rawRows = parseCSV(csvText);
 
-        meps = rawRows.map(obj => ({
+        meps = rawRows.app(obj => ({
           id: parseInt(obj.id),
           name: obj.name,
           role: obj.role,
