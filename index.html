@@ -300,8 +300,9 @@
       <div class="filter-buttons">
         <button id="hondAbcBtn" class="btn-toggle" onclick="setFilter('hondAbc')">HoND ABC</button>
         <button id="hondSizeBtn" class="btn-toggle" onclick="setFilter('hondSize')">HoND Size</button>
-        <button id="coordCtteeBtn" class="btn-toggle" onclick="setFilter('coordCttee')">Coordinators CTTEE</button>
-        <button id="coordAbcBtn" class="btn-toggle" onclick="setFilter('coordAbc')">Coordinators ABC</button>
+        <button id="coordCtteeProtoBtn" class="btn-toggle" onclick="setFilter('coordCtteeProto')">Coord CTTEE Proto</button>
+        <button id="coordCtteeAbcBtn" class="btn-toggle" onclick="setFilter('coordCtteeAbc')">Coord CTTEE ABC</button>
+        <button id="coordNameAbcBtn" class="btn-toggle" onclick="setFilter('coordNameAbc')">Coord Name ABC</button>
       </div>
 
       <div class="search-row">
@@ -379,8 +380,9 @@
 
       document.getElementById('hondAbcBtn').classList.toggle('active', currentFilter === 'hondAbc');
       document.getElementById('hondSizeBtn').classList.toggle('active', currentFilter === 'hondSize');
-      document.getElementById('coordCtteeBtn').classList.toggle('active', currentFilter === 'coordCttee');
-      document.getElementById('coordAbcBtn').classList.toggle('active', currentFilter === 'coordAbc');
+      document.getElementById('coordCtteeProtoBtn').classList.toggle('active', currentFilter === 'coordCtteeProto');
+      document.getElementById('coordCtteeAbcBtn').classList.toggle('active', currentFilter === 'coordCtteeAbc');
+      document.getElementById('coordNameAbcBtn').classList.toggle('active', currentFilter === 'coordNameAbc');
 
       applyFilters();
     }
@@ -428,7 +430,7 @@
         let matchesFilter = true;
         if (currentFilter === 'hondAbc' || currentFilter === 'hondSize') {
           matchesFilter = m.isHead;
-        } else if (currentFilter === 'coordCttee' || currentFilter === 'coordAbc') {
+        } else if (currentFilter === 'coordCtteeProto' || currentFilter === 'coordCtteeAbc' || currentFilter === 'coordNameAbc') {
           matchesFilter = !!m.coordinator;
         }
 
@@ -443,16 +445,29 @@
         return matchesFilter && matchesQuery;
       });
 
-      if (currentFilter === 'hondAbc' || currentFilter === 'coordAbc') {
+      if (currentFilter === 'hondAbc' || currentFilter === 'coordNameAbc') {
         filtered.sort((a, b) => {
           const lastA = a.name.split(' ').pop();
           const lastB = b.name.split(' ').pop();
           return lastA.localeCompare(lastB);
         });
       } else if (currentFilter === 'hondSize') {
-        filtered.sort((a, b) => a.hondOrder - b.hondOrder);
-      } else if (currentFilter === 'coordCttee') {
+        filtered.sort((a, b) => {
+          if (a.hondOrder !== b.hondOrder) {
+            return a.hondOrder - b.hondOrder;
+          }
+          const lastA = a.name.split(' ').pop();
+          const lastB = b.name.split(' ').pop();
+          return lastA.localeCompare(lastB);
+        });
+      } else if (currentFilter === 'coordCtteeProto') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
+      } else if (currentFilter === 'coordCtteeAbc') {
+        filtered.sort((a, b) => {
+          const cA = (a.coordinator || '').toLowerCase();
+          const cB = (b.coordinator || '').toLowerCase();
+          return cA.localeCompare(cB);
+        });
       } else {
         // Default main page sort: Chair first, then VPs ABC by last name, then MEPs ABC by last name
         filtered.sort((a, b) => {
