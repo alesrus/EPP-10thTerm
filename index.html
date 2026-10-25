@@ -470,7 +470,7 @@
           return cA.localeCompare(cB);
         });
       } else {
-        // Default general sort: Chair (1) -> Group VPs (2) -> EP VPs (3) -> Regular Members (4)
+        // Default general sort: Chair (1) -> Group VPs (2) -> EP VPs 1,2,3 (3) -> Regular Members (4)
         filtered.sort((a, b) => {
           const getPriority = (m) => {
             if (m.role === 'chair') return 1;
@@ -486,6 +486,11 @@
 
           if (pA !== pB) {
             return pA - pB;
+          }
+
+          // If both are EP VPs (Priority 3), sort strictly by roleLabel ('EP VP 1' -> 'EP VP 2' -> 'EP VP 3')
+          if (pA === 3) {
+            return (a.roleLabel || '').localeCompare(b.roleLabel || '');
           }
 
           const lastA = a.name.split(' ').pop();
