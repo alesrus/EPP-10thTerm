@@ -450,14 +450,7 @@
           return lastA.localeCompare(lastB);
         });
       } else if (currentFilter === 'hondSize') {
-        filtered.sort((a, b) => {
-          if (a.hondOrder !== b.hondOrder) {
-            return a.hondOrder - b.hondOrder;
-          }
-          const lastA = a.name.split(' ').pop();
-          const lastB = b.name.split(' ').pop();
-          return lastA.localeCompare(lastB);
-        });
+        filtered.sort((a, b) => a.hondOrder - b.hondOrder);
       } else if (currentFilter === 'coordCttee') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       } else {
@@ -504,8 +497,8 @@
           party: obj.party,
           isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || obj.headOfDelegation === 'True',
           coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
-          coordinatorOrder: parseInt(obj.coordinatorOrder) || 999,
-          hondOrder: parseInt(obj.hondOrder) || 999
+          coordinatorOrder: parseFloat(obj.coordinatorOrder) || 999,
+          hondOrder: parseFloat(obj.hondOrder) || 999
         })).filter(m => !isNaN(m.id) && m.name);
 
         document.getElementById('loadingState').style.display = 'none';
