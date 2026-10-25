@@ -393,7 +393,10 @@
       container.innerHTML = list.map(m => {
         let roleBadge = '';
         if (m.role === 'chair') roleBadge = `<span class="badge badge-chair">Chairman</span>`;
-        else if (m.role === 'vp') roleBadge = `<span class="badge badge-vp">Vice-President</span>`;
+        else if (m.role === 'vp') {
+          let label = (m.roleLabel && m.roleLabel.startsWith('EP VP')) ? m.roleLabel : 'Vice-President';
+          roleBadge = `<span class="badge badge-vp">${label}</span>`;
+        }
 
         const headBadge = m.isHead ? `<span class="badge badge-head">Head of Delegation</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` : '';
@@ -467,16 +470,19 @@
           return cA.localeCompare(cB);
         });
       } else {
-        // Default main page sort: Chair first, then VPs ABC by last name, then MEPs ABC by last name
+        // Default general sort: Chair (1) -> Group VPs (2) -> EP VPs (3) -> Regular Members (4)
         filtered.sort((a, b) => {
-          const getPriority = (role) => {
-            if (role === 'chair') return 1;
-            if (role === 'vp') return 2;
-            return 3;
+          const getPriority = (m) => {
+            if (m.role === 'chair') return 1;
+            if (m.role === 'vp') {
+              if (m.roleLabel && m.roleLabel.startsWith('EP VP')) return 3;
+              return 2; // Group VP
+            }
+            return 4; // Regular MEP
           };
 
-          const pA = getPriority(a.role);
-          const pB = getPriority(b.role);
+          const pA = getPriority(a);
+          const pB = getPriority(b);
 
           if (pA !== pB) {
             return pA - pB;
