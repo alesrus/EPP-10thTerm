@@ -1,10 +1,10 @@
 id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coordinatorOrder,hondOrder
-256810,Mika AALTOLA,member,MEP,EPP,Finland,🇫🇮,Kokoomus,Yes,EUDS,26,17.1
+256810,Mika AALTOLA,member,MEP,EPP,Finland,🇫🇮,Kokoomus,Yes,EUDS,25.0,17.1
 257043,Maravillas ABADÍA JOVER,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 197490,Magdalena ADAMOWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 256820,Georgios AFTIAS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,No,,,999.0
 113523,Peter AGIUS,member,MEP,EPP,Malta,🇲🇹,Partit Nazzjonalista,No,,,999.0
-96808,Pablo ARIAS ECHEVERRÍA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,IMCO,11,999.0
+96808,Pablo ARIAS ECHEVERRÍA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,IMCO,14,999.0
 24922,Pascal ARIMONT,member,MEP,EPP,Belgium,🇧🇪,CSP,No,,,999.0
 197492,Bartosz ARŁUKOWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 256887,Wouter BEKE,member,MEP,EPP,Belgium,🇧🇪,CD&V,Yes,,,19.1
@@ -17,7 +17,7 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 277777,Csaba BOGDÁN,member,MEP,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 197636,Ioan-Rareş BOGDAN,member,MEP,EPP,Romania,🇷🇴,PNL,No,,,999.0
 251324,Krzysztof BREJZA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
-204129,Nikolina BRNJAC,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,HOUS,25,999.0
+204129,Nikolina BRNJAC,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,HOUS,26,999.0
 125012,Daniel BUDA,member,MEP,EPP,Romania,🇷🇴,PNL,Yes,,,4.1
 257047,Borys BUDKA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 257081,Sebastião BUGALHO,member,MEP,EPP,Portugal,🇵🇹,AD,No,,,999.0
@@ -37,21 +37,21 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 257048,Paulo DO NASCIMENTO CABRAL,member,MEP,EPP,Portugal,🇵🇹,PSD,No,,,999.0
 257237,Regina DOHERTY,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,No,,,999.0
 197473,Christian DOLESCHAL,member,MEP,EPP,Germany,🇩🇪,CSU,Yes,,,1.2
-96787,Herbert DORFMANN,member,MEP,EPP,Italy,🇮🇹,SVP,Yes,AGRI,14,5.2
-99945,Lena DÜPONT,member,MEP,EPP,Germany,🇩🇪,CDU,No,LIBE,17,999.0
-28226,Christian EHLER,member,MEP,EPP,Germany,🇩🇪,CDU,No,ITRE,10,999.0
+96787,Herbert DORFMANN,member,MEP,EPP,Italy,🇮🇹,SVP,Yes,AGRI,17,5.2
+99945,Lena DÜPONT,member,MEP,EPP,Germany,🇩🇪,CDU,No,LIBE,21,999.0
+28226,Christian EHLER,member,MEP,EPP,Germany,🇩🇪,CDU,No,ITRE,13,999.0
 96811,Rosa ESTARÀS FERRAGUT,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 257035,Alma EZCURRA ALMANSA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 197649,Gheorghe FALCĂ,member,MEP,EPP,Romania,🇷🇴,PNL,No,,,999.0
 257137,Marco FALCONE,member,MEP,EPP,Italy,🇮🇹,Forza Italia,No,,,999.0
 256840,Jan FARSKÝ,member,MEP,EPP,Czechia,🇨🇿,STAN,No,,,999.0
-1917,Markus FERBER,member,MEP,EPP,Germany,🇩🇪,CSU,No,ECON,5,999.0
+1917,Markus FERBER,member,MEP,EPP,Germany,🇩🇪,CSU,No,ECON,8,999.0
 197414,Loucas FOURLAS,member,MEP,EPP,Cyprus,🇨🇾,DISY,Yes,,,22.1
 2341,Michael GAHLER,member,MEP,EPP,Germany,🇩🇪,CDU,No,AFET,1,999.0
 257032,Kamila GASIUK-PIHOWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 256866,Gabriella GERZSENYI,member,MEP,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 251874,Niels GEUKING,member,MEP,EPP,Germany,🇩🇪,Familienpartei,No,,,999.0
-124807,Jens GIESEKE,member,MEP,EPP,Germany,🇩🇪,CDU,No,TRAN,12,999.0
+124807,Jens GIESEKE,member,MEP,EPP,Germany,🇩🇪,CDU,No,TRAN,15,999.0
 125204,Borja GIMÉNEZ LARRAZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 202036,Sunčana GLAVAK,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,,,999.0
 256919,Christophe GOMART,member,MEP,EPP,France,🇫🇷,Les Républicains,No,,,999.0
@@ -90,16 +90,16 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 256864,András Tivadar KULJA,member,MEP,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 256865,Eszter LAKOS,vp,Vice-President,EPP,Hungary,🇭🇺,TISZA,Yes,,,7.1
 257261,Ilia LAZAROV,member,MEP,EPP,Bulgaria,🇧🇬,SDS,No,,,999.0
-256920,Isabelle LE CALLENNEC,member,MEP,EPP,France,🇫🇷,Les Républicains,No,PECH,19,999.0
+256920,Isabelle LE CALLENNEC,member,MEP,EPP,France,🇫🇷,Les Républicains,No,PECH,18,999.0
 95074,Jeroen LENAERS,vp,Vice-President,EPP,Netherlands,🇳🇱,CDA,Yes,,,12.1
 23781,Janusz LEWANDOWSKI,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 204336,Miriam LEXMANN,member,MEP,EPP,Slovakia,🇸🇰,KDH,Yes,,,27.1
-1927,Peter LIESE,member,MEP,EPP,Germany,🇩🇪,CDU,No,ENVI,8,999.0
+1927,Peter LIESE,member,MEP,EPP,Germany,🇩🇪,CDU,No,ENVI,11,999.0
 124808,Norbert LINS,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
 220896,Reinhold LOPATKA,member,MEP,EPP,Austria,🇦🇹,ÖVP,Yes,,,13.1
 28399,Antonio LÓPEZ-ISTÚRIZ WHITE,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 96791,Elżbieta Katarzyna ŁUKACIJEWSKA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
-190713,Lukas MANDL,member,MEP,EPP,Austria,🇦🇹,ÖVP,No,DEVE,2,999.0
+190713,Lukas MANDL,member,MEP,EPP,Austria,🇦🇹,ÖVP,No,DEVE,4,999.0
 257082,Jagna MARCZUŁAJTIS-WALCZAK,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 124828,Fulvio MARTUSCIELLO,member,MEP,EPP,Italy,🇮🇹,Forza Italia,Yes,,,5.1
 96936,Gabriel MATO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
@@ -108,7 +108,7 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 124806,David MCALLISTER,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
 256980,Alexandra MEHNERT,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
 197662,Vangelis MEIMARAKIS,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,No,,,999.0
-256943,Eleonora MELETI,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,No,FEMM,21,999.0
+256943,Eleonora MELETI,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,No,FEMM,23,999.0
 256974,Verena MERTENS,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
 118859,Roberta METSOLA,member,MEP,EPP,Malta,🇲🇹,Partit Nazzjonalista,No,,,999.0
 28400,Francisco José MILLÁN MON,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
@@ -117,14 +117,14 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 257151,Letizia MORATTI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,No,,,999.0
 197647,Dan-Ştefan MOTREANU,member,MEP,EPP,Romania,🇷🇴,PNL,No,,,999.0
 124802,Siegfried MUREŞAN,vp,Vice-President,EPP,Romania,🇷🇴,PNL,No,,,999.0
-257027,Fernando NAVARRETE ROJAS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,FISC,6,999.0
+257027,Fernando NAVARRETE ROJAS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,FISC,9,999.0
 256847,Danuše NERUDOVÁ,member,MEP,EPP,Czechia,🇨🇿,STAN,Yes,,,14.2
-257039,Elena NEVADO DEL CAMPO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,PETI,22,999.0
+257039,Elena NEVADO DEL CAMPO,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,PETI,24,999.0
 4289,Angelika NIEBLER,member,MEP,EPP,Germany,🇩🇪,CSU,No,,,999.0
 124701,Luděk NIEDERMAYER,member,MEP,EPP,Czechia,🇨🇿,TOP 09,Yes,,,14.1
-107212,Andrey NOVAKOV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,No,REGI,13,999.0
+107212,Andrey NOVAKOV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,No,REGI,16,999.0
 257049,Mirosława NYKIEL,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
-257040,Nicolás PASCUAL DE LA PARTE,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,SEDE,23,999.0
+257040,Nicolás PASCUAL DE LA PARTE,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,SEDE,3,999.0
 110673,Ana Miguel PEDRO,member,MEP,EPP,Portugal,🇵🇹,CDS-PP,Yes,,,8.2
 197738,Lídia PEREIRA,member,MEP,EPP,Portugal,🇵🇹,PSD,No,,,999.0
 40599,Sirpa PIETIKÄINEN,member,MEP,EPP,Finland,🇫🇮,Kokoomus,No,,,999.0
@@ -133,9 +133,9 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 257128,Giusi PRINCI,member,MEP,EPP,Italy,🇮🇹,Forza Italia,No,,,999.0
 257041,Jacek PROTAS,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 124850,Emil RADEV,member,MEP,EPP,Bulgaria,🇧🇬,GERB,No,,,999.0
-188945,Dennis RADTKE,member,MEP,EPP,Germany,🇩🇪,CDU,No,EMPL,7,999.0
+188945,Dennis RADTKE,member,MEP,EPP,Germany,🇩🇪,CDU,No,EMPL,10,999.0
 188096,Jüri RATAS,member,MEP,EPP,Estonia,🇪🇪,Isamaa,No,,,999.0
-197413,Karlo RESSLER,member,MEP,EPP,Croatia,🇭🇷,HDZ,Yes,BUDG,4,10.1
+197413,Karlo RESSLER,member,MEP,EPP,Croatia,🇭🇷,HDZ,Yes,BUDG,6,10.1
 206158,Manuela RIPA,member,MEP,EPP,Germany,🇩🇪,ÖDP,No,,,999.0
 125670,Massimiliano SALINI,vp,Vice-President,EPP,Italy,🇮🇹,Forza Italia,No,,,999.0
 98219,Aura SALLA,member,MEP,EPP,Finland,🇫🇮,Kokoomus,No,,,999.0
@@ -145,10 +145,10 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 197425,Ralf SEEKATZ,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
 86057,Bartłomiej SIENKIEWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 197426,Sven SIMON,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
-197417,Tomislav SOKOL,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,SANT,9,999.0
+197417,Tomislav SOKOL,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,SANT,12,999.0
 197784,Susana SOLÍS PÉREZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 256889,Liesbet SOMMEN,member,MEP,EPP,Belgium,🇧🇪,CD&V,No,,,999.0
-257068,Hélder SOUSA SILVA,member,MEP,EPP,Portugal,🇵🇹,PSD,No,CULT,15,999.0
+257068,Hélder SOUSA SILVA,member,MEP,EPP,Portugal,🇵🇹,PSD,No,CULT,19,999.0
 119435,Davor Ivo STIER,member,MEP,EPP,Croatia,🇭🇷,HDZ,No,,,999.0
 257026,Michał SZCZERBA,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 257089,Alice TEODORESCU MÅWE,member,MEP,EPP,Sweden,🇸🇪,Kristdemokraterna,No,,,999.0
@@ -164,12 +164,12 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 37324,Adina VĂLEAN,member,MEP,EPP,Romania,🇷🇴,PNL,No,,,999.0
 204400,Adrián VÁZQUEZ LÁZARA,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 96756,Sabine VERHEYEN,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
-98582,Loránt VINCZE,member,MEP,EPP,Romania,🇷🇴,RMDSZ,No,AFCO,18,999.0
-96761,Axel VOSS,member,MEP,EPP,Germany,🇩🇪,CDU,No,JURI,16,999.0
+98582,Loránt VINCZE,member,MEP,EPP,Romania,🇷🇴,RMDSZ,No,AFCO,22,999.0
+96761,Axel VOSS,member,MEP,EPP,Germany,🇩🇪,CDU,No,JURI,20,999.0
 125065,Elissavet VOZEMBERG-VRIONIDI,member,MEP,EPP,Greece,🇬🇷,Nea Demokratia,Yes,,,6.1
 197863,Maria WALSH,member,MEP,EPP,Ireland,🇮🇪,Fine Gael,No,,,999.0
 197429,Marion WALSMANN,member,MEP,EPP,Germany,🇩🇪,CDU,No,,,999.0
-197405,Jörgen WARBORN,member,MEP,EPP,Sweden,🇸🇪,Moderaterna,No,INTA,3,999.0
+197405,Jörgen WARBORN,member,MEP,EPP,Sweden,🇸🇪,Moderaterna,No,INTA,5,999.0
 257045,Michał WAWRYKIEWICZ,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 257046,Marta WCISŁO,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 28229,Manfred WEBER,chair,Chairman,EPP,Germany,🇩🇪,CSU,No,,,999.0
@@ -177,9 +177,9 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 260695,Viktor WEISZ,member,MEP,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 39725,Iuliu WINKLER,member,MEP,EPP,Romania,🇷🇴,RMDSZ,Yes,,,4.2
 197652,Angelika WINZIG,member,MEP,EPP,Austria,🇦🇹,ÖVP,No,,,999.0
-197421,Isabel WISELER-LIMA,member,MEP,EPP,Luxembourg,🇱🇺,CSV,Yes,DROI,24,26.1
+197421,Isabel WISELER-LIMA,member,MEP,EPP,Luxembourg,🇱🇺,CSV,Yes,DROI,2,26.1
 197606,Javier ZARZALEJOS,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
-124713,Tomáš ZDECHOVSKÝ,member,MEP,EPP,Czechia,🇨🇿,KDU-ČSL,No,CONT,20,999.0
+124713,Tomáš ZDECHOVSKÝ,member,MEP,EPP,Czechia,🇨🇿,KDU-ČSL,No,CONT,7,999.0
 124893,Bogdan Andrzej ZDROJEWSKI,member,MEP,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 197621,Juan Ignacio ZOIDO ÁLVAREZ,member,MEP,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 185341,Željana ZOVKO,vp,Vice-President,EPP,Croatia,🇭🇷,HDZ,No,,,999.0
