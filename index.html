@@ -229,7 +229,6 @@
     .badge-vp { background: #dbeafe; color: #1e40af; }
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
     .badge-coord { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; }
-    .badge-role { background: #f1f5f9; color: #475569; }
 
     .mep-name {
       font-size: 0.92rem;
@@ -395,7 +394,6 @@
         let roleBadge = '';
         if (m.role === 'chair') roleBadge = `<span class="badge badge-chair">Chairman</span>`;
         else if (m.role === 'vp') roleBadge = `<span class="badge badge-vp">Vice-President</span>`;
-        else roleBadge = `<span class="badge badge-role">MEP</span>`;
 
         const headBadge = m.isHead ? `<span class="badge badge-head">Head of Delegation</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coordinator: ${m.coordinator}</span>` : '';
