@@ -334,6 +334,19 @@
     let meps = [];
     let currentFilter = 'all';
 
+    const GROUP_VP_ORDER = [
+      "Dolors MONTSERRAT",
+      "Eszter LAKOS",
+      "Siegfried MUREŞAN",
+      "Tomas TOBÉ",
+      "Massimiliano SALINI",
+      "Andrzej HALICKI",
+      "Jeroen LENAERS",
+      "Romana TOMC",
+      "François-Xavier BELLAMY",
+      "Željana ZOVKO"
+    ];
+
     function parseCSV(text) {
       const lines = text.trim().split(/\r?\n/);
       if (lines.length === 0) return [];
@@ -480,7 +493,7 @@
           return cA.localeCompare(cB);
         });
       } else {
-        // Default general sort: Chair (1) -> Group VPs (2) -> EP VPs 1,2,3 (3) -> Regular Members (4)
+        // Default general sort: Chair (1) -> Group VPs in custom order (2) -> EP VPs 1,2,3 (3) -> Regular Members (4)
         filtered.sort((a, b) => {
           const getPriority = (m) => {
             if (m.role === 'chair') return 1;
@@ -498,6 +511,14 @@
             return pA - pB;
           }
 
+          // If both are Group VPs (Priority 2), sort by exact GROUP_VP_ORDER index
+          if (pA === 2) {
+            const indexA = GROUP_VP_ORDER.indexOf(a.name);
+            const indexB = GROUP_VP_ORDER.indexOf(b.name);
+            return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
+          }
+
+          // If both are EP VPs (Priority 3), sort strictly by roleLabel ('EP VP 1' -> 'EP VP 2' -> 'EP VP 3')
           if (pA === 3) {
             return (a.roleLabel || '').localeCompare(b.roleLabel || '');
           }
