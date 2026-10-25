@@ -55,7 +55,7 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 125204,Borja GIMÉNEZ LARRAZ,member,,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
 202036,Sunčana GLAVAK,member,,EPP,Croatia,🇭🇷,HDZ,No,,,999.0
 256919,Christophe GOMART,member,,EPP,France,🇫🇷,Les Républicains,No,,,999.0
-125027,Esteban GONZÁLEZ PONS,member,,EPP,Spain,🇪🇸,Partido Popular,Yes,,,3.1
+125027,Esteban GONZÁLEZ PONS,vp,EP VP 2,EPP,Spain,🇪🇸,Partido Popular,Yes,,,3.1
 97399,Dirk GOTINK,member,,EPP,Netherlands,🇳🇱,NSC,No,,,999.0
 262021,Hanna GRONKIEWICZ-WALTZ,member,,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 256985,Michalis HADJIPANTELA,member,,EPP,Cyprus,🇨🇾,DISY,No,,,999.0
@@ -85,7 +85,7 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 256846,Ondřej KOLÁŘ,member,,EPP,Czechia,🇨🇿,TOP 09,No,,,999.0
 256861,Kinga KOLLÁR,member,,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 276060,Willemien KONING,member,,EPP,Netherlands,🇳🇱,CDA,No,,,999.0
-197525,Ewa KOPACZ,member,,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
+197525,Ewa KOPACZ,vp,EP VP 3,EPP,Poland,🇵🇱,Platforma Obywatelska,No,,,999.0
 97968,Andrey KOVATCHEV,member,,EPP,Bulgaria,🇧🇬,GERB,Yes,,,9.1
 256864,András Tivadar KULJA,member,,EPP,Hungary,🇭🇺,TISZA,No,,,999.0
 256865,Eszter LAKOS,vp,Vice-President,EPP,Hungary,🇭🇺,TISZA,Yes,,,7.1
@@ -163,7 +163,7 @@ id,name,role,roleLabel,group,country,flag,party,headOfDelegation,coordinator,coo
 28617,Inese VAIDERE,member,,EPP,Latvia,🇱🇻,Vienotība,No,,,999.0
 37324,Adina VĂLEAN,member,,EPP,Romania,🇷🇴,PNL,No,,,999.0
 204400,Adrián VÁZQUEZ LÁZARA,member,,EPP,Spain,🇪🇸,Partido Popular,No,,,999.0
-96756,Sabine VERHEYEN,member,,EPP,Germany,🇩🇪,CDU,No,,,999.0
+96756,Sabine VERHEYEN,vp,EP VP 1,EPP,Germany,🇩🇪,CDU,No,,,999.0
 98582,Loránt VINCZE,member,,EPP,Romania,🇷🇴,RMDSZ,No,AFCO,22.0,999.0
 96761,Axel VOSS,member,,EPP,Germany,🇩🇪,CDU,No,JURI,20.0,999.0
 125065,Elissavet VOZEMBERG-VRIONIDI,member,,EPP,Greece,🇬🇷,Nea Demokratia,Yes,,,6.1
