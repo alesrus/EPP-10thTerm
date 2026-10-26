@@ -34,6 +34,7 @@
       --badge-ep-vp: #8b5cf6;
       --badge-head: #10b981;
       --badge-coord: #0d9488;
+      --badge-seat: #475569;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -222,16 +223,16 @@
     .badge {
       font-size: 0.6rem;
       font-weight: 700;
-      //text-transform: uppercase;
       padding: 2px 6px;
       border-radius: 4px;
       letter-spacing: 0.3px;
     }
-    .badge-chair { background: #fef3c7; color: #b45309; }
-    .badge-vp { background: #dbeafe; color: #1e40af; }
-    .badge-ep-vp { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; }
+    .badge-chair { background: #fef3c7; color: #b45309; text-transform: uppercase; }
+    .badge-vp { background: #dbeafe; color: #1e40af; text-transform: uppercase; }
+    .badge-ep-vp { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; text-transform: uppercase; }
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
-    .badge-coord { background: #f0fdfa; color: #0d9488; border: 1px solid #0d9488; }
+    .badge-coord { background: #f0fdfa; color: #0d9488; border: 1px solid #0d9488; text-transform: uppercase; }
+    .badge-seat { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
     .mep-name {
       font-size: 0.92rem;
@@ -310,7 +311,7 @@
       <div class="search-row">
         <div class="search-box">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="mepSearch" placeholder="Search by name, country, party, committee..." onkeyup="applyFilters()">
+          <input type="text" id="mepSearch" placeholder="Search by name, country, party, committee, seat..." onkeyup="applyFilters()">
         </div>
         <div class="counter">
           Showing <strong id="visibleCount">0</strong> of <span id="totalCount">0</span> MEPs
@@ -423,6 +424,10 @@
 
         const headBadge = m.isHead ? `<span class="badge badge-head">HoND</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
+        
+        // Seat badges (S for Strasbourg, B for Brussels)
+        const strBadge = m.strasbourg ? `<span class="badge badge-seat" title="Strasbourg Seat">S:${m.strasbourg}</span>` : '';
+        const bruBadge = m.brussels && m.brussels !== '0' ? `<span class="badge badge-seat" title="Brussels Seat">B:${m.brussels}</span>` : '';
 
         return `
           <div class="mep-card ${cardClass}">
@@ -435,6 +440,8 @@
                 ${roleBadge}
                 ${headBadge}
                 ${coordBadge}
+                ${strBadge}
+                ${bruBadge}
               </div>
               <div class="mep-name">${m.name}</div>
               <div class="mep-meta">
@@ -464,6 +471,8 @@
           (m.party && m.party.toLowerCase().includes(q)) ||
           (m.roleLabel && m.roleLabel.toLowerCase().includes(q)) ||
           (m.coordinator && m.coordinator.toLowerCase().includes(q)) ||
+          (m.strasbourg && m.strasbourg.toString().includes(q)) ||
+          (m.brussels && m.brussels.toString().includes(q)) ||
           (m.isHead && "hond".includes(q)) ||
           (m.isHead && "head of delegation".includes(q));
 
@@ -551,7 +560,9 @@
           isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || String(obj.headOfDelegation).toLowerCase() === 'true',
           coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
           coordinatorOrder: parseFloat(obj.coordinatorOrder) || 999,
-          hondOrder: parseFloat(obj.hondOrder) || 999
+          hondOrder: parseFloat(obj.hondOrder) || 999,
+          strasbourg: obj.strasbourg || '',
+          brussels: obj.brussels || ''
         })).filter(m => !isNaN(m.id) && m.name);
 
         document.getElementById('loadingState').style.display = 'none';
