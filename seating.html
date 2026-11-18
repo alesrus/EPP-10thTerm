@@ -71,8 +71,8 @@
         <svg id="seatMap" viewBox="0 0 1000 610" role="img" aria-labelledby="mapTitle mapDescription">
           <title id="mapTitle">Hemicycle seat map</title>
           <desc id="mapDescription">An empty circle represents each seat. The selected MEP's seat is filled.</desc>
-          <path class="stage" d="M 370 95 Q 500 35 630 95 L 615 120 Q 500 77 385 120 Z"></path>
-          <text class="stage-label" x="500" y="95" text-anchor="middle">PRESIDING AREA</text>
+          <path class="stage" d="M 370 515 Q 500 575 630 515 L 615 490 Q 500 533 385 490 Z"></path>
+          <text class="stage-label" x="500" y="555" text-anchor="middle">PRESIDENCY</text>
           <g id="seatRows"></g>
         </svg>
       </div>
@@ -88,7 +88,7 @@
     const ROOM_MAPS = {
       strasbourg: {
         name: 'Strasbourg · S1.4',
-        rows: [[1, 32], [33, 43], [44, 80], [81, 125], [126, 179], [180, 242], [243, 340]]
+        rows: [[1, 22], [23, 53], [54, 80], [81, 125], [126, 179], [180, 242], [243, 340]]
       },
       brussels: {
         name: 'Brussels · 2Q2',
@@ -135,15 +135,15 @@
       room.rows.forEach(([first, last], rowIndex) => {
         const radius = 150 + rowIndex * (270 / Math.max(1, rowCount - 1));
         const rowSeats = last - first + 1;
-        const startAngle = 145;
-        const endAngle = 35;
+        const startAngle = 215;
+        const endAngle = 325;
         const arc = document.createElementNS(svgNamespace, 'path');
         const startX = 500 + radius * Math.cos(startAngle * Math.PI / 180);
-        const startY = 100 + radius * Math.sin(startAngle * Math.PI / 180);
+        const startY = 510 + radius * Math.sin(startAngle * Math.PI / 180);
         const endX = 500 + radius * Math.cos(endAngle * Math.PI / 180);
-        const endY = 100 + radius * Math.sin(endAngle * Math.PI / 180);
+        const endY = 510 + radius * Math.sin(endAngle * Math.PI / 180);
         arc.setAttribute('class', 'row-line');
-        arc.setAttribute('d', `M ${startX} ${startY} A ${radius} ${radius} 0 0 0 ${endX} ${endY}`);
+        arc.setAttribute('d', `M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`);
         rowsElement.append(arc);
 
         for (let number = first; number <= last; number++) {
@@ -153,7 +153,7 @@
           const isSelected = number === seat;
           dot.setAttribute('class', `seat-dot${isSelected ? ' selected' : ''}`);
           dot.setAttribute('cx', String(500 + radius * Math.cos(angle)));
-          dot.setAttribute('cy', String(100 + radius * Math.sin(angle)));
+          dot.setAttribute('cy', String(510 + radius * Math.sin(angle)));
           dot.setAttribute('r', isSelected ? '8' : '4');
           dot.setAttribute('aria-label', isSelected ? `Seat ${number}, ${mepName}` : `Seat ${number}`);
           const title = document.createElementNS(svgNamespace, 'title');
