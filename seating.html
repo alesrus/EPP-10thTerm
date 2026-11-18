@@ -43,12 +43,15 @@
     .stage { fill: #eff4ff; stroke: #b7c8e8; stroke-width: 2; }
     .stage-label { fill: #526174; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
     .row-line { fill: none; stroke: #e2e8f0; stroke-width: 1.5; }
+    .aisle { fill: none; stroke: #edf2f7; stroke-width: 18; }
+    .aisle-center { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4 5; }
     .seat-dot { fill: white; stroke: #7b8da8; stroke-width: 1.5; }
     .seat-dot.selected { fill: #003399; stroke: #ffcc00; stroke-width: 4; }
     .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 14px 0 0; color: #526174; font-size: 0.92rem; }
     .legend-item { display: inline-flex; align-items: center; gap: 8px; }
     .legend-dot { width: 14px; height: 14px; border: 2px solid #7b8da8; border-radius: 50%; background: white; }
     .legend-dot.selected { border-color: #003399; background: #003399; box-shadow: 0 0 0 2px #ffcc00; }
+    .legend-corridor { width: 22px; height: 0; border-top: 2px dashed #94a3b8; }
     .schematic-note { margin: 14px 0 0; color: #64748b; font-size: 0.82rem; }
     .error { color: #991b1b; }
     footer { padding: 18px; color: #64748b; text-align: center; font-size: 0.82rem; }
@@ -70,15 +73,17 @@
       <div class="map-wrap">
         <svg id="seatMap" viewBox="0 0 1000 610" role="img" aria-labelledby="mapTitle mapDescription">
           <title id="mapTitle">Hemicycle seat map</title>
-          <desc id="mapDescription">An empty circle represents each seat. The selected MEP's seat is filled.</desc>
+          <desc id="mapDescription">An empty circle represents each seat, with two corridors between seating sections. The selected MEP's seat is filled.</desc>
           <path class="stage" d="M 370 515 Q 500 575 630 515 L 615 490 Q 500 533 385 490 Z"></path>
           <text class="stage-label" x="500" y="555" text-anchor="middle">PRESIDENCY</text>
+          <g id="aisles"></g>
           <g id="seatRows"></g>
         </svg>
       </div>
       <div class="legend" aria-label="Map legend">
         <span class="legend-item"><span class="legend-dot"></span>Other seats</span>
         <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
+        <span class="legend-item"><span class="legend-corridor"></span>Corridor</span>
       </div>
       <p class="schematic-note">Schematic view: seats are arranged by the numbered rows in the room plan.</p>
     </section>
@@ -88,11 +93,13 @@
     const ROOM_MAPS = {
       strasbourg: {
         name: 'Strasbourg · S1.4',
-        rows: [[1, 22], [23, 53], [54, 80], [81, 125], [126, 179], [180, 242], [243, 340]]
+        aisleStartRow: 1,
+        rows: [[1, 22], [23, 53], [54, 94], [95, 142], [143, 200], [201, 266], [267, 340]]
       },
       brussels: {
         name: 'Brussels · 2Q2',
-        rows: [[1, 13], [14, 27], [28, 53], [54, 83], [84, 120], [121, 159], [160, 203], [204, 251], [252, 302], [303, 355], [356, 413]]
+        aisleStartRow: 0,
+        rows: [[1, 13], [14, 34], [35, 61], [62, 94], [95, 131], [132, 172], [173, 217], [218, 266], [267, 318], [319, 370], [371, 413]]
       }
     };
 
@@ -103,8 +110,53 @@
     const mepName = params.get('name') || '';
     const nameElement = document.getElementById('mepName');
     const summaryElement = document.getElementById('seatSummary');
+    const aislesElement = document.getElementById('aisles');
     const rowsElement = document.getElementById('seatRows');
     const svgNamespace = 'http://www.w3.org/2000/svg';
+    const startAngle = 215;
+    const endAngle = 325;
+    const centerY = 510;
+    const corridorHalfAngle = 2.2;
+
+    function pointOnArc(radius, angle) {
+      const radians = angle * Math.PI / 180;
+      return {
+        x: 500 + radius * Math.cos(radians),
+        y: centerY + radius * Math.sin(radians)
+      };
+    }
+
+    function arcPath(radius, firstAngle, lastAngle) {
+      const start = pointOnArc(radius, firstAngle);
+      const end = pointOnArc(radius, lastAngle);
+      return `M ${start.x} ${start.y} A ${radius} ${radius} 0 0 1 ${end.x} ${end.y}`;
+    }
+
+    function corridorCenters() {
+      const span = endAngle - startAngle;
+      return [startAngle + span / 3, startAngle + 2 * span / 3];
+    }
+
+    function rowArcSegments(hasCorridors) {
+      if (!hasCorridors) return [[startAngle, endAngle]];
+      const [first, second] = corridorCenters();
+      return [
+        [startAngle, first - corridorHalfAngle],
+        [first + corridorHalfAngle, second - corridorHalfAngle],
+        [second + corridorHalfAngle, endAngle]
+      ];
+    }
+
+    function seatAngle(index, count, segments) {
+      const availableAngle = segments.reduce((total, [first, last]) => total + last - first, 0);
+      let remaining = count > 1 ? index / (count - 1) * availableAngle : availableAngle / 2;
+      for (const [first, last] of segments) {
+        const segmentWidth = last - first;
+        if (remaining <= segmentWidth) return first + remaining;
+        remaining -= segmentWidth;
+      }
+      return segments[segments.length - 1][1];
+    }
 
     function showError(message) {
       nameElement.textContent = 'Seat information unavailable';
@@ -132,28 +184,41 @@
       profileLink.hidden = false;
 
       const rowCount = room.rows.length;
+      const outerRadius = 420;
+      const firstAisleRadius = 150 + room.aisleStartRow * (270 / Math.max(1, rowCount - 1));
+      corridorCenters().forEach(angle => {
+        const start = pointOnArc(firstAisleRadius, angle);
+        const end = pointOnArc(outerRadius, angle);
+        const path = document.createElementNS(svgNamespace, 'path');
+        path.setAttribute('class', 'aisle');
+        path.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
+        aislesElement.append(path);
+        const centerline = document.createElementNS(svgNamespace, 'path');
+        centerline.setAttribute('class', 'aisle-center');
+        centerline.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
+        aislesElement.append(centerline);
+      });
+
       room.rows.forEach(([first, last], rowIndex) => {
         const radius = 150 + rowIndex * (270 / Math.max(1, rowCount - 1));
-        const rowSeats = last - first + 1;
-        const startAngle = 215;
-        const endAngle = 325;
-        const arc = document.createElementNS(svgNamespace, 'path');
-        const startX = 500 + radius * Math.cos(startAngle * Math.PI / 180);
-        const startY = 510 + radius * Math.sin(startAngle * Math.PI / 180);
-        const endX = 500 + radius * Math.cos(endAngle * Math.PI / 180);
-        const endY = 510 + radius * Math.sin(endAngle * Math.PI / 180);
-        arc.setAttribute('class', 'row-line');
-        arc.setAttribute('d', `M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`);
-        rowsElement.append(arc);
+        const hasCorridors = rowIndex >= room.aisleStartRow;
+        const segments = rowArcSegments(hasCorridors);
+        const seatCount = last - first + 1;
+
+        segments.forEach(([firstAngle, lastAngle]) => {
+          const arc = document.createElementNS(svgNamespace, 'path');
+          arc.setAttribute('class', 'row-line');
+          arc.setAttribute('d', arcPath(radius, firstAngle, lastAngle));
+          rowsElement.append(arc);
+        });
 
         for (let number = first; number <= last; number++) {
-          const position = rowSeats === 1 ? 0.5 : (number - first) / (rowSeats - 1);
-          const angle = (startAngle + (endAngle - startAngle) * position) * Math.PI / 180;
+          const angle = seatAngle(number - first, seatCount, segments) * Math.PI / 180;
           const dot = document.createElementNS(svgNamespace, 'circle');
           const isSelected = number === seat;
           dot.setAttribute('class', `seat-dot${isSelected ? ' selected' : ''}`);
           dot.setAttribute('cx', String(500 + radius * Math.cos(angle)));
-          dot.setAttribute('cy', String(510 + radius * Math.sin(angle)));
+          dot.setAttribute('cy', String(centerY + radius * Math.sin(angle)));
           dot.setAttribute('r', isSelected ? '8' : '4');
           dot.setAttribute('aria-label', isSelected ? `Seat ${number}, ${mepName}` : `Seat ${number}`);
           const title = document.createElementNS(svgNamespace, 'title');
