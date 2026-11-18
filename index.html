@@ -359,6 +359,11 @@
       "Željana ZOVKO"
     ];
 
+    const STRASBOURG_PRESIDENCY_IDS = new Set([
+      125670, 256865, 197711, 124802, 197402, 95074, 28229,
+      197514, 125104, 197534, 185341
+    ]);
+
     function parseCSV(text) {
       const lines = text.trim().split(/\r?\n/);
       if (lines.length === 0) return [];
@@ -450,6 +455,9 @@
             id: String(m.id),
             name: m.name
           });
+          if (room === 'strasbourg') {
+            params.set('location', STRASBOURG_PRESIDENCY_IDS.has(m.id) ? 'presidency' : 'room');
+          }
           return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
         };
         const strBadge = seatBadge(m.strasbourg, 'strasbourg', 'S');
