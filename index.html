@@ -241,6 +241,14 @@
       margin-bottom: 5px;
       line-height: 1.25;
     }
+    .mep-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .mep-name a:hover,
+    .mep-name a:focus-visible {
+      text-decoration: underline;
+    }
     .mep-meta {
       display: flex;
       align-items: center;
@@ -424,6 +432,8 @@
 
         const headBadge = m.isHead ? `<span class="badge badge-head">HoND</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
+        const profileSlug = encodeURIComponent(m.name.trim().toUpperCase().replace(/\s+/g, '_'));
+        const profileUrl = `https://www.europarl.europa.eu/meps/en/${m.id}/${profileSlug}/home`;
         
         // Seat badges (S for Strasbourg, B for Brussels)
         const strBadge = m.strasbourg ? `<span class="badge badge-seat" title="Strasbourg Seat">S:${m.strasbourg}</span>` : '';
@@ -443,7 +453,7 @@
                 ${strBadge}
                 ${bruBadge}
               </div>
-              <div class="mep-name">${m.name}</div>
+              <div class="mep-name"><a href="${profileUrl}">${m.name}</a></div>
               <div class="mep-meta">
                 <span>${m.flag || ''} ${m.country}</span>
                 ${m.party ? `<span>• ${m.party}</span>` : ''}
