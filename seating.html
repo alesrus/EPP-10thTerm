@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#003399">
+  <title>MEP seat | EPP Group</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f4f6fa;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; }
+    header {
+      padding: 22px 18px;
+      color: white;
+      text-align: center;
+      background: linear-gradient(135deg, #05142b, #003399 65%, #0d47a1);
+      border-bottom: 4px solid #ffcc00;
+    }
+    header h1 { margin: 0; font-size: clamp(1.3rem, 3vw, 2rem); }
+    main { width: min(1120px, 100% - 24px); margin: 22px auto 42px; }
+    .back-link { color: #003399; font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .seat-card {
+      margin-top: 16px;
+      padding: clamp(16px, 3vw, 28px);
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 35, 102, 0.06);
+    }
+    .seat-card h2 { margin: 0 0 6px; font-size: clamp(1.25rem, 3vw, 1.75rem); }
+    .seat-summary { margin: 0; color: #526174; }
+    .seat-summary strong { color: #003399; }
+    .profile-link { display: inline-block; margin-top: 10px; color: #003399; }
+    .map-wrap { margin-top: 20px; overflow-x: auto; }
+    #seatMap { display: block; width: 100%; min-width: 560px; height: auto; }
+    .stage { fill: #eff4ff; stroke: #b7c8e8; stroke-width: 2; }
+    .stage-label { fill: #526174; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
+    .row-line { fill: none; stroke: #e2e8f0; stroke-width: 1.5; }
+    .seat-dot { fill: white; stroke: #7b8da8; stroke-width: 1.5; }
+    .seat-dot.selected { fill: #003399; stroke: #ffcc00; stroke-width: 4; }
+    .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 14px 0 0; color: #526174; font-size: 0.92rem; }
+    .legend-item { display: inline-flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 14px; height: 14px; border: 2px solid #7b8da8; border-radius: 50%; background: white; }
+    .legend-dot.selected { border-color: #003399; background: #003399; box-shadow: 0 0 0 2px #ffcc00; }
+    .schematic-note { margin: 14px 0 0; color: #64748b; font-size: 0.82rem; }
+    .error { color: #991b1b; }
+    footer { padding: 18px; color: #64748b; text-align: center; font-size: 0.82rem; }
+    @media (max-width: 600px) {
+      main { width: min(100% - 16px, 1120px); margin-top: 14px; }
+      .seat-card { padding: 14px 10px; }
+      #seatMap { min-width: 480px; }
+    }
+  </style>
+</head>
+<body>
+  <header><h1>EPP Group seat map</h1></header>
+  <main>
+    <a class="back-link" href="index.html">← Back to MEP directory</a>
+    <section class="seat-card" aria-live="polite">
+      <h2 id="mepName">Loading seat…</h2>
+      <p class="seat-summary" id="seatSummary"></p>
+      <a class="profile-link" id="profileLink" hidden>European Parliament profile</a>
+      <div class="map-wrap">
+        <svg id="seatMap" viewBox="0 0 1000 610" role="img" aria-labelledby="mapTitle mapDescription">
+          <title id="mapTitle">Hemicycle seat map</title>
+          <desc id="mapDescription">An empty circle represents each seat. The selected MEP's seat is filled.</desc>
+          <path class="stage" d="M 370 95 Q 500 35 630 95 L 615 120 Q 500 77 385 120 Z"></path>
+          <text class="stage-label" x="500" y="95" text-anchor="middle">PRESIDING AREA</text>
+          <g id="seatRows"></g>
+        </svg>
+      </div>
+      <div class="legend" aria-label="Map legend">
+        <span class="legend-item"><span class="legend-dot"></span>Other seats</span>
+        <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
+      </div>
+      <p class="schematic-note">Schematic view: seats are arranged by the numbered rows in the room plan.</p>
+    </section>
+  </main>
+  <footer>Group of the European People's Party · European Parliament</footer>
+  <script>
+    const ROOM_MAPS = {
+      strasbourg: {
+        name: 'Strasbourg · S1.4',
+        rows: [[1, 32], [33, 43], [44, 80], [81, 125], [126, 179], [180, 242], [243, 340]]
+      },
+      brussels: {
+        name: 'Brussels · 2Q2',
+        rows: [[1, 13], [14, 27], [28, 53], [54, 83], [84, 120], [121, 159], [160, 203], [204, 251], [252, 302], [303, 355], [356, 413]]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const room = ROOM_MAPS[params.get('room')];
+    const seat = Number(params.get('seat'));
+    const mepId = Number(params.get('id'));
+    const mepName = params.get('name') || '';
+    const nameElement = document.getElementById('mepName');
+    const summaryElement = document.getElementById('seatSummary');
+    const rowsElement = document.getElementById('seatRows');
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function showError(message) {
+      nameElement.textContent = 'Seat information unavailable';
+      summaryElement.textContent = message;
+      summaryElement.classList.add('error');
+    }
+
+    function isListedSeat(number) {
+      return room.rows.some(([first, last]) => number >= first && number <= last);
+    }
+
+    if (!room || !Number.isInteger(seat) || !isListedSeat(seat) ||
+        !Number.isInteger(mepId) || mepId < 1 || !mepName) {
+      showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
+    } else {
+      nameElement.textContent = mepName;
+      summaryElement.textContent = `${room.name} · Seat `;
+      const seatNumber = document.createElement('strong');
+      seatNumber.textContent = String(seat);
+      summaryElement.append(seatNumber);
+
+      const profileName = encodeURIComponent(mepName.trim().toUpperCase().replace(/\s+/g, '_'));
+      const profileLink = document.getElementById('profileLink');
+      profileLink.href = `https://www.europarl.europa.eu/meps/en/${mepId}/${profileName}/home`;
+      profileLink.hidden = false;
+
+      const rowCount = room.rows.length;
+      room.rows.forEach(([first, last], rowIndex) => {
+        const radius = 150 + rowIndex * (270 / Math.max(1, rowCount - 1));
+        const rowSeats = last - first + 1;
+        const startAngle = 145;
+        const endAngle = 35;
+        const arc = document.createElementNS(svgNamespace, 'path');
+        const startX = 500 + radius * Math.cos(startAngle * Math.PI / 180);
+        const startY = 100 + radius * Math.sin(startAngle * Math.PI / 180);
+        const endX = 500 + radius * Math.cos(endAngle * Math.PI / 180);
+        const endY = 100 + radius * Math.sin(endAngle * Math.PI / 180);
+        arc.setAttribute('class', 'row-line');
+        arc.setAttribute('d', `M ${startX} ${startY} A ${radius} ${radius} 0 0 0 ${endX} ${endY}`);
+        rowsElement.append(arc);
+
+        for (let number = first; number <= last; number++) {
+          const position = rowSeats === 1 ? 0.5 : (number - first) / (rowSeats - 1);
+          const angle = (startAngle + (endAngle - startAngle) * position) * Math.PI / 180;
+          const dot = document.createElementNS(svgNamespace, 'circle');
+          const isSelected = number === seat;
+          dot.setAttribute('class', `seat-dot${isSelected ? ' selected' : ''}`);
+          dot.setAttribute('cx', String(500 + radius * Math.cos(angle)));
+          dot.setAttribute('cy', String(100 + radius * Math.sin(angle)));
+          dot.setAttribute('r', isSelected ? '8' : '4');
+          dot.setAttribute('aria-label', isSelected ? `Seat ${number}, ${mepName}` : `Seat ${number}`);
+          const title = document.createElementNS(svgNamespace, 'title');
+          title.textContent = `Seat ${number}${isSelected ? ` · ${mepName}` : ''}`;
+          dot.append(title);
+          rowsElement.append(dot);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

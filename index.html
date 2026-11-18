@@ -233,6 +233,9 @@
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
     .badge-coord { background: #f0fdfa; color: #0d9488; border: 1px solid #0d9488; text-transform: uppercase; }
     .badge-seat { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    a.badge-seat { color: inherit; text-decoration: none; }
+    a.badge-seat:hover,
+    a.badge-seat:focus-visible { background: #dbeafe; outline: 2px solid #2563eb; outline-offset: 1px; }
 
     .mep-name {
       font-size: 0.92rem;
@@ -434,10 +437,23 @@
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
         const profileSlug = encodeURIComponent(m.name.trim().toUpperCase().replace(/\s+/g, '_'));
         const profileUrl = `https://www.europarl.europa.eu/meps/en/${m.id}/${profileSlug}/home`;
-        
-        // Seat badges (S for Strasbourg, B for Brussels)
-        const strBadge = m.strasbourg ? `<span class="badge badge-seat" title="Strasbourg Seat">S:${m.strasbourg}</span>` : '';
-        const bruBadge = m.brussels && m.brussels !== '0' ? `<span class="badge badge-seat" title="Brussels Seat">B:${m.brussels}</span>` : '';
+
+        const seatBadge = (seat, room, label) => {
+          if (!seat || seat === '0') return '';
+          const number = Number(seat);
+          if (!Number.isInteger(number) || number < 1 || number >= 999) {
+            return `<span class="badge badge-seat">${label}:${seat}</span>`;
+          }
+          const params = new URLSearchParams({
+            room,
+            seat: String(number),
+            id: String(m.id),
+            name: m.name
+          });
+          return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
+        };
+        const strBadge = seatBadge(m.strasbourg, 'strasbourg', 'S');
+        const bruBadge = seatBadge(m.brussels, 'brussels', 'B');
 
         return `
           <div class="mep-card ${cardClass}">
