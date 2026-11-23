@@ -38,6 +38,7 @@
     .seat-summary { margin: 0; color: #526174; }
     .seat-summary strong { color: #003399; }
     .profile-link { display: inline-block; margin-top: 10px; color: #003399; }
+    [hidden] { display: none !important; }
     .map-wrap { margin-top: 20px; overflow-x: auto; }
     #seatMap { display: block; width: 100%; min-width: 560px; height: auto; }
     .stage { fill: #eff4ff; stroke: #b7c8e8; stroke-width: 2; }
@@ -111,9 +112,9 @@
     const params = new URLSearchParams(window.location.search);
     const room = ROOM_MAPS[params.get('room')];
     const seat = Number(params.get('seat'));
-    const mepId = Number(params.get('id'));
+    const mepId = Number(params.get('id') || params.get('eid'));
     const mepName = params.get('name') || '';
-    const location = params.get('location');
+    const seatLocation = params.get('location');
     const nameElement = document.getElementById('mepName');
     const summaryElement = document.getElementById('seatSummary');
     const aislesElement = document.getElementById('aisles');
@@ -229,7 +230,7 @@
       profileLink.hidden = false;
 
       if (room.name.startsWith('Strasbourg')) {
-        const isPresidencyMep = location === 'presidency' ||
+        const isPresidencyMep = seatLocation === 'presidency' ||
           presidentialMEPIds.has(mepId) ||
           Object.values(presidentialSeatNames).includes(mepName);
         const table = document.createElementNS(svgNamespace, 'rect');
@@ -302,7 +303,7 @@
           const angle = seatAngle(number - first, seatCount, segments) * Math.PI / 180;
           const dot = document.createElementNS(svgNamespace, 'circle');
           const isPresidencyMep = room.name.startsWith('Strasbourg') &&
-            (location === 'presidency' ||
+            (seatLocation === 'presidency' ||
               presidentialMEPIds.has(mepId) ||
               Object.values(presidentialSeatNames).includes(mepName));
           const isSelected = room.name.startsWith('Strasbourg')
