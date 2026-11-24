@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#003399">
+  <link rel="manifest" href="./manifest.json">
+  <title>Settings | EPP Group</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f4f6fa;
+      --primary: #003399;
+      --border: #e2e8f0;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: #f4f6fa; }
+    header {
+      padding: 22px 18px;
+      color: white;
+      text-align: center;
+      background: linear-gradient(135deg, #05142b, #003399 65%, #0d47a1);
+      border-bottom: 4px solid #ffcc00;
+    }
+    header h1 { margin: 0; font-size: clamp(1.3rem, 3vw, 2rem); }
+    main { width: min(820px, 100% - 24px); margin: 18px auto 110px; }
+    .back-link { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .card {
+      margin-top: 16px;
+      padding: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 35, 102, 0.06);
+    }
+    .card h2 { margin: 0 0 4px; font-size: 1.15rem; }
+    .hint { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+    label.field { display: block; margin-top: 14px; font-weight: 600; font-size: 0.9rem; }
+    input[type="text"], input[type="password"], input[type="search"] {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 12px;
+      font: inherit;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.12); }
+    .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
+    .switch-row strong { display: block; }
+    .switch { position: relative; flex: none; width: 54px; height: 30px; }
+    .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+    .switch span {
+      position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;
+    }
+    .switch span::after {
+      content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+      background: white; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s;
+    }
+    .switch input:checked + span { background: #0f9d58; }
+    .switch input:checked + span::after { transform: translateX(24px); }
+    .switch input:focus-visible + span { box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.3); }
+    .list-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    .list-tools input { flex: 1 1 220px; margin-top: 0; }
+    .btn {
+      padding: 9px 14px; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--primary);
+      background: white; border: 1px solid var(--primary); border-radius: 8px; cursor: pointer;
+    }
+    .btn:hover { background: #f0f4ff; }
+    .btn.primary { color: white; background: var(--primary); }
+    .btn.primary:hover { background: #002a80; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .count { margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
+    .count strong { color: var(--primary); }
+    .mep-list { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--border); }
+    .mep-list li { border-bottom: 1px solid var(--border); }
+    .mep-list label { display: flex; align-items: center; gap: 12px; padding: 10px 4px; cursor: pointer; }
+    .mep-list input { width: 20px; height: 20px; flex: none; accent-color: var(--primary); }
+    .mep-list .name { font-weight: 600; }
+    .mep-list .meta { color: var(--muted); font-size: 0.82rem; }
+    .mep-list li.checked { background: #f0f4ff; }
+    .savebar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 16px;
+      padding: 12px 16px; background: white; border-top: 1px solid var(--border); box-shadow: 0 -4px 16px rgba(0, 35, 102, 0.08);
+    }
+    .status { font-size: 0.85rem; color: var(--muted); }
+    .status.ok { color: #0f7b3e; }
+    .status.error { color: #b91c1c; }
+    .status.dirty { color: #b45309; }
+    details summary { cursor: pointer; font-weight: 700; }
+    details ol { margin: 10px 0 0; padding-left: 20px; color: #334155; font-size: 0.88rem; line-height: 1.6; }
+    .token-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+    .token-row input { flex: 1 1 240px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header><h1>Settings</h1></header>
+  <main>
+    <a class="back-link" href="index.html">← Back to MEP directory</a>
+
+    <section class="card">
+      <h2>External meeting (mission)</h2>
+      <p class="hint">When Mission mode is on, the directory shows only the MEPs present at the mission, on everyone's app. All buttons and the search then work within those MEPs.</p>
+      <label class="field" for="missionName">Mission name</label>
+      <input type="text" id="missionName" placeholder="e.g. Study Days Athens" maxlength="80" autocomplete="off">
+      <div class="switch-row">
+        <div>
+          <strong>Mission mode</strong>
+          <span class="hint" id="modeHint">Off: everyone sees all MEPs.</span>
+        </div>
+        <label class="switch" aria-label="Mission mode">
+          <input type="checkbox" id="missionEnabled">
+          <span></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>MEPs present</h2>
+      <div class="list-tools">
+        <input type="search" id="mepFilter" placeholder="Find a MEP or country…" autocomplete="off">
+        <button type="button" class="btn" id="tickShown">Tick all shown</button>
+        <button type="button" class="btn" id="untickAll">Untick all</button>
+      </div>
+      <p class="count"><strong id="presentCount">0</strong> of <span id="totalCount">0</span> MEPs ticked as present</p>
+      <ul class="mep-list" id="mepList"><li class="hint">Loading MEPs…</li></ul>
+    </section>
+
+    <section class="card">
+      <details id="editorAccess">
+        <summary>Editor access (GitHub key)</summary>
+        <p class="hint">Saving the mission for everyone needs a GitHub access token on this device. It stays only in this browser. Colleagues without a token can look at the settings but not change them.</p>
+        <div class="token-row">
+          <label class="field" style="flex:1 1 240px">GitHub access token
+            <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off">
+          </label>
+          <button type="button" class="btn" id="tokenSave">Save key</button>
+          <button type="button" class="btn" id="tokenForget">Forget key</button>
+        </div>
+        <p class="hint" id="tokenStatus"></p>
+        <ol>
+          <li>On GitHub, open <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong> and choose <strong>Generate new token</strong>.</li>
+          <li>Repository access: <strong>Only select repositories → EPP-10thTerm</strong>.</li>
+          <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong>.</li>
+          <li>Generate it, copy it and paste it above.</li>
+        </ol>
+      </details>
+    </section>
+  </main>
+
+  <div class="savebar">
+    <span class="status" id="saveStatus">Loading…</span>
+    <button type="button" class="btn primary" id="saveButton" disabled>Save for everyone</button>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="mission.js"></script>
+  <script>
+    const nameInput = document.getElementById('missionName');
+    const enabledInput = document.getElementById('missionEnabled');
+    const listElement = document.getElementById('mepList');
+    const filterInput = document.getElementById('mepFilter');
+    const saveButton = document.getElementById('saveButton');
+    const saveStatus = document.getElementById('saveStatus');
+    const tokenInput = document.getElementById('tokenInput');
+    const tokenStatus = document.getElementById('tokenStatus');
+
+    let allMeps = [];
+    let present = new Set();
+    let savedState = '';
+
+    const surname = name => name.split(/\s+/).filter(w => w === w.toUpperCase() && /\p{L}/u.test(w)).join(' ') || name;
+    const state = () => JSON.stringify({ e: enabledInput.checked, n: nameInput.value.trim(), m: [...present].sort((a, b) => a - b) });
+
+    function setStatus(text, kind = '') {
+      saveStatus.textContent = text;
+      saveStatus.className = `status ${kind}`;
+    }
+
+    function refresh() {
+      document.getElementById('presentCount').textContent = present.size;
+      document.getElementById('modeHint').textContent = enabledInput.checked
+        ? `On: everyone sees only the ${present.size} MEPs present.`
+        : 'Off: everyone sees all MEPs.';
+      const dirty = state() !== savedState;
+      const hasToken = Boolean(missionToken());
+      saveButton.disabled = !dirty || !hasToken;
+      if (!hasToken) setStatus(dirty ? 'Changes not saved: add a GitHub key under Editor access.' : 'View only: add a GitHub key under Editor access to make changes.', dirty ? 'dirty' : '');
+      else if (dirty) setStatus('Unsaved changes', 'dirty');
+      else if (!saveStatus.classList.contains('ok')) setStatus('Saved', 'ok');
+    }
+
+    function renderList() {
+      const q = filterInput.value.toLowerCase().trim();
+      listElement.replaceChildren();
+      for (const m of allMeps) {
+        if (q && !`${m.name} ${m.country} ${m.party || ''}`.toLowerCase().includes(q)) continue;
+        const item = document.createElement('li');
+        item.classList.toggle('checked', present.has(m.id));
+        const label = document.createElement('label');
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.checked = present.has(m.id);
+        box.addEventListener('change', () => {
+          if (box.checked) present.add(m.id); else present.delete(m.id);
+          item.classList.toggle('checked', box.checked);
+          refresh();
+        });
+        const text = document.createElement('span');
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = m.name;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `${m.flag || ''} ${m.country}${m.party ? ` · ${m.party}` : ''}`;
+        text.append(name, meta);
+        label.append(box, text);
+        item.append(label);
+        listElement.append(item);
+      }
+      if (!listElement.children.length) {
+        const empty = document.createElement('li');
+        empty.className = 'hint';
+        empty.textContent = 'No MEP matches.';
+        listElement.append(empty);
+      }
+    }
+
+    function shownIds() {
+      const q = filterInput.value.toLowerCase().trim();
+      return allMeps.filter(m => !q || `${m.name} ${m.country} ${m.party || ''}`.toLowerCase().includes(q)).map(m => m.id);
+    }
+
+    function showTokenState() {
+      const has = Boolean(missionToken());
+      tokenStatus.textContent = has ? 'A key is saved on this device: you can save the mission for everyone.' : 'No key on this device.';
+      tokenInput.value = '';
+      tokenInput.placeholder = has ? '•••••••• (saved)' : 'github_pat_…';
+    }
+
+    filterInput.addEventListener('input', renderList);
+    nameInput.addEventListener('input', refresh);
+    enabledInput.addEventListener('change', refresh);
+    document.getElementById('tickShown').addEventListener('click', () => { shownIds().forEach(id => present.add(id)); renderList(); refresh(); });
+    document.getElementById('untickAll').addEventListener('click', () => {
+      if (present.size && !confirm('Untick all MEPs?')) return;
+      present.clear(); renderList(); refresh();
+    });
+    document.getElementById('tokenSave').addEventListener('click', () => {
+      if (!tokenInput.value.trim()) return;
+      setMissionToken(tokenInput.value); showTokenState(); refresh();
+    });
+    document.getElementById('tokenForget').addEventListener('click', () => { setMissionToken(null); showTokenState(); refresh(); });
+
+    saveButton.addEventListener('click', async () => {
+      if (enabledInput.checked && !nameInput.value.trim()) { setStatus('Give the mission a name first.', 'error'); nameInput.focus(); return; }
+      if (enabledInput.checked && !present.size) { setStatus('Tick at least one MEP before turning Mission mode on.', 'error'); return; }
+      saveButton.disabled = true;
+      setStatus('Saving…');
+      try {
+        await saveMission({ enabled: enabledInput.checked, name: nameInput.value, meps: [...present] }, allMeps);
+        savedState = state();
+        setStatus('Saved for everyone. Colleagues see it within a few minutes.', 'ok');
+      } catch (err) {
+        setStatus(err.message, 'error');
+      }
+      refresh();
+    });
+
+    window.addEventListener('beforeunload', event => {
+      if (state() !== savedState && missionToken()) event.preventDefault();
+    });
+
+    (async () => {
+      showTokenState();
+      try {
+        const [meps, mission] = await Promise.all([loadMEPs(), loadMission()]);
+        allMeps = meps.sort((a, b) => surname(a.name).localeCompare(surname(b.name)));
+        document.getElementById('totalCount').textContent = allMeps.length;
+        nameInput.value = mission.name;
+        enabledInput.checked = mission.enabled;
+        const known = new Set(allMeps.map(m => m.id));
+        present = new Set(mission.meps.filter(id => known.has(id)));
+        savedState = state();
+        renderList();
+        setStatus('');
+        refresh();
+      } catch (err) {
+        console.error(err);
+        listElement.innerHTML = '<li class="hint">Could not load the MEP list.</li>';
+        setStatus('Could not load data.', 'error');
+      }
+    })();
+  </script>
+</body>
+</html>
