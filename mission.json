@@ -1,6 +1,27 @@
 {
   "enabled": false,
-  "name": "",
-  "updated": null,
-  "meps": []
+  "name": "Test mission Helsinki",
+  "updated": "2026-11-24T20:52:01.591Z",
+  "meps": [
+    {
+      "id": 96933,
+      "name": "Milan ZVER"
+    },
+    {
+      "id": 219652,
+      "name": "Matej TONIN"
+    },
+    {
+      "id": 125104,
+      "name": "Romana TOMC"
+    },
+    {
+      "id": 204336,
+      "name": "Miriam LEXMANN"
+    },
+    {
+      "id": 256814,
+      "name": "Zala ČERNILEC TOMAŠIČ"
+    }
+  ]
 }
