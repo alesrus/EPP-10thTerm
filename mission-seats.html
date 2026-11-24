@@ -113,6 +113,9 @@
     .row-tools label { font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
     .row-tools input[type="number"] { width: 70px; padding: 8px; font: inherit; border: 1px solid var(--border); border-radius: 8px; }
     .room-plan { margin-top: 14px; }
+    .plan-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 12px; }
+    .plan-tools-label { font-size: 0.9rem; font-weight: 600; }
+    .plan-front.top { margin: 0 0 10px; }
     .plan-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 14px minmax(0, 1fr); align-items: stretch; gap: 4px; margin-bottom: 6px; }
     .plan-row-label { align-self: center; color: var(--primary); font-weight: 800; font-size: 0.85rem; text-align: center; }
     .plan-aisle { border-left: 2px dashed #cbd5e1; margin-left: 6px; }
@@ -153,6 +156,13 @@
         </span>
       </div>
       <p class="count"><strong id="placedCount">0</strong> of <span id="presentTotal">0</span> MEPs have a location</p>
+      <div class="plan-tools" id="planTools" hidden>
+        <span class="plan-tools-label">Presidency</span>
+        <span class="seg" role="group" aria-label="Presidency position">
+          <button type="button" id="presBottom" class="active">At bottom</button>
+          <button type="button" id="presTop">At top</button>
+        </span>
+      </div>
       <div class="room-plan" id="seatPlan" hidden></div>
       <ul class="seat-list" id="seatList"><li class="hint">Loading…</li></ul>
       <p class="hint" style="margin-top:14px">To change who is present or the mission name, go to <a href="settings.html">Settings</a>.</p>
@@ -176,6 +186,9 @@
     let present = [];      // MEP objects present at the mission
     let seats = {};        // id -> "2L"
     let order = 'plan';
+    // Presidency at the bottom (as on the Brussels/Strasbourg plans) or at the
+    // top (the room seen by someone facing the presidency). Kept per device.
+    let presidencyOnTop = (() => { try { return localStorage.getItem('eppPlanPresidency') === 'top'; } catch { return false; } })();
     let savedState = '';
 
     const surname = name => name.split(/\s+/).filter(w => w === w.toUpperCase() && /\p{L}/u.test(w)).join(' ') || name;
@@ -241,7 +254,15 @@
         none.textContent = 'No locations assigned yet.';
         plan.append(none);
       }
-      for (let row = lastRow; row >= 1; row--) {
+      // Turned round (presidency on top), the front's left appears on the right.
+      const front = document.createElement('div');
+      front.className = `plan-front${presidencyOnTop ? ' top' : ''}`;
+      front.innerHTML = presidencyOnTop
+        ? '<span>R</span><strong>FRONT · PRESIDENCY</strong><span>L</span>'
+        : '<span>L</span><strong>FRONT · PRESIDENCY</strong><span>R</span>';
+      if (lastRow && presidencyOnTop) plan.append(front);
+      const rows = Array.from({ length: lastRow }, (_, i) => presidencyOnTop ? i + 1 : lastRow - i);
+      for (const row of rows) {
         const line = document.createElement('div');
         line.className = 'plan-row';
         const label = document.createElement('span');
@@ -249,15 +270,13 @@
         label.textContent = row;
         const aisle = document.createElement('span');
         aisle.className = 'plan-aisle';
-        line.append(label, block(`${row}L`, 'left'), aisle, block(`${row}R`, 'right'));
+        const sides = presidencyOnTop
+          ? [block(`${row}R`, 'right'), aisle, block(`${row}L`, 'left')]
+          : [block(`${row}L`, 'left'), aisle, block(`${row}R`, 'right')];
+        line.append(label, ...sides);
         plan.append(line);
       }
-      if (lastRow) {
-        const front = document.createElement('div');
-        front.className = 'plan-front';
-        front.innerHTML = '<span>L</span><strong>FRONT · PRESIDENCY</strong><span>R</span>';
-        plan.append(front);
-      }
+      if (lastRow && !presidencyOnTop) plan.append(front);
       const unplaced = byPlace.get('') || [];
       if (unplaced.length) {
         const title = document.createElement('p');
@@ -273,6 +292,7 @@
     function renderList() {
       const showPlan = order === 'plan';
       document.getElementById('seatPlan').hidden = !showPlan;
+      document.getElementById('planTools').hidden = !showPlan;
       listElement.hidden = showPlan;
       if (showPlan) { renderPlan(); return; }
       const options = seatOptions();
@@ -340,6 +360,17 @@
     }
 
     document.getElementById('byPlan').addEventListener('click', () => setOrder('plan'));
+    function setPresidencyOnTop(onTop) {
+      presidencyOnTop = onTop;
+      try { localStorage.setItem('eppPlanPresidency', onTop ? 'top' : 'bottom'); } catch { /* ignore */ }
+      document.getElementById('presTop').classList.toggle('active', onTop);
+      document.getElementById('presBottom').classList.toggle('active', !onTop);
+      renderList();
+    }
+    document.getElementById('presTop').addEventListener('click', () => setPresidencyOnTop(true));
+    document.getElementById('presBottom').addEventListener('click', () => setPresidencyOnTop(false));
+    document.getElementById('presTop').classList.toggle('active', presidencyOnTop);
+    document.getElementById('presBottom').classList.toggle('active', !presidencyOnTop);
     document.getElementById('byName').addEventListener('click', () => setOrder('name'));
     document.getElementById('bySeat').addEventListener('click', () => setOrder('seat'));
     rowInput.addEventListener('change', () => { renderList(); refresh(); });
