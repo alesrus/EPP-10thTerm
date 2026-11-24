@@ -36,6 +36,7 @@
       --badge-ep-vp: #8b5cf6;
       --badge-head: #10b981;
       --badge-coord: #0d9488;
+      --badge-ctte-chair: #b45309;
       --badge-seat: #475569;
     }
 
@@ -233,6 +234,7 @@
     .badge-vp { background: #dbeafe; color: #1e40af; text-transform: uppercase; }
     .badge-ep-vp { background: #ede9fe; color: #6d28d9; border: 1px solid #8b5cf6; text-transform: uppercase; }
     .badge-head { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .badge-ctte-chair { background: #fffbeb; color: var(--badge-ctte-chair); border: 1px solid var(--badge-ctte-chair); text-transform: uppercase; }
     .badge-coord { background: #f0fdfa; color: #0d9488; border: 1px solid #0d9488; text-transform: uppercase; }
     .badge-seat { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
     a.badge-seat { color: inherit; text-decoration: none; }
@@ -319,6 +321,7 @@
         <button id="coordCtteeProtoBtn" class="btn-toggle" onclick="setFilter('coordCtteeProto')">Coord CTTEE Proto</button>
         <button id="coordCtteeAbcBtn" class="btn-toggle" onclick="setFilter('coordCtteeAbc')">Coord CTTEE ABC</button>
         <button id="coordNameAbcBtn" class="btn-toggle" onclick="setFilter('coordNameAbc')">Coord Name ABC</button>
+        <button id="ctteChairsBtn" class="btn-toggle" onclick="setFilter('ctteChairs')">CTTEE Chairs</button>
       </div>
 
       <div class="search-row">
@@ -365,6 +368,7 @@
       document.getElementById('coordCtteeProtoBtn').classList.toggle('active', currentFilter === 'coordCtteeProto');
       document.getElementById('coordCtteeAbcBtn').classList.toggle('active', currentFilter === 'coordCtteeAbc');
       document.getElementById('coordNameAbcBtn').classList.toggle('active', currentFilter === 'coordNameAbc');
+      document.getElementById('ctteChairsBtn').classList.toggle('active', currentFilter === 'ctteChairs');
 
       applyFilters();
     }
@@ -389,6 +393,7 @@
         }
 
         const headBadge = m.isHead ? `<span class="badge badge-head">HoND</span>` : '';
+        const chairBadge = m.committeeChair ? `<span class="badge badge-ctte-chair" title="Chair of the ${m.committeeChair} committee">Chair-${m.committeeChair}</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
         const profileSlug = encodeURIComponent(m.name.trim().toUpperCase().replace(/\s+/g, '_'));
         const profileUrl = `https://www.europarl.europa.eu/meps/en/${m.id}/${profileSlug}/home`;
@@ -421,6 +426,7 @@
               <div class="badges-row">
                 ${roleBadge}
                 ${headBadge}
+                ${chairBadge}
                 ${coordBadge}
                 ${strBadge}
                 ${bruBadge}
@@ -445,6 +451,8 @@
           matchesFilter = m.isHead;
         } else if (currentFilter === 'coordCtteeProto' || currentFilter === 'coordCtteeAbc' || currentFilter === 'coordNameAbc') {
           matchesFilter = !!m.coordinator;
+        } else if (currentFilter === 'ctteChairs') {
+          matchesFilter = !!m.committeeChair;
         }
 
         const matchesQuery = !q || 
@@ -453,6 +461,7 @@
           (m.party && m.party.toLowerCase().includes(q)) ||
           (m.roleLabel && m.roleLabel.toLowerCase().includes(q)) ||
           (m.coordinator && m.coordinator.toLowerCase().includes(q)) ||
+          (m.committeeChair && (m.committeeChair.toLowerCase().includes(q) || 'committee chair'.includes(q))) ||
           (m.strasbourg && m.strasbourg.toString().includes(q)) ||
           (m.brussels && m.brussels.toString().includes(q)) ||
           (m.isHead && "hond".includes(q)) ||
@@ -476,6 +485,9 @@
           const lastB = b.name.split(' ').pop();
           return lastA.localeCompare(lastB);
         });
+      } else if (currentFilter === 'ctteChairs') {
+        // EP protocol order of committees (AFET first)
+        filtered.sort((a, b) => a.committeeChairOrder - b.committeeChairOrder);
       } else if (currentFilter === 'coordCtteeProto') {
         filtered.sort((a, b) => a.coordinatorOrder - b.coordinatorOrder);
       } else if (currentFilter === 'coordCtteeAbc') {

@@ -63,6 +63,8 @@ async function loadMEPs() {
     isHead: isYes(obj.headOfDelegation),
     coordinator: (obj.coordinator && obj.coordinator !== 'nan') ? obj.coordinator : null,
     coordinatorOrder: toOrder(obj.coordinatorOrder),
+    committeeChair: obj.committeeChair || null,
+    committeeChairOrder: toOrder(obj.committeeChairOrder),
     hondOrder: toOrder(obj.hondOrder),
     groupVpOrder: toOrder(obj.groupVpOrder),
     strasbourg: obj.strasbourg || '',
