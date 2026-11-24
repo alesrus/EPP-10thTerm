@@ -87,7 +87,6 @@
     }
     .mission-banner[hidden] { display: none; }
     .mission-banner a { color: #05142b; font-weight: 700; }
-    .badge-mission-seat { background: #fff7cc; color: #713f12; border: 1px solid #e0b400; text-decoration: none; }
     .mission-banner .mission-tag {
       padding: 3px 9px;
       font-size: 0.7rem;
@@ -521,7 +520,7 @@
         const strBadge = mission.enabled ? '' : seatBadge(m.strasbourg, 'strasbourg', 'S');
         const bruBadge = mission.enabled ? '' : seatBadge(m.brussels, 'brussels', 'B');
         const missionBadge = missionSeat
-          ? `<a class="badge badge-mission-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">${missionSeat}</a>`
+          ? `<a class="badge badge-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">${missionSeat}</a>`
           : '';
 
         return `
