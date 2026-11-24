@@ -170,6 +170,7 @@
     const rowsElement = document.getElementById('seatRows');
     const presidentialTableElement = document.getElementById('presidentialTable');
     const svgNamespace = 'http://www.w3.org/2000/svg';
+    let selectedPoint = null; // plan coordinates of the selected seat
     const presidentialTableSize = room ? room.presidency.size : 0;
     const TONES = ['left', 'centre', 'right'];
     const toRadians = degrees => degrees * Math.PI / 180;
@@ -330,7 +331,7 @@
           x, y, angle, width, height, number, tone: names || isSelected ? 'presidency' : 'presidency empty',
           label: seatTitle('Presidency · Seat ', number, names, isSelected, selected.name), isSelected
         });
-        if (isSelected) selectedSeat = seat;
+        if (isSelected) { selectedSeat = seat; selectedPoint = { x, y }; }
       });
       if (selectedSeat) presidentialTableElement.append(selectedSeat);
     }
@@ -370,11 +371,20 @@
               x, y, angle, width, height: room.seatHeight, number, tone: block.tone,
               label: seatTitle('Seat ', number, roomSeats.get(number), isSelected, selected.name), isSelected
             });
-            if (isSelected) selectedSeat = seat;
+            if (isSelected) { selectedSeat = seat; selectedPoint = { x, y }; }
           });
         }
       }
       if (selectedSeat) rowsElement.append(selectedSeat);
+    }
+
+    // On narrow screens the map scrolls sideways: bring the selected seat to the middle.
+    function centerOnSelectedSeat() {
+      const wrap = mapElement.parentElement;
+      if (!selectedPoint || wrap.scrollWidth <= wrap.clientWidth) return;
+      const [viewX, , viewWidth] = room.viewBox;
+      const seatX = (selectedPoint.x - viewX) / viewWidth * mapElement.getBoundingClientRect().width;
+      wrap.scrollLeft = Math.max(0, seatX - wrap.clientWidth / 2);
     }
 
     async function init() {
@@ -409,6 +419,8 @@
 
       drawPresidentialTable(presidentialSeats, selected);
       drawRoom(roomSeats, selected);
+      centerOnSelectedSeat();
+      window.addEventListener('resize', centerOnSelectedSeat);
     }
 
     init();
