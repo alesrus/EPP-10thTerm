@@ -417,8 +417,8 @@
   </div>
 
 
-<script src="data.js?v=20261124c"></script>
-  <script src="mission.js?v=20261124c"></script>
+<script src="data.js?v=20261125a"></script>
+  <script src="mission.js?v=20261125a"></script>
 <script>
     // Safety net if an older data.js is still cached: plain matching instead of no results.
     if (typeof foldText !== 'function') window.foldText = value => String(value || '').toLowerCase();
@@ -545,7 +545,7 @@
         const strBadge = mission.enabled ? '' : seatBadge(m.strasbourg, 'strasbourg', 'S');
         const bruBadge = mission.enabled ? '' : seatBadge(m.brussels, 'brussels', 'B');
         const missionBadge = missionSeat
-          ? `<a class="badge badge-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">${missionSeat}</a>`
+          ? `<a class="badge badge-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">${missionSeatLabel(missionSeat)}</a>`
           : '';
 
         return `

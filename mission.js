@@ -22,6 +22,12 @@ function normalizeMissionSeat(value) {
   return MISSION_SEAT_PATTERN.test(seat) ? seat : '';
 }
 
+// How a location is shown: "2L" -> "2 ←", "2R" -> "2 →" (stored as 2L/2R).
+function missionSeatLabel(seat) {
+  const match = MISSION_SEAT_PATTERN.exec(seat || '');
+  return match ? `${match[1]} ${match[2] === 'L' ? '←' : '→'}` : '';
+}
+
 // Order for sorting by location: 1L, 1R, 2L, 2R, ... then no location.
 function missionSeatOrder(seat) {
   const match = MISSION_SEAT_PATTERN.exec(seat || '');

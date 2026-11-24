@@ -1,5 +1,5 @@
 // Bump this when the app files change so installed apps pick up the new worker.
-const APP_VERSION = '20261124c';
+const APP_VERSION = '20261125a';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
