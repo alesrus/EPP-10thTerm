@@ -40,21 +40,28 @@
     .profile-link { display: inline-block; margin-top: 10px; color: #003399; }
     [hidden] { display: none !important; }
     .map-wrap { margin-top: 20px; overflow-x: auto; }
-    #seatMap { display: block; width: 100%; min-width: 560px; height: auto; }
-    .stage { fill: #eff4ff; stroke: #b7c8e8; stroke-width: 2; }
-    .stage-label { fill: #526174; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
-    .row-line { fill: none; stroke: #e2e8f0; stroke-width: 1.5; }
-    .aisle { fill: none; stroke: #edf2f7; stroke-width: 18; }
-    .aisle-center { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4 5; }
-    .seat-dot { fill: white; stroke: #7b8da8; stroke-width: 1.5; }
-    .seat-dot.selected { fill: #003399; stroke: #ffcc00; stroke-width: 4; }
-    .presidential-table { fill: #eff4ff; stroke: #b7c8e8; stroke-width: 2; }
-    .presidential-table-label { fill: #526174; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; }
-    .presidential-seat { fill: white; stroke: #7b8da8; stroke-width: 1.5; }
-    .presidential-seat.selected { fill: #003399; stroke: #ffcc00; stroke-width: 4; }
+    #seatMap { display: block; width: 100%; min-width: 760px; height: auto; }
+    .room-label { fill: #1f2937; font-size: 30px; font-weight: 800; letter-spacing: 2px; }
+    .room-caption { fill: #526174; font-size: 20px; font-weight: 700; letter-spacing: 3px; }
+    .aisle { fill: none; stroke: #f1f5f9; stroke-linecap: round; }
+    .aisle-center { fill: none; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 8 10; }
+    .presidency-band { fill: none; stroke: #eef2ff; stroke-linecap: round; }
+    .pillar { fill: white; stroke: #94a3b8; stroke-width: 2; }
+    .seat rect { fill: white; stroke: #8391a7; stroke-width: 1.6; }
+    .seat text { font-weight: 600; font-variant-numeric: tabular-nums; pointer-events: none; }
+    .seat.left text { fill: #2e7d32; }
+    .seat.centre text { fill: #c62828; }
+    .seat.right text { fill: #1d4ed8; }
+    .seat.front text { fill: #334155; }
+    .seat.presidency text { fill: #7b1fa2; }
+    .seat.presidency rect { stroke: #9c6ab3; }
+    .seat.empty rect { fill: #f8fafc; stroke-dasharray: 4 3; }
+    .seat.selected rect { fill: #003399; stroke: #ffcc00; stroke-width: 4; }
+    .seat.selected text { fill: white; }
+    .seat-halo { fill: rgba(255, 204, 0, 0.28); stroke: #ffcc00; stroke-width: 3; }
     .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 14px 0 0; color: #526174; font-size: 0.92rem; }
     .legend-item { display: inline-flex; align-items: center; gap: 8px; }
-    .legend-dot { width: 14px; height: 14px; border: 2px solid #7b8da8; border-radius: 50%; background: white; }
+    .legend-dot { width: 14px; height: 16px; border: 2px solid #8391a7; border-radius: 3px; background: white; }
     .legend-dot.selected { border-color: #003399; background: #003399; box-shadow: 0 0 0 2px #ffcc00; }
     .legend-corridor { width: 22px; height: 0; border-top: 2px dashed #94a3b8; }
     .schematic-note { margin: 14px 0 0; color: #64748b; font-size: 0.82rem; }
@@ -63,7 +70,7 @@
     @media (max-width: 600px) {
       main { width: min(100% - 16px, 1120px); margin-top: 14px; }
       .seat-card { padding: 14px 10px; }
-      #seatMap { min-width: 480px; }
+      #seatMap { min-width: 680px; }
     }
   </style>
 </head>
@@ -76,13 +83,11 @@
       <p class="seat-summary" id="seatSummary"></p>
       <a class="profile-link" id="profileLink" hidden>European Parliament profile</a>
       <div class="map-wrap">
-        <svg id="seatMap" viewBox="0 0 1000 610" role="img" aria-labelledby="mapTitle mapDescription">
-          <title id="mapTitle">Hemicycle seat map</title>
-          <desc id="mapDescription">An empty circle represents each seat, with two corridors between seating sections. The selected MEP's seat is filled.</desc>
-          <g id="presidentialTable"></g>
-          <path class="stage" d="M 370 515 Q 500 575 630 515 L 615 490 Q 500 533 385 490 Z"></path>
-          <text class="stage-label" x="500" y="555" text-anchor="middle">PRESIDENCY</text>
+        <svg id="seatMap" viewBox="0 0 1000 600" role="img" aria-labelledby="mapTitle mapDescription">
+          <title id="mapTitle">Room seat map</title>
+          <desc id="mapDescription">The room plan with every numbered seat, the corridors between seating blocks and the presidency row. The selected MEP's seat is highlighted.</desc>
           <g id="aisles"></g>
+          <g id="presidentialTable"></g>
           <g id="seatRows"></g>
         </svg>
       </div>
@@ -91,26 +96,66 @@
         <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
         <span class="legend-item"><span class="legend-corridor"></span>Corridor</span>
       </div>
-      <p class="schematic-note">Schematic view: seats are arranged by the numbered rows in the room plan.</p>
+      <p class="schematic-note">Drawn after the official room plan. Hover over a seat to see who sits there.</p>
     </section>
   </main>
   <footer>Group of the European People's Party · European Parliament</footer>
   <script src="data.js"></script>
   <script>
-    // Room layouts (seat numbering per row). MEP names, seats and the
-    // presidential table all come from EPPGroupMEPs.csv via data.js.
+    // Room layouts, traced from the official room plans. Coordinates are in
+    // plan pixels: every row is an arc around `center`; seat numbers run left
+    // to right across the left (green), centre (red) and right (blue) blocks.
+    // The left half is described once and mirrored for the right half:
+    // `outer` is the line where the left block starts, `aisle` the centre line
+    // of the left corridor and `gap` the distance from it to the nearest seat.
+    // A row's `start` (the first seat of the left block) overrides `outer`.
+    // A '_' in a block is a pillar (no seat). MEP names, seats and presidency
+    // places all come from EPPGroupMEPs.csv via data.js.
     const ROOM_MAPS = {
       strasbourg: {
         name: 'Strasbourg · S1.4',
-        aisleStartRow: 1,
-        presidentialTableSize: 13,
-        rows: [[1, 22], [23, 53], [54, 94], [95, 142], [143, 200], [201, 266], [267, 340]]
+        label: 'SALLE S1.4',
+        labelAt: { x: 1000, y: 800 },
+        viewBox: [30, 30, 1940, 950],
+        center: { x: 1000, y: 1000 },
+        seatHeight: 32,
+        outer: [[0, 905], [1000, 905]],
+        aisle: [[775, 607], [616, 132]],
+        gap: 54,
+        rows: [
+          { r: 366, cy: 1066, blocks: [{ seats: '1-22', from: 210, to: 330, tone: 'front' }] },
+          { r: 462, blocks: ['23-32', '33-43', '44-53'] },
+          { r: 560, blocks: ['54-67', '68-80', '81-94'] },
+          { r: 657, blocks: ['95-111', '112-125', '126-142'] },
+          { r: 750, blocks: ['143-163', '164-179', '180-200'] },
+          { r: 846, blocks: ['201-224', '225-242', '243-266'] },
+          { r: 945, blocks: ['267-293', '294-313', '314-340'] }
+        ],
+        presidency: { size: 13, center: { x: 1000, y: 1385 }, r: 520, from: 247.4, to: 292.6, labelY: 965 }
       },
       brussels: {
         name: 'Brussels · 2Q2',
-        aisleStartRow: 0,
-        presidentialTableSize: 7,
-        rows: [[1, 13], [14, 34], [35, 61], [62, 94], [95, 131], [132, 172], [173, 217], [218, 266], [267, 317], [318, 370], [371, 413]]
+        label: 'JAN 2Q2',
+        labelAt: { x: 860, y: 800 },
+        viewBox: [30, 20, 1660, 910],
+        center: { x: 860, y: 1118 },
+        seatHeight: 28,
+        aisle: [[771, 716], [455, 128]],
+        gap: 42,
+        rows: [
+          { r: 411, start: [630, 800], gap: 50, blocks: ['1-5', '6-8', '9-13'] },
+          { r: 488, start: [557, 780], blocks: ['14-20', '21-27', '28-34'] },
+          { r: 551, start: [487, 762], blocks: ['35-43', '44-52', '53-61'] },
+          { r: 615, start: [415, 745], blocks: ['62-72', '73-83', '84-94'] },
+          { r: 680, start: [358, 705], blocks: ['95-106', '107-119', '120-131'] },
+          { r: 743, start: [302, 665], blocks: ['132-144', '145-159', '160-172'] },
+          { r: 808, start: [245, 628], blocks: ['173-186', '187-203', '204-217'] },
+          { r: 873, start: [190, 587], blocks: ['218-232', '233-251', '252-266'] },
+          { r: 938, start: [152, 520], blocks: ['267-281', '282-302', '303-317'] },
+          { r: 1003, start: [112, 458], blocks: ['318-332', '333-355', '356-370'] },
+          { r: 1071, start: [68, 397], gap: 68, blocks: ['371-382,_,383', '384,_,385-389,_,390-394,_,395-399,_,400', '401,_,402-413'] }
+        ],
+        presidency: { size: 7, center: { x: 860, y: 1520 }, r: 650, from: 261, to: 279, labelY: 912 }
       }
     };
 
@@ -120,55 +165,72 @@
     const mepId = Number(params.get('id') || params.get('eid'));
     const nameElement = document.getElementById('mepName');
     const summaryElement = document.getElementById('seatSummary');
+    const mapElement = document.getElementById('seatMap');
     const aislesElement = document.getElementById('aisles');
     const rowsElement = document.getElementById('seatRows');
     const presidentialTableElement = document.getElementById('presidentialTable');
     const svgNamespace = 'http://www.w3.org/2000/svg';
-    const startAngle = 215;
-    const endAngle = 325;
-    const centerY = 510;
-    const corridorHalfAngle = 2.2;
-    const presidentialTableSize = room ? room.presidentialTableSize : 0;
-    const presidentialSeatSpacing = 42;
+    const presidentialTableSize = room ? room.presidency.size : 0;
+    const TONES = ['left', 'centre', 'right'];
+    const toRadians = degrees => degrees * Math.PI / 180;
+    const toDegrees = radians => radians * 180 / Math.PI;
 
-    function pointOnArc(radius, angle) {
-      const radians = angle * Math.PI / 180;
-      return {
-        x: 500 + radius * Math.cos(radians),
-        y: centerY + radius * Math.sin(radians)
-      };
+    // '371-382,_,383' -> [371, 372, ..., 382, null, 383]
+    function parseSlots(spec) {
+      return spec.split(',').flatMap(part => {
+        if (part === '_') return [null];
+        const [first, last = first] = part.split('-').map(Number);
+        return Array.from({ length: last - first + 1 }, (_, i) => first + i);
+      });
     }
 
-    function arcPath(radius, firstAngle, lastAngle) {
-      const start = pointOnArc(radius, firstAngle);
-      const end = pointOnArc(radius, lastAngle);
-      return `M ${start.x} ${start.y} A ${radius} ${radius} 0 0 1 ${end.x} ${end.y}`;
+    function pointAt(center, radius, angle) {
+      return { x: center.x + radius * Math.cos(toRadians(angle)), y: center.y + radius * Math.sin(toRadians(angle)) };
     }
 
-    function corridorCenters() {
-      const span = endAngle - startAngle;
-      return [startAngle + span / 3, startAngle + 2 * span / 3];
-    }
-
-    function rowArcSegments(hasCorridors) {
-      if (!hasCorridors) return [[startAngle, endAngle]];
-      const [first, second] = corridorCenters();
-      return [
-        [startAngle, first - corridorHalfAngle],
-        [first + corridorHalfAngle, second - corridorHalfAngle],
-        [second + corridorHalfAngle, endAngle]
-      ];
-    }
-
-    function seatAngle(index, count, segments) {
-      const availableAngle = segments.reduce((total, [first, last]) => total + last - first, 0);
-      let remaining = count > 1 ? index / (count - 1) * availableAngle : availableAngle / 2;
-      for (const [first, last] of segments) {
-        const segmentWidth = last - first;
-        if (remaining <= segmentWidth) return first + remaining;
-        remaining -= segmentWidth;
+    // Angle (180-270°, upper left quarter) where a line crosses a circle.
+    function lineAngle(center, radius, [[x0, y0], [x1, y1]]) {
+      const dx = x1 - x0, dy = y1 - y0, fx = x0 - center.x, fy = y0 - center.y;
+      const a = dx * dx + dy * dy, b = 2 * (fx * dx + fy * dy), c = fx * fx + fy * fy - radius * radius;
+      const root = Math.sqrt(Math.max(0, b * b - 4 * a * c));
+      for (const t of [(-b - root) / (2 * a), (-b + root) / (2 * a)]) {
+        const angle = (toDegrees(Math.atan2(fy + t * dy, fx + t * dx)) + 360) % 360;
+        if (angle >= 180 && angle <= 270) return angle;
       }
-      return segments[segments.length - 1][1];
+      return 225;
+    }
+
+    const mirror = angle => 540 - angle;
+
+    // Every row as blocks of seat slots with their angular extent.
+    function layoutRows() {
+      return room.rows.map(row => {
+        const center = { x: room.center.x, y: row.cy || room.center.y };
+        if (row.blocks.length === 1) {
+          const block = row.blocks[0];
+          return { center, r: row.r, blocks: [{ slots: parseSlots(block.seats), from: block.from, to: block.to, tone: block.tone }] };
+        }
+        const outer = row.start
+          ? (toDegrees(Math.atan2(row.start[1] - center.y, row.start[0] - center.x)) + 360) % 360
+          : lineAngle(center, row.r, room.outer);
+        const aisle = lineAngle(center, row.r, room.aisle);
+        const half = toDegrees((row.gap || room.gap) / row.r);
+        const extents = [[outer, aisle - half], [aisle + half, mirror(aisle) - half], [mirror(aisle) + half, mirror(outer)]];
+        return {
+          center, r: row.r,
+          blocks: row.blocks.map((spec, i) => ({ slots: parseSlots(spec), from: extents[i][0], to: extents[i][1], tone: TONES[i] }))
+        };
+      });
+    }
+
+    const roomLayout = room ? layoutRows() : [];
+    const listedSeats = new Set(roomLayout.flatMap(row => row.blocks.flatMap(block => block.slots)).filter(Boolean));
+
+    function svgElement(name, attributes, parent) {
+      const element = document.createElementNS(svgNamespace, name);
+      for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value));
+      if (parent) parent.append(element);
+      return element;
     }
 
     function showError(message) {
@@ -178,7 +240,7 @@
     }
 
     function isListedSeat(number) {
-      return room.rows.some(([first, last]) => number >= first && number <= last);
+      return listedSeats.has(number);
     }
 
     function addName(map, seat, name) {
@@ -217,86 +279,102 @@
       return `${prefix}${number}${occupants ? ` · ${occupants}` : ''}${isSelected ? ' · Selected' : ''}`;
     }
 
+    // One seat: a numbered box turned to face the presidency, as on the plans.
+    function drawSeat(parent, { x, y, angle, width, height, number, tone, label, isSelected }) {
+      const seat = svgElement('g', {
+        class: `seat ${tone}${isSelected ? ' selected' : ''}`,
+        transform: `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(angle + 90).toFixed(1)})`,
+        'aria-label': label
+      }, parent);
+      svgElement('title', {}, seat).textContent = label;
+      if (isSelected) svgElement('circle', { class: 'seat-halo', r: Math.max(width, height) * 0.95 }, seat);
+      svgElement('rect', { x: -width / 2, y: -height / 2, width, height, rx: 4 }, seat);
+      const text = svgElement('text', {
+        'text-anchor': 'middle', 'dominant-baseline': 'central',
+        'font-size': Math.min(15, width / 1.75, height * 0.55).toFixed(1)
+      }, seat);
+      text.textContent = String(number).padStart(tone.startsWith('presidency') && presidentialTableSize > 9 ? 2 : 1, '0');
+      return seat;
+    }
+
+    function slotAngles(from, to, count) {
+      return Array.from({ length: count }, (_, i) => count > 1 ? from + i * (to - from) / (count - 1) : (from + to) / 2);
+    }
+
+    function seatWidth(radius, from, to, count) {
+      const pitch = count > 1 ? toRadians(to - from) * radius / (count - 1) : 40;
+      return Math.max(14, Math.min(pitch - 4, 40));
+    }
+
     function drawPresidentialTable(presidentialSeats, selected) {
-      const tableWidth = (presidentialTableSize - 1) * presidentialSeatSpacing + 86;
-      const table = document.createElementNS(svgNamespace, 'rect');
-      table.setAttribute('class', 'presidential-table');
-      table.setAttribute('x', String(500 - tableWidth / 2));
-      table.setAttribute('y', '420');
-      table.setAttribute('width', String(tableWidth));
-      table.setAttribute('height', '62');
-      table.setAttribute('rx', '31');
-      presidentialTableElement.append(table);
+      const p = room.presidency;
+      const height = room.seatHeight;
+      const angles = slotAngles(p.from, p.to, p.size);
+      const width = seatWidth(p.r, p.from, p.to, p.size);
+      const start = pointAt(p.center, p.r, p.from - 3), end = pointAt(p.center, p.r, p.to + 3);
+      svgElement('path', {
+        class: 'presidency-band',
+        d: `M ${start.x} ${start.y} A ${p.r} ${p.r} 0 0 1 ${end.x} ${end.y}`,
+        'stroke-width': height + 18
+      }, presidentialTableElement);
+      svgElement('text', { class: 'room-caption', x: p.center.x, y: p.labelY, 'text-anchor': 'middle' }, presidentialTableElement)
+        .textContent = 'PRESIDENCY';
 
-      const tableLabel = document.createElementNS(svgNamespace, 'text');
-      tableLabel.setAttribute('class', 'presidential-table-label');
-      tableLabel.setAttribute('x', '500');
-      tableLabel.setAttribute('y', '475');
-      tableLabel.setAttribute('text-anchor', 'middle');
-      tableLabel.textContent = 'PRESIDENTIAL TABLE';
-      presidentialTableElement.append(tableLabel);
+      let selectedSeat = null;
+      angles.forEach((angle, i) => {
+        const number = i + 1;
+        const names = presidentialSeats.get(number);
+        const isSelected = selected.location === 'presidency' && selected.seat === number;
+        const { x, y } = pointAt(p.center, p.r, angle);
+        const seat = drawSeat(presidentialTableElement, {
+          x, y, angle, width, height, number, tone: names || isSelected ? 'presidency' : 'presidency empty',
+          label: seatTitle('Presidency · Seat ', number, names, isSelected, selected.name), isSelected
+        });
+        if (isSelected) selectedSeat = seat;
+      });
+      if (selectedSeat) presidentialTableElement.append(selectedSeat);
+    }
 
-      for (let position = 1; position <= presidentialTableSize; position++) {
-        if (!presidentialSeats.has(position)) continue;
-        const names = presidentialSeats.get(position);
-        const isSelected = selected.location === 'presidency' && selected.seat === position;
-        const dot = document.createElementNS(svgNamespace, 'circle');
-        dot.setAttribute('class', `presidential-seat${isSelected ? ' selected' : ''}`);
-        dot.setAttribute('cx', String(500 + (position - (presidentialTableSize + 1) / 2) * presidentialSeatSpacing));
-        dot.setAttribute('cy', '451');
-        dot.setAttribute('r', isSelected ? '10' : '7');
-        const label = seatTitle('Presidential table · Seat ', position, names, isSelected, selected.name);
-        dot.setAttribute('aria-label', label);
-        const title = document.createElementNS(svgNamespace, 'title');
-        title.textContent = label;
-        dot.append(title);
-        presidentialTableElement.append(dot);
+    function drawAisles() {
+      const rows = room.rows.filter(row => row.blocks.length > 1);
+      const inner = rows[0].r - room.seatHeight, outer = rows[rows.length - 1].r + room.seatHeight;
+      const [a, b] = [inner, outer].map(r => pointAt(room.center, r, lineAngle(room.center, r, room.aisle)));
+      for (const mirrored of [false, true]) {
+        const mx = point => mirrored ? 2 * room.center.x - point.x : point.x;
+        const d = `M ${mx(a)} ${a.y} L ${mx(b)} ${b.y}`;
+        svgElement('path', { class: 'aisle', d, 'stroke-width': room.gap * 1.2 }, aislesElement);
+        svgElement('path', { class: 'aisle-center', d }, aislesElement);
       }
     }
 
     function drawRoom(roomSeats, selected) {
-      const rowCount = room.rows.length;
-      const outerRadius = 420;
-      const firstAisleRadius = 150 + room.aisleStartRow * (270 / Math.max(1, rowCount - 1));
-      corridorCenters().forEach(angle => {
-        const start = pointOnArc(firstAisleRadius, angle);
-        const end = pointOnArc(outerRadius, angle);
-        for (const cls of ['aisle', 'aisle-center']) {
-          const path = document.createElementNS(svgNamespace, 'path');
-          path.setAttribute('class', cls);
-          path.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
-          aislesElement.append(path);
+      const [x, y, w, h] = room.viewBox;
+      mapElement.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+      svgElement('text', { class: 'room-label', x: room.labelAt.x, y: room.labelAt.y, 'text-anchor': 'middle' }, rowsElement)
+        .textContent = room.label;
+      drawAisles();
+
+      let selectedSeat = null;
+      for (const row of roomLayout) {
+        for (const block of row.blocks) {
+          const width = seatWidth(row.r, block.from, block.to, block.slots.length);
+          slotAngles(block.from, block.to, block.slots.length).forEach((angle, i) => {
+            const number = block.slots[i];
+            const { x, y } = pointAt(row.center, row.r, angle);
+            if (number === null) {
+              svgElement('circle', { class: 'pillar', cx: x, cy: y, r: room.seatHeight * 0.42 }, rowsElement);
+              return;
+            }
+            const isSelected = selected.location === 'room' && number === selected.seat;
+            const seat = drawSeat(rowsElement, {
+              x, y, angle, width, height: room.seatHeight, number, tone: block.tone,
+              label: seatTitle('Seat ', number, roomSeats.get(number), isSelected, selected.name), isSelected
+            });
+            if (isSelected) selectedSeat = seat;
+          });
         }
-      });
-
-      room.rows.forEach(([first, last], rowIndex) => {
-        const radius = 150 + rowIndex * (270 / Math.max(1, rowCount - 1));
-        const segments = rowArcSegments(rowIndex >= room.aisleStartRow);
-        const seatCount = last - first + 1;
-
-        segments.forEach(([firstAngle, lastAngle]) => {
-          const arc = document.createElementNS(svgNamespace, 'path');
-          arc.setAttribute('class', 'row-line');
-          arc.setAttribute('d', arcPath(radius, firstAngle, lastAngle));
-          rowsElement.append(arc);
-        });
-
-        for (let number = first; number <= last; number++) {
-          const angle = seatAngle(number - first, seatCount, segments) * Math.PI / 180;
-          const isSelected = selected.location === 'room' && number === selected.seat;
-          const dot = document.createElementNS(svgNamespace, 'circle');
-          dot.setAttribute('class', `seat-dot${isSelected ? ' selected' : ''}`);
-          dot.setAttribute('cx', String(500 + radius * Math.cos(angle)));
-          dot.setAttribute('cy', String(centerY + radius * Math.sin(angle)));
-          dot.setAttribute('r', isSelected ? '8' : '4');
-          const label = seatTitle('Seat ', number, roomSeats.get(number), isSelected, selected.name);
-          dot.setAttribute('aria-label', label);
-          const title = document.createElementNS(svgNamespace, 'title');
-          title.textContent = label;
-          dot.append(title);
-          rowsElement.append(dot);
-        }
-      });
+      }
+      if (selectedSeat) rowsElement.append(selectedSeat);
     }
 
     async function init() {
