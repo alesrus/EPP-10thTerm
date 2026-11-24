@@ -519,8 +519,8 @@
         }
 
         const headBadge = m.isHead ? `<span class="badge badge-head">HND</span>` : '';
-        const chairBadge = m.committeeChair ? `<span class="badge badge-ctte-chair" title="Chair of the ${m.committeeChair} committee">Chair-${m.committeeChair}</span>` : '';
-        const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
+        const chairBadge = m.committeeChair ? `<span class="badge badge-ctte-chair" title="Chair of the ${m.committeeChair} committee">Chair ${m.committeeChair}</span>` : '';
+        const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord ${m.coordinator}</span>` : '';
         const profileSlug = encodeURIComponent(m.name.trim().toUpperCase().replace(/\s+/g, '_'));
         const profileUrl = `https://www.europarl.europa.eu/meps/en/${m.id}/${profileSlug}/home`;
 
