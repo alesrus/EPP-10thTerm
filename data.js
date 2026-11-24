@@ -67,6 +67,7 @@ async function loadMEPs() {
     groupVpOrder: toOrder(obj.groupVpOrder),
     strasbourg: obj.strasbourg || '',
     brussels: obj.brussels || '',
-    strasbourgLocation: obj.strasbourgLocation === 'presidency' ? 'presidency' : 'room'
+    strasbourgLocation: obj.strasbourgLocation === 'presidency' ? 'presidency' : 'room',
+    brusselsLocation: obj.brusselsLocation === 'presidency' ? 'presidency' : 'room'
   })).filter(m => !isNaN(m.id) && m.name);
 }

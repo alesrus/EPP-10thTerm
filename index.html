@@ -405,9 +405,7 @@
             id: String(m.id),
             name: m.name
           });
-          if (room === 'strasbourg') {
-            params.set('location', m.strasbourgLocation);
-          }
+          params.set('location', room === 'strasbourg' ? m.strasbourgLocation : m.brusselsLocation);
           return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
         };
         const strBadge = seatBadge(m.strasbourg, 'strasbourg', 'S');

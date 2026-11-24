@@ -103,11 +103,13 @@
       strasbourg: {
         name: 'Strasbourg · S1.4',
         aisleStartRow: 1,
+        presidentialTableSize: 13,
         rows: [[1, 22], [23, 53], [54, 94], [95, 142], [143, 200], [201, 266], [267, 340]]
       },
       brussels: {
         name: 'Brussels · 2Q2',
         aisleStartRow: 0,
+        presidentialTableSize: 7,
         rows: [[1, 13], [14, 34], [35, 61], [62, 94], [95, 131], [132, 172], [173, 217], [218, 266], [267, 318], [319, 370], [371, 413]]
       }
     };
@@ -126,7 +128,8 @@
     const endAngle = 325;
     const centerY = 510;
     const corridorHalfAngle = 2.2;
-    const presidentialTableSize = 13;
+    const presidentialTableSize = room ? room.presidentialTableSize : 0;
+    const presidentialSeatSpacing = 42;
 
     function pointOnArc(radius, angle) {
       const radians = angle * Math.PI / 180;
@@ -197,7 +200,7 @@
 
       for (const m of meps) {
         const seat = Number(roomKey === 'strasbourg' ? m.strasbourg : m.brussels);
-        const location = roomKey === 'strasbourg' ? m.strasbourgLocation : 'room';
+        const location = roomKey === 'strasbourg' ? m.strasbourgLocation : m.brusselsLocation;
         if (m.id === mepId) selected = { name: m.name, seat, location };
         if (!Number.isInteger(seat) || seat < 1) continue;
         addName(location === 'presidency' ? presidentialSeats : roomSeats, seat, m.name);
@@ -215,11 +218,12 @@
     }
 
     function drawPresidentialTable(presidentialSeats, selected) {
+      const tableWidth = (presidentialTableSize - 1) * presidentialSeatSpacing + 86;
       const table = document.createElementNS(svgNamespace, 'rect');
       table.setAttribute('class', 'presidential-table');
-      table.setAttribute('x', '205');
+      table.setAttribute('x', String(500 - tableWidth / 2));
       table.setAttribute('y', '420');
-      table.setAttribute('width', '590');
+      table.setAttribute('width', String(tableWidth));
       table.setAttribute('height', '62');
       table.setAttribute('rx', '31');
       presidentialTableElement.append(table);
@@ -238,7 +242,7 @@
         const isSelected = selected.location === 'presidency' && selected.seat === position;
         const dot = document.createElementNS(svgNamespace, 'circle');
         dot.setAttribute('class', `presidential-seat${isSelected ? ' selected' : ''}`);
-        dot.setAttribute('cx', String(245 + (position - 1) * 42));
+        dot.setAttribute('cx', String(500 + (position - (presidentialTableSize + 1) / 2) * presidentialSeatSpacing));
         dot.setAttribute('cy', '451');
         dot.setAttribute('r', isSelected ? '10' : '7');
         const label = seatTitle('Presidential table · Seat ', position, names, isSelected, selected.name);
@@ -309,7 +313,7 @@
       }
 
       const { selected, presidentialSeats, roomSeats } = buildSeatData(meps);
-      if (!selected.name || !Number.isInteger(selected.seat) || !isListedSeat(selected.seat)) {
+      if (!selected.name || !Number.isInteger(selected.seat) || !(selected.location === 'presidency' ? selected.seat <= presidentialTableSize : isListedSeat(selected.seat))) {
         showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
         return;
       }
@@ -325,7 +329,7 @@
       profileLink.href = `https://www.europarl.europa.eu/meps/en/${mepId}/${profileName}/home`;
       profileLink.hidden = false;
 
-      if (roomKey === 'strasbourg') drawPresidentialTable(presidentialSeats, selected);
+      drawPresidentialTable(presidentialSeats, selected);
       drawRoom(roomSeats, selected);
     }
 
