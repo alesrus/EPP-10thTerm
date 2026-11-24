@@ -447,6 +447,7 @@
     function onSearchInput() {
       document.getElementById('searchClear').hidden = !document.getElementById('mepSearch').value;
       applyFilters();
+      saveListState();
     }
 
     function clearSearch() {
@@ -466,17 +467,36 @@
       if (fb) fb.style.display = 'flex';
     }
 
-    function setFilter(filterType) {
-      currentFilter = (currentFilter === filterType) ? 'all' : filterType;
+    // Remember the list (button, search, scroll) so coming back from the
+    // seat map or Settings shows the same members as before.
+    const LIST_STATE_KEY = 'eppListState';
+    function saveListState() {
+      try {
+        sessionStorage.setItem(LIST_STATE_KEY, JSON.stringify({
+          filter: currentFilter,
+          query: document.getElementById('mepSearch').value,
+          scrollY: window.scrollY
+        }));
+      } catch { /* storage unavailable: ignore */ }
+    }
+    function readListState() {
+      try { return JSON.parse(sessionStorage.getItem(LIST_STATE_KEY)) || null; } catch { return null; }
+    }
 
+    function showFilterButtons() {
       document.getElementById('hondAbcBtn').classList.toggle('active', currentFilter === 'hondAbc');
       document.getElementById('hondSizeBtn').classList.toggle('active', currentFilter === 'hondSize');
       document.getElementById('coordCtteeProtoBtn').classList.toggle('active', currentFilter === 'coordCtteeProto');
       document.getElementById('coordCtteeAbcBtn').classList.toggle('active', currentFilter === 'coordCtteeAbc');
       document.getElementById('coordNameAbcBtn').classList.toggle('active', currentFilter === 'coordNameAbc');
       document.getElementById('ctteChairsBtn').classList.toggle('active', currentFilter === 'ctteChairs');
+    }
 
+    function setFilter(filterType) {
+      currentFilter = (currentFilter === filterType) ? 'all' : filterType;
+      showFilterButtons();
       applyFilters();
+      saveListState();
     }
 
     function renderMEPs(list) {
@@ -517,7 +537,7 @@
             name: m.name
           });
           params.set('location', room === 'strasbourg' ? m.strasbourgLocation : m.brusselsLocation);
-          return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
+          return `<a class="badge badge-seat" href="seating.html?${params}" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
         };
         // In Mission mode the usual Brussels/Strasbourg seats don't apply:
         // show the approximate location at the mission instead, if assigned.
@@ -653,7 +673,15 @@
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('mepGrid').style.display = 'grid';
         showMission();
+        const saved = readListState();
+        if (saved) {
+          currentFilter = saved.filter || 'all';
+          document.getElementById('mepSearch').value = saved.query || '';
+          document.getElementById('searchClear').hidden = !saved.query;
+          showFilterButtons();
+        }
         applyFilters();
+        if (saved && saved.scrollY) requestAnimationFrame(() => window.scrollTo(0, saved.scrollY));
 
       } catch (err) {
         console.error(err);
@@ -666,6 +694,10 @@
     }
 
     loadDelegation();
+    window.addEventListener('pagehide', saveListState);
+    document.addEventListener('click', event => {
+      if (event.target.closest('a[href^="seating.html"], a[href^="settings.html"], a[href^="mission-seats.html"]')) saveListState();
+    }, true);
 
     // Cards show only the flag: tap it to show (or hide) the country name.
     document.getElementById('mepGrid').addEventListener('click', event => {
