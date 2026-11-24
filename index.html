@@ -342,62 +342,10 @@
     <p>Group of the European People's Party • European Parliament</p>
   </footer>
 
+<script src="data.js"></script>
 <script>
-    const SHEET_CSV_URL = "EPPGroupMEPs.csv";
-
     let meps = [];
     let currentFilter = 'all';
-
-    const GROUP_VP_ORDER = [
-      "Dolors MONTSERRAT",
-      "Eszter LAKOS",
-      "Siegfried MUREŞAN",
-      "Tomas TOBÉ",
-      "Massimiliano SALINI",
-      "Andrzej HALICKI",
-      "Jeroen LENAERS",
-      "Romana TOMC",
-      "François-Xavier BELLAMY",
-      "Željana ZOVKO"
-    ];
-
-    const STRASBOURG_PRESIDENCY_IDS = new Set([
-      125670, 256865, 197711, 124802, 197402, 95074, 28229,
-      197514, 125104, 197534, 185341
-    ]);
-
-    function parseCSV(text) {
-      const lines = text.trim().split(/\r?\n/);
-      if (lines.length === 0) return [];
-      const headers = lines[0].split(',').map(h => h.trim());
-      const rows = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const values = [];
-        let insideQuote = false;
-        let entry = '';
-
-        for (let char of lines[i]) {
-          if (char === '"') {
-            insideQuote = !insideQuote;
-          } else if (char === ',' && !insideQuote) {
-            values.push(entry.trim());
-            entry = '';
-          } else {
-            entry += char;
-          }
-        }
-        values.push(entry.trim());
-
-        const obj = {};
-        headers.forEach((h, index) => {
-          obj[h] = (values[index] || '').replace(/^"|"$/g, '');
-        });
-        rows.push(obj);
-      }
-      return rows;
-    }
 
     function getInitials(name) {
       return (name || '').split(' ').map(n => n[0]).filter((_, i) => i < 2).join('');
@@ -458,7 +406,7 @@
             name: m.name
           });
           if (room === 'strasbourg') {
-            params.set('location', STRASBOURG_PRESIDENCY_IDS.has(m.id) ? 'presidency' : 'room');
+            params.set('location', m.strasbourgLocation);
           }
           return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
         };
@@ -558,9 +506,7 @@
           }
 
           if (pA === 2) {
-            const indexA = GROUP_VP_ORDER.indexOf(a.name);
-            const indexB = GROUP_VP_ORDER.indexOf(b.name);
-            return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
+            return a.groupVpOrder - b.groupVpOrder;
           }
 
           if (pA === 3) {
@@ -578,28 +524,7 @@
 
     async function loadDelegation() {
       try {
-        const res = await fetch(SHEET_CSV_URL);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        
-        const csvText = await res.text();
-        const rawRows = parseCSV(csvText);
-
-        meps = rawRows.map(obj => ({
-          id: parseInt(obj.id),
-          name: obj.name,
-          role: obj.role,
-          roleLabel: obj.roleLabel,
-          group: obj.group,
-          country: obj.country,
-          flag: obj.flag,
-          party: obj.party,
-          isHead: String(obj.headOfDelegation).toLowerCase() === 'yes' || String(obj.headOfDelegation).toLowerCase() === 'true',
-          coordinator: (obj.coordinator && obj.coordinator !== '' && obj.coordinator !== 'nan') ? obj.coordinator : null,
-          coordinatorOrder: parseFloat(obj.coordinatorOrder) || 999,
-          hondOrder: parseFloat(obj.hondOrder) || 999,
-          strasbourg: obj.strasbourg || '',
-          brussels: obj.brussels || ''
-        })).filter(m => !isNaN(m.id) && m.name);
+        meps = await loadMEPs();
 
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('mepGrid').style.display = 'grid';
@@ -610,9 +535,9 @@
       } catch (err) {
         console.error(err);
         document.getElementById('loadingState').innerHTML = `
-          <p style="color: #dc2626; font-weight: 600;">Could not load data from CSV file (${SHEET_CSV_URL}).</p>
+          <p style="color: #dc2626; font-weight: 600;">Could not load data from CSV file (${MEP_CSV_URL}).</p>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
-            Please ensure both index.html and ${SHEET_CSV_URL} are in the root of your GitHub repository.
+            Please ensure both index.html and ${MEP_CSV_URL} are in the root of your GitHub repository.
           </p>`;
       }
     }

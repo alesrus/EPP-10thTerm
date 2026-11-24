@@ -95,7 +95,10 @@
     </section>
   </main>
   <footer>Group of the European People's Party · European Parliament</footer>
+  <script src="data.js"></script>
   <script>
+    // Room layouts (seat numbering per row). MEP names, seats and the
+    // presidential table all come from EPPGroupMEPs.csv via data.js.
     const ROOM_MAPS = {
       strasbourg: {
         name: 'Strasbourg · S1.4',
@@ -110,11 +113,9 @@
     };
 
     const params = new URLSearchParams(window.location.search);
-    const room = ROOM_MAPS[params.get('room')];
-    const seat = Number(params.get('seat'));
+    const roomKey = params.get('room');
+    const room = ROOM_MAPS[roomKey];
     const mepId = Number(params.get('id') || params.get('eid'));
-    const mepName = params.get('name') || '';
-    const seatLocation = params.get('location');
     const nameElement = document.getElementById('mepName');
     const summaryElement = document.getElementById('seatSummary');
     const aislesElement = document.getElementById('aisles');
@@ -125,44 +126,7 @@
     const endAngle = 325;
     const centerY = 510;
     const corridorHalfAngle = 2.2;
-    const presidentialSeatNumbers = new Set([1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13]);
-    const presidentialMEPIds = new Set([125670, 256865, 197711, 124802, 197402, 95074, 28229, 197514, 125104, 197534, 185341]);
-    const presidentialMEPSeatById = new Map([
-      [125670, 1], [256865, 2], [197711, 3], [124802, 4],
-      [197402, 5], [95074, 6], [28229, 7], [197514, 10],
-      [125104, 11], [197534, 12], [185341, 13]
-    ]);
-    const presidentialSeatNames = {
-      1: 'Massimiliano SALINI',
-      2: 'Eszter LAKOS',
-      3: 'Dolors MONTSERRAT',
-      4: 'Siegfried MUREŞAN',
-      5: 'Tomas TOBÉ',
-      6: 'Jeroen LENAERS',
-      7: 'Manfred WEBER',
-      10: 'Andrzej HALICKI',
-      11: 'Romana TOMC',
-      12: 'François-Xavier BELLAMY',
-      13: 'Željana ZOVKO'
-    };
-    const roomSeatNames = {
-      4: 'Andrey KOVATCHEV',
-      5: 'Ana Miguel PEDRO',
-      6: 'Paulo CUNHA',
-      7: 'Herbert DORFMANN',
-      8: 'Fulvio MARTUSCIELLO',
-      9: 'Esteban GONZÁLEZ PONS',
-      10: 'Christian DOLESCHAL',
-      11: 'Niclas HERBST',
-      12: 'Adam JARUBAS',
-      13: 'Daniel BUDA',
-      14: 'Iuliu WINKLER',
-      15: 'Elissavet VOZEMBERG-VRIONIDI',
-      16: 'Karlo RESSLER',
-      17: 'Reinhold LOPATKA',
-      18: 'Jessica POLFJÄRD',
-      21: 'Hanna GRONKIEWICZ-WALTZ'
-    };
+    const presidentialTableSize = 13;
 
     function pointOnArc(radius, angle) {
       const radians = angle * Math.PI / 180;
@@ -214,82 +178,96 @@
       return room.rows.some(([first, last]) => number >= first && number <= last);
     }
 
-    if (!room || !Number.isInteger(seat) || !isListedSeat(seat) ||
-        !Number.isInteger(mepId) || mepId < 1 || !mepName) {
-      showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
-    } else {
-      nameElement.textContent = mepName;
-      summaryElement.textContent = `${room.name} · Seat `;
-      const seatNumber = document.createElement('strong');
-      seatNumber.textContent = String(seat);
-      summaryElement.append(seatNumber);
+    function addName(map, seat, name) {
+      if (!map.has(seat)) map.set(seat, []);
+      map.get(seat).push(name);
+    }
 
-      const profileName = encodeURIComponent(mepName.trim().toUpperCase().replace(/\s+/g, '_'));
-      const profileLink = document.getElementById('profileLink');
-      profileLink.href = `https://www.europarl.europa.eu/meps/en/${mepId}/${profileName}/home`;
-      profileLink.hidden = false;
+    // Build the selected MEP and the seat occupants from the CSV rows.
+    // Without CSV data, fall back to the details carried in the link.
+    function buildSeatData(meps) {
+      const fromLink = {
+        name: params.get('name') || '',
+        seat: Number(params.get('seat')),
+        location: params.get('location') === 'presidency' ? 'presidency' : 'room'
+      };
+      const presidentialSeats = new Map();
+      const roomSeats = new Map();
+      let selected = fromLink;
 
-      if (room.name.startsWith('Strasbourg')) {
-        const isPresidencyMep = seatLocation === 'presidency' ||
-          presidentialMEPIds.has(mepId) ||
-          Object.values(presidentialSeatNames).includes(mepName);
-        const table = document.createElementNS(svgNamespace, 'rect');
-        table.setAttribute('class', 'presidential-table');
-        table.setAttribute('x', '205');
-        table.setAttribute('y', '420');
-        table.setAttribute('width', '590');
-        table.setAttribute('height', '62');
-        table.setAttribute('rx', '31');
-        presidentialTableElement.append(table);
-
-        const tableLabel = document.createElementNS(svgNamespace, 'text');
-        tableLabel.setAttribute('class', 'presidential-table-label');
-        tableLabel.setAttribute('x', '500');
-        tableLabel.setAttribute('y', '475');
-        tableLabel.setAttribute('text-anchor', 'middle');
-        tableLabel.textContent = 'PRESIDENTIAL TABLE';
-        presidentialTableElement.append(tableLabel);
-
-        for (let position = 1; position <= 13; position++) {
-          if (!presidentialSeatNumbers.has(position)) continue;
-          const x = 245 + (position - 1) * 42;
-          const dot = document.createElementNS(svgNamespace, 'circle');
-          const isSelected = isPresidencyMep &&
-            (presidentialMEPSeatById.get(mepId) === position ||
-              presidentialSeatNames[position] === mepName);
-          dot.setAttribute('class', `presidential-seat${isSelected ? ' selected' : ''}`);
-          dot.setAttribute('cx', String(x));
-          dot.setAttribute('cy', '451');
-          dot.setAttribute('r', isSelected ? '10' : '7');
-          const seatedName = presidentialSeatNames[position];
-          dot.setAttribute('aria-label', isSelected ? `Presidential table seat ${position}, ${mepName}` : `Presidential table seat ${position}, ${seatedName}`);
-          const title = document.createElementNS(svgNamespace, 'title');
-          title.textContent = `Presidential table · Seat ${position} · ${seatedName}${isSelected ? ' · Selected' : ''}`;
-          dot.append(title);
-          presidentialTableElement.append(dot);
-        }
+      for (const m of meps) {
+        const seat = Number(roomKey === 'strasbourg' ? m.strasbourg : m.brussels);
+        const location = roomKey === 'strasbourg' ? m.strasbourgLocation : 'room';
+        if (m.id === mepId) selected = { name: m.name, seat, location };
+        if (!Number.isInteger(seat) || seat < 1) continue;
+        addName(location === 'presidency' ? presidentialSeats : roomSeats, seat, m.name);
       }
 
+      if (meps.length === 0 && selected.location === 'presidency' && selected.name) {
+        addName(presidentialSeats, selected.seat, selected.name);
+      }
+      return { selected, presidentialSeats, roomSeats };
+    }
+
+    function seatTitle(prefix, number, names, isSelected, selectedName) {
+      const occupants = names ? names.join(' / ') : (isSelected ? selectedName : '');
+      return `${prefix}${number}${occupants ? ` · ${occupants}` : ''}${isSelected ? ' · Selected' : ''}`;
+    }
+
+    function drawPresidentialTable(presidentialSeats, selected) {
+      const table = document.createElementNS(svgNamespace, 'rect');
+      table.setAttribute('class', 'presidential-table');
+      table.setAttribute('x', '205');
+      table.setAttribute('y', '420');
+      table.setAttribute('width', '590');
+      table.setAttribute('height', '62');
+      table.setAttribute('rx', '31');
+      presidentialTableElement.append(table);
+
+      const tableLabel = document.createElementNS(svgNamespace, 'text');
+      tableLabel.setAttribute('class', 'presidential-table-label');
+      tableLabel.setAttribute('x', '500');
+      tableLabel.setAttribute('y', '475');
+      tableLabel.setAttribute('text-anchor', 'middle');
+      tableLabel.textContent = 'PRESIDENTIAL TABLE';
+      presidentialTableElement.append(tableLabel);
+
+      for (let position = 1; position <= presidentialTableSize; position++) {
+        if (!presidentialSeats.has(position)) continue;
+        const names = presidentialSeats.get(position);
+        const isSelected = selected.location === 'presidency' && selected.seat === position;
+        const dot = document.createElementNS(svgNamespace, 'circle');
+        dot.setAttribute('class', `presidential-seat${isSelected ? ' selected' : ''}`);
+        dot.setAttribute('cx', String(245 + (position - 1) * 42));
+        dot.setAttribute('cy', '451');
+        dot.setAttribute('r', isSelected ? '10' : '7');
+        const label = seatTitle('Presidential table · Seat ', position, names, isSelected, selected.name);
+        dot.setAttribute('aria-label', label);
+        const title = document.createElementNS(svgNamespace, 'title');
+        title.textContent = label;
+        dot.append(title);
+        presidentialTableElement.append(dot);
+      }
+    }
+
+    function drawRoom(roomSeats, selected) {
       const rowCount = room.rows.length;
       const outerRadius = 420;
       const firstAisleRadius = 150 + room.aisleStartRow * (270 / Math.max(1, rowCount - 1));
       corridorCenters().forEach(angle => {
         const start = pointOnArc(firstAisleRadius, angle);
         const end = pointOnArc(outerRadius, angle);
-        const path = document.createElementNS(svgNamespace, 'path');
-        path.setAttribute('class', 'aisle');
-        path.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
-        aislesElement.append(path);
-        const centerline = document.createElementNS(svgNamespace, 'path');
-        centerline.setAttribute('class', 'aisle-center');
-        centerline.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
-        aislesElement.append(centerline);
+        for (const cls of ['aisle', 'aisle-center']) {
+          const path = document.createElementNS(svgNamespace, 'path');
+          path.setAttribute('class', cls);
+          path.setAttribute('d', `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
+          aislesElement.append(path);
+        }
       });
 
       room.rows.forEach(([first, last], rowIndex) => {
         const radius = 150 + rowIndex * (270 / Math.max(1, rowCount - 1));
-        const hasCorridors = rowIndex >= room.aisleStartRow;
-        const segments = rowArcSegments(hasCorridors);
+        const segments = rowArcSegments(rowIndex >= room.aisleStartRow);
         const seatCount = last - first + 1;
 
         segments.forEach(([firstAngle, lastAngle]) => {
@@ -301,31 +279,57 @@
 
         for (let number = first; number <= last; number++) {
           const angle = seatAngle(number - first, seatCount, segments) * Math.PI / 180;
+          const isSelected = selected.location === 'room' && number === selected.seat;
           const dot = document.createElementNS(svgNamespace, 'circle');
-          const isPresidencyMep = room.name.startsWith('Strasbourg') &&
-            (seatLocation === 'presidency' ||
-              presidentialMEPIds.has(mepId) ||
-              Object.values(presidentialSeatNames).includes(mepName));
-          const isSelected = room.name.startsWith('Strasbourg')
-            ? number === seat && !isPresidencyMep
-            : number === seat;
           dot.setAttribute('class', `seat-dot${isSelected ? ' selected' : ''}`);
           dot.setAttribute('cx', String(500 + radius * Math.cos(angle)));
           dot.setAttribute('cy', String(centerY + radius * Math.sin(angle)));
           dot.setAttribute('r', isSelected ? '8' : '4');
-          const seatedName = room.name.startsWith('Strasbourg') ? roomSeatNames[number] : null;
-          dot.setAttribute('aria-label', isSelected
-            ? `Seat ${number}, ${mepName}`
-            : seatedName ? `Seat ${number}, ${seatedName}` : `Seat ${number}`);
+          const label = seatTitle('Seat ', number, roomSeats.get(number), isSelected, selected.name);
+          dot.setAttribute('aria-label', label);
           const title = document.createElementNS(svgNamespace, 'title');
-          title.textContent = seatedName
-            ? `Seat ${number} · ${seatedName}${isSelected ? ' · Selected' : ''}`
-            : `Seat ${number}${isSelected ? ` · ${mepName}` : ''}`;
+          title.textContent = label;
           dot.append(title);
           rowsElement.append(dot);
         }
       });
     }
+
+    async function init() {
+      if (!room || !Number.isInteger(mepId) || mepId < 1) {
+        showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
+        return;
+      }
+
+      let meps = [];
+      try {
+        meps = await loadMEPs();
+      } catch (err) {
+        console.error('Could not load MEP data; using the details in the link.', err);
+      }
+
+      const { selected, presidentialSeats, roomSeats } = buildSeatData(meps);
+      if (!selected.name || !Number.isInteger(selected.seat) || !isListedSeat(selected.seat)) {
+        showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
+        return;
+      }
+
+      nameElement.textContent = selected.name;
+      summaryElement.textContent = `${room.name}${selected.location === 'presidency' ? ' · Presidential table' : ''} · Seat `;
+      const seatNumber = document.createElement('strong');
+      seatNumber.textContent = String(selected.seat);
+      summaryElement.append(seatNumber);
+
+      const profileName = encodeURIComponent(selected.name.trim().toUpperCase().replace(/\s+/g, '_'));
+      const profileLink = document.getElementById('profileLink');
+      profileLink.href = `https://www.europarl.europa.eu/meps/en/${mepId}/${profileName}/home`;
+      profileLink.hidden = false;
+
+      if (roomKey === 'strasbourg') drawPresidentialTable(presidentialSeats, selected);
+      drawRoom(roomSeats, selected);
+    }
+
+    init();
   </script>
 </body>
 </html>
