@@ -2,27 +2,32 @@
   "enabled": true,
   "name": "Test mission Helsinki",
   "rows": 10,
-  "updated": "2026-11-24T21:08:04.746Z",
+  "updated": "2026-11-24T21:10:42.000Z",
   "meps": [
     {
       "id": 96933,
-      "name": "Milan ZVER"
+      "name": "Milan ZVER",
+      "seat": "2R"
     },
     {
       "id": 219652,
-      "name": "Matej TONIN"
+      "name": "Matej TONIN",
+      "seat": "2R"
     },
     {
       "id": 125104,
-      "name": "Romana TOMC"
+      "name": "Romana TOMC",
+      "seat": "2R"
     },
     {
       "id": 204336,
-      "name": "Miriam LEXMANN"
+      "name": "Miriam LEXMANN",
+      "seat": "3L"
     },
     {
       "id": 256814,
-      "name": "Zala ČERNILEC TOMAŠIČ"
+      "name": "Zala ČERNILEC TOMAŠIČ",
+      "seat": "3L"
     },
     {
       "id": 256810,
@@ -31,31 +36,38 @@
     },
     {
       "id": 257043,
-      "name": "Maravillas ABADÍA JOVER"
+      "name": "Maravillas ABADÍA JOVER",
+      "seat": "2L"
     },
     {
       "id": 197490,
-      "name": "Magdalena ADAMOWICZ"
+      "name": "Magdalena ADAMOWICZ",
+      "seat": "5L"
     },
     {
       "id": 256820,
-      "name": "Georgios AFTIAS"
+      "name": "Georgios AFTIAS",
+      "seat": "2R"
     },
     {
       "id": 113523,
-      "name": "Peter AGIUS"
+      "name": "Peter AGIUS",
+      "seat": "5L"
     },
     {
       "id": 96808,
-      "name": "Pablo ARIAS ECHEVERRÍA"
+      "name": "Pablo ARIAS ECHEVERRÍA",
+      "seat": "4R"
     },
     {
       "id": 24922,
-      "name": "Pascal ARIMONT"
+      "name": "Pascal ARIMONT",
+      "seat": "4R"
     },
     {
       "id": 197492,
-      "name": "Bartosz ARŁUKOWICZ"
+      "name": "Bartosz ARŁUKOWICZ",
+      "seat": "2L"
     }
   ]
 }
