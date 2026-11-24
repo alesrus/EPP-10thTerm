@@ -316,6 +316,23 @@
     .mep-name a:focus-visible {
       text-decoration: underline;
     }
+    .flag-btn {
+      padding: 0;
+      font: inherit;
+      font-size: 1.05em;
+      line-height: 1;
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .country-name {
+      margin-left: 4px;
+      padding: 1px 6px;
+      color: #fff;
+      font-weight: 600;
+      background: #334155;
+      border-radius: 4px;
+    }
     .mep-meta {
       display: flex;
       align-items: center;
@@ -527,7 +544,7 @@
               </div>
               <div class="mep-name"><a href="${profileUrl}">${m.name}</a></div>
               <div class="mep-meta">
-                <span>${m.flag || ''} ${m.country}</span>
+                <span class="country"><button type="button" class="flag-btn" title="${m.country}" aria-label="${m.country}" aria-expanded="false">${m.flag || m.country}</button><span class="country-name" hidden>${m.country}</span></span>
                 ${m.party ? `<span>• ${m.party}</span>` : ''}
               </div>
             </div>
@@ -647,6 +664,15 @@
     }
 
     loadDelegation();
+
+    // Cards show only the flag: tap it to show (or hide) the country name.
+    document.getElementById('mepGrid').addEventListener('click', event => {
+      const flag = event.target.closest('.flag-btn');
+      if (!flag) return;
+      const name = flag.nextElementSibling;
+      name.hidden = !name.hidden;
+      flag.setAttribute('aria-expanded', String(!name.hidden));
+    });
 
     // When the installed app comes back to the foreground, pick up mission changes.
     document.addEventListener('visibilitychange', async () => {
