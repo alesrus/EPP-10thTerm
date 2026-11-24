@@ -37,7 +37,7 @@
     .seat-card h2 { margin: 0 0 6px; font-size: clamp(1.25rem, 3vw, 1.75rem); }
     .seat-summary { margin: 0; color: #526174; }
     .seat-summary strong { color: #003399; }
-    .profile-link { display: inline-block; margin-top: 10px; color: #003399; }
+    .seat-number { font-weight: 400; }
     [hidden] { display: none !important; }
     .map-wrap { position: relative; margin-top: 20px; overflow-x: auto; }
     .seat { cursor: pointer; }
@@ -65,10 +65,6 @@
     .seat.selected > rect:nth-of-type(2) { fill: #ffcc00; opacity: 1; }
     .seat.selected text { fill: white; }
     .seat-halo { fill: rgba(255, 204, 0, 0.28); stroke: #ffcc00; stroke-width: 3; }
-    .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 14px 0 0; color: #526174; font-size: 0.92rem; }
-    .legend-item { display: inline-flex; align-items: center; gap: 8px; }
-    .legend-dot { width: 14px; height: 16px; border: 2px solid #8391a7; border-radius: 3px; background: white; }
-    .legend-dot.selected { border-color: #003399; background: #003399; box-shadow: 0 0 0 2px #ffcc00; }
     .error { color: #991b1b; }
     @media (max-width: 600px) {
       main { width: min(100% - 16px, 1120px); margin-top: 14px; }
@@ -84,17 +80,12 @@
     <section class="seat-card" aria-live="polite">
       <h2 id="mepName">Loading seat…</h2>
       <p class="seat-summary" id="seatSummary"></p>
-      <a class="profile-link" id="profileLink" hidden>European Parliament profile</a>
       <div class="map-wrap">
         <svg id="seatMap" viewBox="0 0 1000 600" role="img" aria-labelledby="mapTitle mapDescription">
           <title id="mapTitle">Room seat map</title>
           <desc id="mapDescription">The official room plan with every numbered seat and the presidency row. The selected MEP's seat is highlighted.</desc>
         </svg>
         <div id="seatTip" class="seat-tip" role="status" hidden></div>
-      </div>
-      <div class="legend" aria-label="Map legend">
-        <span class="legend-item"><span class="legend-dot"></span>Other seats</span>
-        <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
       </div>
     </section>
   </main>
@@ -278,18 +269,15 @@
         return;
       }
 
-      nameElement.textContent = selected.name;
-      summaryElement.textContent = `${room.name}${selected.location === 'presidency' ? ' · Presidential table' : ''} · Seat `;
-      const seatNumber = document.createElement('strong');
-      seatNumber.textContent = String(selected.seat);
-      summaryElement.append(seatNumber);
-
-      const profileName = encodeURIComponent(selected.name.trim().toUpperCase().replace(/\s+/g, '_'));
-      const profileLink = document.getElementById('profileLink');
-      profileLink.href = `https://www.europarl.europa.eu/meps/en/${mepId}/${profileName}/home`;
-      profileLink.hidden = false;
-
       markSeats(roomSeats, presidentialSeats, selected);
+
+      // "Manfred WEBER (07)": the seat number as written on the plan, not bold.
+      const seatElement = (selected.location === 'presidency' ? presidencySeatElements : roomSeatElements).get(selected.seat);
+      const seatLabel = document.createElement('span');
+      seatLabel.className = 'seat-number';
+      seatLabel.textContent = ` (${seatElement.querySelector('text').textContent.trim()})`;
+      nameElement.replaceChildren(selected.name, seatLabel);
+      summaryElement.hidden = true;
       centerOnSelectedSeat();
       window.addEventListener('resize', centerOnSelectedSeat);
     }
