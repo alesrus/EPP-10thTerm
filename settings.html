@@ -198,10 +198,10 @@
     }
 
     function renderList() {
-      const q = filterInput.value.toLowerCase().trim();
+      const q = foldText(filterInput.value).trim();
       listElement.replaceChildren();
       for (const m of allMeps) {
-        if (q && !`${m.name} ${m.country} ${m.party || ''}`.toLowerCase().includes(q)) continue;
+        if (q && !foldText(`${m.name} ${m.country} ${m.party || ''}`).includes(q)) continue;
         const item = document.createElement('li');
         item.classList.toggle('checked', present.has(m.id));
         const label = document.createElement('label');
@@ -234,8 +234,8 @@
     }
 
     function shownIds() {
-      const q = filterInput.value.toLowerCase().trim();
-      return allMeps.filter(m => !q || `${m.name} ${m.country} ${m.party || ''}`.toLowerCase().includes(q)).map(m => m.id);
+      const q = foldText(filterInput.value).trim();
+      return allMeps.filter(m => !q || foldText(`${m.name} ${m.country} ${m.party || ''}`).includes(q)).map(m => m.id);
     }
 
     function showTokenState() {

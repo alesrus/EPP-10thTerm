@@ -2,6 +2,17 @@
 // All MEP data (roles, orders, seats, presidential table) lives in the CSV.
 const MEP_CSV_URL = 'EPPGroupMEPs.csv';
 
+// Text for searching: lower case, accents and special letters folded, so
+// "tobe" finds "Tobé" and "arlukowicz" finds "Arłukowicz".
+const FOLD_LETTERS = { 'ł': 'l', 'ø': 'o', 'đ': 'd', 'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'ı': 'i', 'þ': 'th', 'ð': 'd' };
+function foldText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[łøđßæœıþð]/g, letter => FOLD_LETTERS[letter]);
+}
+
 function parseCSV(text) {
   const rows = [];
   let row = [];

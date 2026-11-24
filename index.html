@@ -554,7 +554,7 @@
     }
 
     function applyFilters() {
-      const q = document.getElementById('mepSearch').value.toLowerCase().trim();
+      const q = foldText(document.getElementById('mepSearch').value).trim();
 
       let filtered = baseMEPs().filter(m => {
         let matchesFilter = true;
@@ -567,10 +567,10 @@
         }
 
         const matchesQuery = !q || 
-          m.name.toLowerCase().includes(q) || 
-          m.country.toLowerCase().includes(q) || 
-          (m.party && m.party.toLowerCase().includes(q)) ||
-          (m.roleLabel && m.roleLabel.toLowerCase().includes(q)) ||
+          foldText(m.name).includes(q) ||
+          foldText(m.country).includes(q) ||
+          (m.party && foldText(m.party).includes(q)) ||
+          (m.roleLabel && foldText(m.roleLabel).includes(q)) ||
           (m.coordinator && m.coordinator.toLowerCase().includes(q)) ||
           (m.committeeChair && (m.committeeChair.toLowerCase().includes(q) || 'committee chair'.includes(q))) ||
           (m.strasbourg && m.strasbourg.toString().includes(q)) ||
