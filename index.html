@@ -51,20 +51,21 @@
     header {
       background: linear-gradient(135deg, #05142b 0%, #003399 60%, #0d47a1 100%);
       color: #fff;
-      padding: 34px 14px 26px;
+      padding: 12px 52px;
       text-align: center;
       border-bottom: 4px solid #FFCC00;
       position: relative;
     }
     .settings-link {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 42px;
-      height: 42px;
+      width: 32px;
+      height: 32px;
       color: #fff;
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -112,8 +113,8 @@
       margin-bottom: 8px;
     }
     h1 {
-      font-size: clamp(1.6rem, 3.2vw, 2.4rem);
-      margin-bottom: 6px;
+      font-size: clamp(1.25rem, 2.6vw, 1.8rem);
+      margin: 0;
     }
     .subtitle {
       font-size: clamp(0.85rem, 1.4vw, 1.02rem);
@@ -331,15 +332,6 @@
       color: var(--text-muted);
     }
 
-    footer {
-      background: #0b1a30;
-      color: #94a3b8;
-      text-align: center;
-      padding: 22px 14px;
-      font-size: 0.78rem;
-      border-top: 1px solid #1e293b;
-    }
-    footer a { color: #FFCC00; text-decoration: none; }
 
     /* MOBILE: 3 CARDS PER ROW */
     @media (max-width: 640px) {
@@ -368,7 +360,7 @@
   <header>
     <h1>EPP Group in the EP</h1>
     <a class="settings-link" href="settings.html" aria-label="Settings" title="Settings">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
     </a>
   </header>
   <div class="mission-banner" id="missionBanner" role="status" hidden>
@@ -407,9 +399,6 @@
 
   </div>
 
-  <footer>
-    <p>Group of the European People's Party • European Parliament</p>
-  </footer>
 
 <script src="data.js"></script>
   <script src="mission.js"></script>
