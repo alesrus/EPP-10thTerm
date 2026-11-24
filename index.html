@@ -521,7 +521,7 @@
         const strBadge = mission.enabled ? '' : seatBadge(m.strasbourg, 'strasbourg', 'S');
         const bruBadge = mission.enabled ? '' : seatBadge(m.brussels, 'brussels', 'B');
         const missionBadge = missionSeat
-          ? `<a class="badge badge-mission-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">📍 ${missionSeat}</a>`
+          ? `<a class="badge badge-mission-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">${missionSeat}</a>`
           : '';
 
         return `
