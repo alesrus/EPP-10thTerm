@@ -124,7 +124,7 @@
     <section class="card">
       <h2>MEPs present</h2>
       <div class="list-tools">
-        <input type="search" id="mepFilter" placeholder="Find a MEP or country…" autocomplete="off">
+        <input type="search" id="mepFilter" placeholder="Find a MEP or country…" autocomplete="off" onkeydown="if (event.key === 'Enter') { event.preventDefault(); this.blur(); }">
         <button type="button" class="btn" id="tickShown">Tick all shown</button>
         <button type="button" class="btn" id="untickAll">Untick all</button>
       </div>
