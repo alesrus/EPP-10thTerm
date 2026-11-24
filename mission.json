@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "name": "Test mission Helsinki",
-  "updated": "2026-11-24T20:56:45.290Z",
+  "updated": "2026-11-24T20:57:02.578Z",
   "meps": [
     {
       "id": 96933,
@@ -22,6 +22,38 @@
     {
       "id": 256814,
       "name": "Zala ČERNILEC TOMAŠIČ"
+    },
+    {
+      "id": 256810,
+      "name": "Mika AALTOLA"
+    },
+    {
+      "id": 257043,
+      "name": "Maravillas ABADÍA JOVER"
+    },
+    {
+      "id": 197490,
+      "name": "Magdalena ADAMOWICZ"
+    },
+    {
+      "id": 256820,
+      "name": "Georgios AFTIAS"
+    },
+    {
+      "id": 113523,
+      "name": "Peter AGIUS"
+    },
+    {
+      "id": 96808,
+      "name": "Pablo ARIAS ECHEVERRÍA"
+    },
+    {
+      "id": 24922,
+      "name": "Pascal ARIMONT"
+    },
+    {
+      "id": 197492,
+      "name": "Bartosz ARŁUKOWICZ"
     }
   ]
 }
