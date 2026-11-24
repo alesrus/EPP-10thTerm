@@ -390,8 +390,8 @@
 
     <div class="controls-wrapper">
       <div class="filter-buttons">
-        <button id="hondAbcBtn" class="btn-toggle" onclick="setFilter('hondAbc')">HoND ABC</button>
-        <button id="hondSizeBtn" class="btn-toggle" onclick="setFilter('hondSize')">HoND Size</button>
+        <button id="hondAbcBtn" class="btn-toggle" onclick="setFilter('hondAbc')">HND ABC</button>
+        <button id="hondSizeBtn" class="btn-toggle" onclick="setFilter('hondSize')">HND Size</button>
         <button id="coordCtteeProtoBtn" class="btn-toggle" onclick="setFilter('coordCtteeProto')">Coord CTTEE Proto</button>
         <button id="coordCtteeAbcBtn" class="btn-toggle" onclick="setFilter('coordCtteeAbc')">Coord CTTEE ABC</button>
         <button id="coordNameAbcBtn" class="btn-toggle" onclick="setFilter('coordNameAbc')">Coord Name ABC</button>
@@ -518,7 +518,7 @@
           }
         }
 
-        const headBadge = m.isHead ? `<span class="badge badge-head">HoND</span>` : '';
+        const headBadge = m.isHead ? `<span class="badge badge-head">HND</span>` : '';
         const chairBadge = m.committeeChair ? `<span class="badge badge-ctte-chair" title="Chair of the ${m.committeeChair} committee">Chair-${m.committeeChair}</span>` : '';
         const coordBadge = m.coordinator ? `<span class="badge badge-coord">Coord-${m.coordinator}</span>` : '';
         const profileSlug = encodeURIComponent(m.name.trim().toUpperCase().replace(/\s+/g, '_'));
@@ -598,7 +598,7 @@
           (m.strasbourg && m.strasbourg.toString().includes(q)) ||
           (m.brussels && m.brussels.toString().includes(q)) ||
           (mission.enabled && mission.seats[m.id] && mission.seats[m.id].toLowerCase() === q) ||
-          (m.isHead && "hond".includes(q)) ||
+          (m.isHead && ("hnd".includes(q) || "hond".includes(q))) ||
           (m.isHead && "head of delegation".includes(q));
 
         return matchesFilter && matchesQuery;
