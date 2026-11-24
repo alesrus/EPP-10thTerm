@@ -13,12 +13,39 @@ const MISSION_API_URL = `https://api.github.com/repos/${MISSION_REPO}/contents/$
 const MISSION_CACHE_KEY = 'eppMission';
 const MISSION_TOKEN_KEY = 'eppMissionToken';
 
+const MISSION_DEFAULT_ROWS = 10;
+const MISSION_SEAT_PATTERN = /^([1-9]\d?)([LR])$/;
+
+// "2l" -> "2L"; anything else -> ''
+function normalizeMissionSeat(value) {
+  const seat = String(value || '').trim().toUpperCase();
+  return MISSION_SEAT_PATTERN.test(seat) ? seat : '';
+}
+
+// Order for sorting by location: 1L, 1R, 2L, 2R, ... then no location.
+function missionSeatOrder(seat) {
+  const match = MISSION_SEAT_PATTERN.exec(seat || '');
+  return match ? Number(match[1]) * 2 + (match[2] === 'R' ? 1 : 0) : Infinity;
+}
+
 function normalizeMission(data) {
-  const meps = Array.isArray(data && data.meps) ? data.meps : [];
+  const entries = Array.isArray(data && data.meps) ? data.meps : [];
+  const meps = [];
+  const seats = {};
+  for (const entry of entries) {
+    const id = Number(typeof entry === 'object' && entry ? entry.id : entry);
+    if (!Number.isInteger(id)) continue;
+    meps.push(id);
+    const seat = normalizeMissionSeat(entry && entry.seat);
+    if (seat) seats[id] = seat;
+  }
+  const rows = Number(data && data.rows);
   return {
     enabled: Boolean(data && data.enabled),
     name: String((data && data.name) || '').trim(),
-    meps: meps.map(m => Number(typeof m === 'object' && m ? m.id : m)).filter(Number.isInteger),
+    rows: Number.isInteger(rows) && rows > 0 && rows < 100 ? rows : MISSION_DEFAULT_ROWS,
+    meps,
+    seats, // MEP id -> approximate location, e.g. "2L"
     updated: (data && data.updated) || null
   };
 }
@@ -85,11 +112,16 @@ async function saveMission(mission, allMeps) {
     'X-GitHub-Api-Version': '2022-11-28'
   };
   const names = new Map(allMeps.map(m => [m.id, m.name]));
+  const seats = mission.seats || {};
   const data = {
     enabled: Boolean(mission.enabled),
     name: mission.name.trim(),
+    rows: mission.rows || MISSION_DEFAULT_ROWS,
     updated: new Date().toISOString(),
-    meps: [...new Set(mission.meps)].map(id => ({ id, name: names.get(id) || '' }))
+    meps: [...new Set(mission.meps)].map(id => {
+      const seat = normalizeMissionSeat(seats[id]);
+      return { id, name: names.get(id) || '', ...(seat ? { seat } : {}) };
+    })
   };
 
   const current = await fetch(`${MISSION_API_URL}?ref=${MISSION_BRANCH}`, { headers, cache: 'no-store' });

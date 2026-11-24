@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#003399">
+  <link rel="manifest" href="./manifest.json">
+  <title>Mission seating | EPP Group</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f4f6fa;
+      --primary: #003399;
+      --border: #e2e8f0;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: #f4f6fa; }
+    header {
+      padding: 22px 18px;
+      color: white;
+      text-align: center;
+      background: linear-gradient(135deg, #05142b, #003399 65%, #0d47a1);
+      border-bottom: 4px solid #ffcc00;
+    }
+    header h1 { margin: 0; font-size: clamp(1.3rem, 3vw, 2rem); }
+    main { width: min(820px, 100% - 24px); margin: 18px auto 110px; }
+    .back-link { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .card {
+      margin-top: 16px;
+      padding: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 35, 102, 0.06);
+    }
+    .card h2 { margin: 0 0 4px; font-size: 1.15rem; }
+    .hint { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+    label.field { display: block; margin-top: 14px; font-weight: 600; font-size: 0.9rem; }
+    input[type="text"], input[type="password"], input[type="search"] {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 12px;
+      font: inherit;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.12); }
+    .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
+    .switch-row strong { display: block; }
+    .switch { position: relative; flex: none; width: 54px; height: 30px; }
+    .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+    .switch span {
+      position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;
+    }
+    .switch span::after {
+      content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+      background: white; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s;
+    }
+    .switch input:checked + span { background: #0f9d58; }
+    .switch input:checked + span::after { transform: translateX(24px); }
+    .switch input:focus-visible + span { box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.3); }
+    .list-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    .list-tools input { flex: 1 1 220px; margin-top: 0; }
+    .btn {
+      padding: 9px 14px; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--primary);
+      background: white; border: 1px solid var(--primary); border-radius: 8px; cursor: pointer;
+    }
+    .btn:hover { background: #f0f4ff; }
+    .btn.primary { color: white; background: var(--primary); }
+    .btn.primary:hover { background: #002a80; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .count { margin-top: 10px; color: var(--muted); font-size: 0.85rem; }
+    .count strong { color: var(--primary); }
+    .mep-list { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--border); }
+    .mep-list li { border-bottom: 1px solid var(--border); }
+    .mep-list label { display: flex; align-items: center; gap: 12px; padding: 10px 4px; cursor: pointer; }
+    .mep-list input { width: 20px; height: 20px; flex: none; accent-color: var(--primary); }
+    .mep-list .name { font-weight: 600; }
+    .mep-list .meta { color: var(--muted); font-size: 0.82rem; }
+    .mep-list li.checked { background: #f0f4ff; }
+    .savebar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 16px;
+      padding: 12px 16px; background: white; border-top: 1px solid var(--border); box-shadow: 0 -4px 16px rgba(0, 35, 102, 0.08);
+    }
+    .status { font-size: 0.85rem; color: var(--muted); }
+    .status.ok { color: #0f7b3e; }
+    .status.error { color: #b91c1c; }
+    .status.dirty { color: #b45309; }
+    details summary { cursor: pointer; font-weight: 700; }
+    details ol { margin: 10px 0 0; padding-left: 20px; color: #334155; font-size: 0.88rem; line-height: 1.6; }
+    .token-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+    .token-row input { flex: 1 1 240px; }
+    [hidden] { display: none !important; }
+
+    .seat-list { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--border); }
+    .seat-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 4px; border-bottom: 1px solid var(--border); }
+    .seat-list .name { font-weight: 600; }
+    .seat-list .meta { color: var(--muted); font-size: 0.82rem; }
+    .seat-list li.group { padding: 14px 4px 6px; color: var(--primary); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; background: none; }
+    .seat-list select {
+      flex: none; min-width: 84px; padding: 8px 10px; font: inherit; font-weight: 700; color: var(--primary);
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    }
+    .seat-list select:disabled { color: #334155; opacity: 1; background: transparent; border-color: transparent; -webkit-appearance: none; appearance: none; text-align: right; }
+    .seat-list li.unset select:not(:disabled) { color: var(--muted); }
+    .row-tools { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 12px; }
+    .row-tools label { font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .row-tools input[type="number"] { width: 70px; padding: 8px; font: inherit; border: 1px solid var(--border); border-radius: 8px; }
+    .seg { display: inline-flex; border: 1px solid var(--primary); border-radius: 8px; overflow: hidden; }
+    .seg button { padding: 8px 12px; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--primary); background: white; border: 0; cursor: pointer; }
+    .seg button.active { color: white; background: var(--primary); }
+  </style>
+</head>
+<body>
+  <header><h1>Mission seating</h1></header>
+  <main>
+    <a class="back-link" href="index.html">← Back to MEP directory</a>
+
+    <section class="card">
+      <h2 id="missionTitle">Mission</h2>
+      <p class="hint">Approximate place of each MEP present: row number from the front, L (left) or R (right) as seen from the front of the room. These locations replace the Brussels/Strasbourg seats on the cards while Mission mode is on.</p>
+      <div class="row-tools">
+        <label>Rows in the room <input type="number" id="rowCount" min="1" max="99" inputmode="numeric"></label>
+        <span class="seg" role="group" aria-label="Order">
+          <button type="button" id="byName" class="active">By name</button>
+          <button type="button" id="bySeat">By location</button>
+        </span>
+      </div>
+      <p class="count"><strong id="placedCount">0</strong> of <span id="presentTotal">0</span> MEPs have a location</p>
+      <ul class="seat-list" id="seatList"><li class="hint">Loading…</li></ul>
+      <p class="hint" style="margin-top:14px">To change who is present or the mission name, go to <a href="settings.html">Settings</a>.</p>
+    </section>
+  </main>
+
+  <div class="savebar">
+    <span class="status" id="saveStatus">Loading…</span>
+    <button type="button" class="btn primary" id="saveButton" disabled>Save for everyone</button>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="mission.js"></script>
+  <script>
+    const listElement = document.getElementById('seatList');
+    const rowInput = document.getElementById('rowCount');
+    const saveButton = document.getElementById('saveButton');
+    const saveStatus = document.getElementById('saveStatus');
+
+    let mission = null;
+    let present = [];      // MEP objects present at the mission
+    let seats = {};        // id -> "2L"
+    let order = 'name';
+    let savedState = '';
+
+    const surname = name => name.split(/\s+/).filter(w => w === w.toUpperCase() && /\p{L}/u.test(w)).join(' ') || name;
+    const state = () => JSON.stringify({ r: Number(rowInput.value), s: Object.entries(seats).filter(([, v]) => v).sort() });
+    const canEdit = () => Boolean(missionToken());
+
+    function setStatus(text, kind = '') {
+      saveStatus.textContent = text;
+      saveStatus.className = `status ${kind}`;
+    }
+
+    function seatOptions() {
+      const rows = Math.max(1, Math.min(99, Number(rowInput.value) || MISSION_DEFAULT_ROWS));
+      const options = [''];
+      for (let r = 1; r <= rows; r++) options.push(`${r}L`, `${r}R`);
+      return options;
+    }
+
+    function refresh() {
+      const placed = present.filter(m => seats[m.id]).length;
+      document.getElementById('placedCount').textContent = placed;
+      const dirty = state() !== savedState;
+      saveButton.disabled = !dirty || !canEdit();
+      if (!canEdit()) setStatus('View only: add a GitHub key in Settings → Editor access to make changes.');
+      else if (dirty) setStatus('Unsaved changes', 'dirty');
+      else if (!saveStatus.classList.contains('ok')) setStatus('Saved', 'ok');
+    }
+
+    function renderList() {
+      const options = seatOptions();
+      const list = [...present].sort((a, b) => order === 'seat'
+        ? missionSeatOrder(seats[a.id]) - missionSeatOrder(seats[b.id]) || surname(a.name).localeCompare(surname(b.name))
+        : surname(a.name).localeCompare(surname(b.name)));
+      listElement.replaceChildren();
+      let lastRow = null;
+      for (const m of list) {
+        if (order === 'seat') {
+          const row = seats[m.id] ? `Row ${seats[m.id].slice(0, -1)}` : 'No location yet';
+          if (row !== lastRow) {
+            const head = document.createElement('li');
+            head.className = 'group';
+            head.textContent = row.toUpperCase();
+            listElement.append(head);
+            lastRow = row;
+          }
+        }
+        const item = document.createElement('li');
+        item.classList.toggle('unset', !seats[m.id]);
+        const text = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = m.name;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `${m.flag || ''} ${m.country}`;
+        text.append(name, meta);
+        const select = document.createElement('select');
+        select.setAttribute('aria-label', `Location of ${m.name}`);
+        select.disabled = !canEdit();
+        const current = seats[m.id] || '';
+        const values = options.includes(current) ? options : [...options, current];
+        for (const value of values) {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = value || '—';
+          option.selected = value === current;
+          select.append(option);
+        }
+        select.addEventListener('change', () => {
+          if (select.value) seats[m.id] = select.value; else delete seats[m.id];
+          item.classList.toggle('unset', !select.value);
+          refresh();
+          if (order === 'seat') renderList();
+        });
+        item.append(text, select);
+        listElement.append(item);
+      }
+      if (!list.length) {
+        const empty = document.createElement('li');
+        empty.className = 'hint';
+        empty.textContent = 'No MEPs are ticked as present yet. Tick them in Settings first.';
+        listElement.append(empty);
+      }
+    }
+
+    function setOrder(value) {
+      order = value;
+      document.getElementById('byName').classList.toggle('active', value === 'name');
+      document.getElementById('bySeat').classList.toggle('active', value === 'seat');
+      renderList();
+    }
+
+    document.getElementById('byName').addEventListener('click', () => setOrder('name'));
+    document.getElementById('bySeat').addEventListener('click', () => setOrder('seat'));
+    rowInput.addEventListener('change', () => { renderList(); refresh(); });
+
+    saveButton.addEventListener('click', async () => {
+      saveButton.disabled = true;
+      setStatus('Saving…');
+      try {
+        // Re-read the latest mission so changes made meanwhile in Settings are kept.
+        const latest = await loadMission();
+        mission = await saveMission({ ...latest, rows: Number(rowInput.value) || MISSION_DEFAULT_ROWS, seats }, allMeps);
+        savedState = state();
+        setStatus('Saved for everyone. Colleagues see it within a few minutes.', 'ok');
+      } catch (err) {
+        setStatus(err.message, 'error');
+      }
+      refresh();
+    });
+
+    window.addEventListener('beforeunload', event => {
+      if (state() !== savedState && canEdit()) event.preventDefault();
+    });
+
+    let allMeps = [];
+    (async () => {
+      try {
+        const [meps, loaded] = await Promise.all([loadMEPs(), loadMission()]);
+        allMeps = meps;
+        mission = loaded;
+        const ids = new Set(mission.meps);
+        present = meps.filter(m => ids.has(m.id));
+        seats = { ...mission.seats };
+        rowInput.value = mission.rows;
+        rowInput.disabled = !canEdit();
+        document.getElementById('missionTitle').textContent = mission.name || 'Mission';
+        document.getElementById('presentTotal').textContent = present.length;
+        savedState = state();
+        renderList();
+        setStatus('');
+        refresh();
+      } catch (err) {
+        console.error(err);
+        listElement.innerHTML = '<li class="hint">Could not load the mission.</li>';
+        setStatus('Could not load data.', 'error');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -86,6 +86,8 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
     .mission-banner[hidden] { display: none; }
+    .mission-banner a { color: #05142b; font-weight: 700; }
+    .badge-mission-seat { background: #fff7cc; color: #713f12; border: 1px solid #e0b400; text-decoration: none; }
     .mission-banner .mission-tag {
       padding: 3px 9px;
       font-size: 0.7rem;
@@ -376,6 +378,7 @@
     <span class="mission-tag">Mission mode</span>
     <strong id="missionName"></strong>
     <span id="missionCount"></span>
+    <a href="mission-seats.html">Seating →</a>
   </div>
 
   <div class="container">
@@ -416,7 +419,7 @@
   <script src="mission.js"></script>
 <script>
     let meps = [];
-    let mission = { enabled: false, name: '', meps: [] };
+    let mission = { enabled: false, name: '', meps: [], seats: {} };
 
     // In Mission mode every filter and search works only on the MEPs present.
     function baseMEPs() {
@@ -512,8 +515,14 @@
           params.set('location', room === 'strasbourg' ? m.strasbourgLocation : m.brusselsLocation);
           return `<a class="badge badge-seat" href="seating.html?${params}" target="_blank" rel="noopener noreferrer" title="Show seat ${number} in the ${label === 'S' ? 'Strasbourg' : 'Brussels'} room">${label}:${number}</a>`;
         };
-        const strBadge = seatBadge(m.strasbourg, 'strasbourg', 'S');
-        const bruBadge = seatBadge(m.brussels, 'brussels', 'B');
+        // In Mission mode the usual Brussels/Strasbourg seats don't apply:
+        // show the approximate location at the mission instead, if assigned.
+        const missionSeat = mission.enabled ? mission.seats[m.id] : '';
+        const strBadge = mission.enabled ? '' : seatBadge(m.strasbourg, 'strasbourg', 'S');
+        const bruBadge = mission.enabled ? '' : seatBadge(m.brussels, 'brussels', 'B');
+        const missionBadge = missionSeat
+          ? `<a class="badge badge-mission-seat" href="mission-seats.html" title="Approximate place at the mission: row ${missionSeat.slice(0, -1)}, ${missionSeat.endsWith('L') ? 'left' : 'right'}">📍 ${missionSeat}</a>`
+          : '';
 
         return `
           <div class="mep-card ${cardClass}">
@@ -529,6 +538,7 @@
                 ${coordBadge}
                 ${strBadge}
                 ${bruBadge}
+                ${missionBadge}
               </div>
               <div class="mep-name"><a href="${profileUrl}">${m.name}</a></div>
               <div class="mep-meta">
@@ -563,6 +573,7 @@
           (m.committeeChair && (m.committeeChair.toLowerCase().includes(q) || 'committee chair'.includes(q))) ||
           (m.strasbourg && m.strasbourg.toString().includes(q)) ||
           (m.brussels && m.brussels.toString().includes(q)) ||
+          (mission.enabled && mission.seats[m.id] && mission.seats[m.id].toLowerCase() === q) ||
           (m.isHead && "hond".includes(q)) ||
           (m.isHead && "head of delegation".includes(q));
 

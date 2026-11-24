@@ -128,7 +128,7 @@
         <button type="button" class="btn" id="tickShown">Tick all shown</button>
         <button type="button" class="btn" id="untickAll">Untick all</button>
       </div>
-      <p class="count"><strong id="presentCount">0</strong> of <span id="totalCount">0</span> MEPs ticked as present</p>
+      <p class="count"><strong id="presentCount">0</strong> of <span id="totalCount">0</span> MEPs ticked as present · <a href="mission-seats.html">Assign seating locations →</a></p>
       <ul class="mep-list" id="mepList"><li class="hint">Loading MEPs…</li></ul>
     </section>
 
@@ -173,6 +173,7 @@
 
     let allMeps = [];
     let present = new Set();
+    let loadedMission = null; // keeps seat locations and rows set on the seating page
     let savedState = '';
 
     const surname = name => name.split(/\s+/).filter(w => w === w.toUpperCase() && /\p{L}/u.test(w)).join(' ') || name;
@@ -264,7 +265,7 @@
       saveButton.disabled = true;
       setStatus('Saving…');
       try {
-        await saveMission({ enabled: enabledInput.checked, name: nameInput.value, meps: [...present] }, allMeps);
+        loadedMission = await saveMission({ ...loadedMission, enabled: enabledInput.checked, name: nameInput.value, meps: [...present] }, allMeps);
         savedState = state();
         setStatus('Saved for everyone. Colleagues see it within a few minutes.', 'ok');
       } catch (err) {
@@ -281,6 +282,7 @@
       showTokenState();
       try {
         const [meps, mission] = await Promise.all([loadMEPs(), loadMission()]);
+        loadedMission = mission;
         allMeps = meps.sort((a, b) => surname(a.name).localeCompare(surname(b.name)));
         document.getElementById('totalCount').textContent = allMeps.length;
         nameInput.value = mission.name;
