@@ -39,6 +39,13 @@ function normalizeMission(data) {
     const seat = normalizeMissionSeat(entry && entry.seat);
     if (seat) seats[id] = seat;
   }
+  // Already-normalized missions keep seats in a separate { id: seat } object.
+  if (data && data.seats && typeof data.seats === 'object') {
+    for (const [id, value] of Object.entries(data.seats)) {
+      const seat = normalizeMissionSeat(value);
+      if (seat && meps.includes(Number(id))) seats[id] = seat;
+    }
+  }
   const rows = Number(data && data.rows);
   return {
     enabled: Boolean(data && data.enabled),
@@ -71,9 +78,19 @@ const newer = (a, b) => (a && a.updated ? a.updated : '') > (b && b.updated ? b.
 // then the copy published with the site, then the last one seen on this device.
 async function loadMission() {
   const cached = cachedMission();
-  for (const url of [MISSION_RAW_URL, MISSION_FILE]) {
+  const token = missionToken();
+  const sources = [
+    // Editors read through the GitHub API, which always has the latest version.
+    ...(token ? [[`${MISSION_API_URL}?ref=${MISSION_BRANCH}&t=${Date.now()}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' },
+      cache: 'no-store'
+    }]] : []),
+    [`${MISSION_RAW_URL}?t=${Date.now()}`, { cache: 'no-store' }],
+    [`${MISSION_FILE}?t=${Date.now()}`, { cache: 'no-store' }]
+  ];
+  for (const [url, options] of sources) {
     try {
-      const res = await fetch(`${url}?t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(url, options);
       if (!res.ok) continue;
       const mission = normalizeMission(await res.json());
       // Right after saving, GitHub may still serve the previous version for a
