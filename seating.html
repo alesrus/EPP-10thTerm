@@ -38,6 +38,16 @@
     .seat-summary { margin: 0; color: #526174; }
     .seat-summary strong { color: #003399; }
     .seat-number { font-weight: 400; }
+    .overview-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; margin-top: 10px; }
+    .room-tabs { display: inline-flex; border: 1px solid #003399; border-radius: 8px; overflow: hidden; }
+    .room-tabs a { padding: 8px 14px; font-weight: 600; font-size: 0.9rem; color: #003399; text-decoration: none; background: white; }
+    .room-tabs a.active { color: white; background: #003399; }
+    .overview-legend { display: inline-flex; flex-wrap: wrap; gap: 8px 16px; color: #526174; font-size: 0.85rem; }
+    .overview-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .overview-legend .key { display: inline-block; width: 16px; height: 16px; border-radius: 4px; border: 2px solid #1557b0; }
+    .overview-legend .key.filled { background: #1557b0; }
+    .overview-legend .key.empty { background: white; opacity: 0.6; }
+    .seat.vacant { opacity: 0.45; }
     [hidden] { display: none !important; }
     .map-wrap { position: relative; margin-top: 20px; overflow-x: auto; }
     .seat { cursor: pointer; }
@@ -74,12 +84,22 @@
   </style>
 </head>
 <body>
-  <header><h1>EPP Group seat map</h1></header>
+  <header><h1 id="pageTitle">EPP Group seat map</h1></header>
   <main>
     <a class="back-link" href="index.html">← Back to MEP directory</a>
     <section class="seat-card" aria-live="polite">
       <h2 id="mepName">Loading seat…</h2>
       <p class="seat-summary" id="seatSummary"></p>
+      <div class="overview-tools" id="overviewTools" hidden>
+        <span class="room-tabs" role="group" aria-label="Room">
+          <a id="tabStrasbourg" href="seating.html?room=strasbourg">Strasbourg</a>
+          <a id="tabBrussels" href="seating.html?room=brussels">Brussels</a>
+        </span>
+        <span class="overview-legend">
+          <span><i class="key filled"></i><b id="mepSeatCount">0</b> EPP MEPs</span>
+          <span><i class="key empty"></i>Staff, guests, reserve</span>
+        </span>
+      </div>
       <div class="map-wrap">
         <svg id="seatMap" viewBox="0 0 1000 600" role="img" aria-labelledby="mapTitle mapDescription">
           <title id="mapTitle">Room seat map</title>
@@ -103,6 +123,9 @@
     const roomKey = params.get('room');
     const room = ROOM_MAPS[roomKey];
     const mepId = Number(params.get('id') || params.get('eid'));
+    // Without an MEP in the link the page shows the whole room: seats of EPP
+    // MEPs filled in, every other seat (staff, guests, reserve) left empty.
+    const overview = !params.has('id') && !params.has('eid');
     const nameElement = document.getElementById('mepName');
     const summaryElement = document.getElementById('seatSummary');
     const mapElement = document.getElementById('seatMap');
@@ -242,7 +265,50 @@
       if (!mapElement.contains(event.target)) showSeatTip(null);
     });
 
+    // Fill the seats of EPP MEPs with their block colour; fade the others.
+    function showOccupancy(roomSeats, presidentialSeats) {
+      let count = 0;
+      for (const [elements, occupants] of [[roomSeatElements, roomSeats], [presidencySeatElements, presidentialSeats]]) {
+        for (const [number, group] of elements) {
+          const box = group.querySelector('rect');
+          const text = group.querySelector('text');
+          if (occupants.has(number)) {
+            count++;
+            box.style.fill = box.getAttribute('stroke');
+            text.style.fill = '#fff';
+          } else {
+            box.style.fill = '#fff';
+            group.classList.add('vacant');
+          }
+        }
+      }
+      return count;
+    }
+
+    async function initOverview() {
+      nameElement.textContent = room.name;
+      document.title = `${room.name} | EPP Group`;
+      document.getElementById('overviewTools').hidden = false;
+      document.getElementById(roomKey === 'strasbourg' ? 'tabStrasbourg' : 'tabBrussels').classList.add('active');
+      let meps = [];
+      try {
+        [meps] = await Promise.all([loadMEPs(), loadPlan()]);
+      } catch (err) {
+        console.error(err);
+        showError('The room plan could not be loaded. Check your connection and reload the page.');
+        return;
+      }
+      const { presidentialSeats, roomSeats } = buildSeatData(meps);
+      markSeats(roomSeats, presidentialSeats, { location: null });
+      document.getElementById('mepSeatCount').textContent = showOccupancy(roomSeats, presidentialSeats);
+      summaryElement.hidden = true;
+      // On a phone the plan is wider than the screen: start in the middle.
+      const wrap = mapElement.parentElement;
+      wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+    }
+
     async function init() {
+      if (overview && room) return initOverview();
       if (!room || !Number.isInteger(mepId) || mepId < 1) {
         showError('The room or seat link is incomplete or invalid. Return to the directory and select a seat number.');
         return;
