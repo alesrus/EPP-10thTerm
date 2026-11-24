@@ -39,7 +39,27 @@
     .seat-summary strong { color: #003399; }
     .profile-link { display: inline-block; margin-top: 10px; color: #003399; }
     [hidden] { display: none !important; }
-    .map-wrap { margin-top: 20px; overflow-x: auto; }
+    .map-wrap { position: relative; margin-top: 20px; overflow-x: auto; }
+    .seat { cursor: pointer; }
+    .seat.tapped rect { stroke: #003399; stroke-width: 4; }
+    .seat-tip {
+      position: absolute;
+      z-index: 2;
+      white-space: nowrap;
+      padding: 7px 11px;
+      color: white;
+      font-size: 0.88rem;
+      line-height: 1.3;
+      text-align: center;
+      background: #0f172a;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
+      transform: translate(-50%, calc(-100% - 8px));
+      pointer-events: none;
+    }
+    .seat-tip.below { transform: translate(-50%, 8px); }
+    .seat-tip strong { display: block; font-size: 0.95rem; }
+    .seat-tip span { color: #cbd5e1; font-size: 0.8rem; }
     #seatMap { display: block; width: 100%; min-width: 760px; height: auto; }
     .room-label { fill: #1f2937; font-size: 30px; font-weight: 800; letter-spacing: 2px; }
     .room-caption { fill: #526174; font-size: 20px; font-weight: 700; letter-spacing: 3px; }
@@ -90,13 +110,14 @@
           <g id="presidentialTable"></g>
           <g id="seatRows"></g>
         </svg>
+        <div id="seatTip" class="seat-tip" role="status" hidden></div>
       </div>
       <div class="legend" aria-label="Map legend">
         <span class="legend-item"><span class="legend-dot"></span>Other seats</span>
         <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
         <span class="legend-item"><span class="legend-corridor"></span>Corridor</span>
       </div>
-      <p class="schematic-note">Drawn after the official room plan. Hover over a seat to see who sits there.</p>
+      <p class="schematic-note">Drawn after the official room plan. Tap or hover over a seat to see who sits there.</p>
     </section>
   </main>
   <footer>Group of the European People's Party · European Parliament</footer>
@@ -386,6 +407,36 @@
       const seatX = (selectedPoint.x - viewX) / viewWidth * mapElement.getBoundingClientRect().width;
       wrap.scrollLeft = Math.max(0, seatX - wrap.clientWidth / 2);
     }
+
+    // Touch screens have no hover: tapping (or clicking) a seat shows who sits there.
+    function showSeatTip(seat) {
+      const wrap = mapElement.parentElement;
+      const tip = document.getElementById('seatTip');
+      document.querySelectorAll('.seat.tapped').forEach(s => s.classList.remove('tapped'));
+      if (!seat) { tip.hidden = true; return; }
+      seat.classList.add('tapped');
+      const [where, ...names] = seat.getAttribute('aria-label').replace(' · Selected', '').split(' · ');
+      const place = names.length > 1 && where === 'Presidency' ? `${where} · ${names.shift()}` : where;
+      const who = document.createElement('strong');
+      who.textContent = names.join(' · ') || 'No EPP MEP';
+      const seatLine = document.createElement('span');
+      seatLine.textContent = place;
+      tip.replaceChildren(who, seatLine);
+      tip.hidden = false;
+      const seatBox = seat.getBoundingClientRect(), wrapBox = wrap.getBoundingClientRect();
+      const top = seatBox.top - wrapBox.top + wrap.scrollTop;
+      const below = top < tip.offsetHeight + 12;
+      tip.classList.toggle('below', below);
+      const half = tip.offsetWidth / 2 + 8;
+      const x = seatBox.left + seatBox.width / 2 - wrapBox.left + wrap.scrollLeft;
+      tip.style.left = `${Math.min(Math.max(x, wrap.scrollLeft + half), wrap.scrollLeft + wrap.clientWidth - half)}px`;
+      tip.style.top = `${below ? top + seatBox.height : top}px`;
+    }
+
+    mapElement.addEventListener('click', event => showSeatTip(event.target.closest('g.seat')));
+    document.addEventListener('click', event => {
+      if (!mapElement.contains(event.target)) showSeatTip(null);
+    });
 
     async function init() {
       if (!room || !Number.isInteger(mepId) || mepId < 1) {
