@@ -112,6 +112,25 @@
     .row-tools { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 12px; }
     .row-tools label { font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
     .row-tools input[type="number"] { width: 70px; padding: 8px; font: inherit; border: 1px solid var(--border); border-radius: 8px; }
+    .room-plan { margin-top: 14px; }
+    .plan-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 14px minmax(0, 1fr); align-items: stretch; gap: 4px; margin-bottom: 6px; }
+    .plan-row-label { align-self: center; color: var(--primary); font-weight: 800; font-size: 0.85rem; text-align: center; }
+    .plan-aisle { border-left: 2px dashed #cbd5e1; margin-left: 6px; }
+    .plan-block {
+      display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; min-height: 34px; padding: 5px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    }
+    .plan-block.empty { background: repeating-linear-gradient(135deg, #f8fafc 0 6px, #f1f5f9 6px 12px); }
+    .plan-chip {
+      max-width: 100%; padding: 3px 7px; font-size: 0.78rem; font-weight: 600; color: #1e293b; overflow-wrap: anywhere;
+      background: white; border: 1px solid #cbd5e1; border-radius: 6px;
+    }
+    .plan-front {
+      display: grid; grid-template-columns: 22px 1fr 22px; align-items: center; margin-top: 10px; padding: 8px 0;
+      color: white; text-align: center; font-size: 0.78rem; letter-spacing: 0.08em; background: #003399; border-radius: 8px;
+    }
+    .plan-front span { font-weight: 800; color: #ffcc00; }
+    .plan-unplaced-title { margin: 18px 0 6px; color: var(--muted); font-weight: 700; font-size: 0.85rem; }
     .seg { display: inline-flex; border: 1px solid var(--primary); border-radius: 8px; overflow: hidden; }
     .seg button { padding: 8px 12px; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--primary); background: white; border: 0; cursor: pointer; }
     .seg button.active { color: white; background: var(--primary); }
@@ -124,15 +143,17 @@
 
     <section class="card">
       <h2 id="missionTitle">Mission</h2>
-      <p class="hint">Approximate place of each MEP present: row number from the front, L (left) or R (right) as seen from the front of the room. These locations replace the Brussels/Strasbourg seats on the cards while Mission mode is on.</p>
+      <p class="hint">Approximate place of each MEP present: row number from the front, L (left) or R (right) as seen from the front of the room, like on the Brussels and Strasbourg plans. These locations replace the Brussels/Strasbourg seats on the cards while Mission mode is on.</p>
       <div class="row-tools">
         <label>Rows in the room <input type="number" id="rowCount" min="1" max="99" inputmode="numeric"></label>
         <span class="seg" role="group" aria-label="Order">
-          <button type="button" id="byName" class="active">By name</button>
+          <button type="button" id="byPlan" class="active">Plan</button>
+          <button type="button" id="byName">By name</button>
           <button type="button" id="bySeat">By location</button>
         </span>
       </div>
       <p class="count"><strong id="placedCount">0</strong> of <span id="presentTotal">0</span> MEPs have a location</p>
+      <div class="room-plan" id="seatPlan" hidden></div>
       <ul class="seat-list" id="seatList"><li class="hint">Loading…</li></ul>
       <p class="hint" style="margin-top:14px">To change who is present or the mission name, go to <a href="settings.html">Settings</a>.</p>
     </section>
@@ -154,7 +175,7 @@
     let mission = null;
     let present = [];      // MEP objects present at the mission
     let seats = {};        // id -> "2L"
-    let order = 'name';
+    let order = 'plan';
     let savedState = '';
 
     const surname = name => name.split(/\s+/).filter(w => w === w.toUpperCase() && /\p{L}/u.test(w)).join(' ') || name;
@@ -183,7 +204,77 @@
       else if (!saveStatus.classList.contains('ok')) setStatus('Saved', 'ok');
     }
 
+    // Plan view: the front of the room (presidency) at the bottom, row 1 just
+    // above it; left and right blocks as seen from the front.
+    function renderPlan() {
+      const plan = document.getElementById('seatPlan');
+      plan.replaceChildren();
+      const byPlace = new Map();
+      for (const m of present) {
+        const seat = seats[m.id] || '';
+        if (!byPlace.has(seat)) byPlace.set(seat, []);
+        byPlace.get(seat).push(m);
+      }
+      for (const list of byPlace.values()) list.sort((a, b) => surname(a.name).localeCompare(surname(b.name)));
+      const usedRows = Object.values(seats).filter(Boolean).map(seat => Number(seat.slice(0, -1)));
+      const lastRow = usedRows.length ? Math.max(...usedRows) : 0;
+
+      const chip = m => {
+        const element = document.createElement('span');
+        element.className = 'plan-chip';
+        element.title = `${m.name} · ${m.country}`;
+        element.textContent = `${m.flag || ''} ${surname(m.name)}`;
+        return element;
+      };
+      const block = (seat, side) => {
+        const element = document.createElement('div');
+        element.className = `plan-block ${side}`;
+        const people = byPlace.get(seat) || [];
+        if (people.length) people.forEach(m => element.append(chip(m)));
+        else element.classList.add('empty');
+        return element;
+      };
+
+      if (!lastRow) {
+        const none = document.createElement('p');
+        none.className = 'hint';
+        none.textContent = 'No locations assigned yet.';
+        plan.append(none);
+      }
+      for (let row = lastRow; row >= 1; row--) {
+        const line = document.createElement('div');
+        line.className = 'plan-row';
+        const label = document.createElement('span');
+        label.className = 'plan-row-label';
+        label.textContent = row;
+        const aisle = document.createElement('span');
+        aisle.className = 'plan-aisle';
+        line.append(label, block(`${row}L`, 'left'), aisle, block(`${row}R`, 'right'));
+        plan.append(line);
+      }
+      if (lastRow) {
+        const front = document.createElement('div');
+        front.className = 'plan-front';
+        front.innerHTML = '<span>L</span><strong>FRONT · PRESIDENCY</strong><span>R</span>';
+        plan.append(front);
+      }
+      const unplaced = byPlace.get('') || [];
+      if (unplaced.length) {
+        const title = document.createElement('p');
+        title.className = 'plan-unplaced-title';
+        title.textContent = `No location yet (${unplaced.length})`;
+        const rest = document.createElement('div');
+        rest.className = 'plan-block unplaced';
+        unplaced.forEach(m => rest.append(chip(m)));
+        plan.append(title, rest);
+      }
+    }
+
     function renderList() {
+      const showPlan = order === 'plan';
+      document.getElementById('seatPlan').hidden = !showPlan;
+      listElement.hidden = showPlan;
+      if (showPlan) { renderPlan(); return; }
       const options = seatOptions();
       const list = [...present].sort((a, b) => order === 'seat'
         ? missionSeatOrder(seats[a.id]) - missionSeatOrder(seats[b.id]) || surname(a.name).localeCompare(surname(b.name))
@@ -242,11 +333,13 @@
 
     function setOrder(value) {
       order = value;
+      document.getElementById('byPlan').classList.toggle('active', value === 'plan');
       document.getElementById('byName').classList.toggle('active', value === 'name');
       document.getElementById('bySeat').classList.toggle('active', value === 'seat');
       renderList();
     }
 
+    document.getElementById('byPlan').addEventListener('click', () => setOrder('plan'));
     document.getElementById('byName').addEventListener('click', () => setOrder('name'));
     document.getElementById('bySeat').addEventListener('click', () => setOrder('seat'));
     rowInput.addEventListener('change', () => { renderList(); refresh(); });
