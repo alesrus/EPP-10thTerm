@@ -69,9 +69,7 @@
     .legend-item { display: inline-flex; align-items: center; gap: 8px; }
     .legend-dot { width: 14px; height: 16px; border: 2px solid #8391a7; border-radius: 3px; background: white; }
     .legend-dot.selected { border-color: #003399; background: #003399; box-shadow: 0 0 0 2px #ffcc00; }
-    .schematic-note { margin: 14px 0 0; color: #64748b; font-size: 0.82rem; }
     .error { color: #991b1b; }
-    footer { padding: 18px; color: #64748b; text-align: center; font-size: 0.82rem; }
     @media (max-width: 600px) {
       main { width: min(100% - 16px, 1120px); margin-top: 14px; }
       .seat-card { padding: 14px 10px; }
@@ -98,10 +96,8 @@
         <span class="legend-item"><span class="legend-dot"></span>Other seats</span>
         <span class="legend-item"><span class="legend-dot selected"></span>Selected seat</span>
       </div>
-      <p class="schematic-note">Drawn after the official room plan. Tap or hover over a seat to see who sits there.</p>
     </section>
   </main>
-  <footer>Group of the European People's Party · European Parliament</footer>
   <script src="data.js"></script>
   <script>
     // Room plans (SVG files in plans/). Each seat in a plan is a <g> holding a
