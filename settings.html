@@ -159,9 +159,11 @@
     <button type="button" class="btn primary" id="saveButton" disabled>Save for everyone</button>
   </div>
 
-  <script src="data.js"></script>
-  <script src="mission.js"></script>
+  <script src="data.js?v=20261124c"></script>
+  <script src="mission.js?v=20261124c"></script>
   <script>
+    // Safety net if an older data.js is still cached: plain matching instead of no results.
+    if (typeof foldText !== 'function') window.foldText = value => String(value || '').toLowerCase();
     const nameInput = document.getElementById('missionName');
     const enabledInput = document.getElementById('missionEnabled');
     const listElement = document.getElementById('mepList');
