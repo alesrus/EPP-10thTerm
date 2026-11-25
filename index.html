@@ -378,7 +378,7 @@
 
   <header>
     <h1>EPP Group in the EP</h1>
-    <a class="settings-link plans-link" href="seating.html?room=strasbourg" aria-label="Room plans" title="Room plans">
+    <a class="settings-link plans-link" id="plansLink" href="seating.html?room=strasbourg" aria-label="Room plans" title="Room plans">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
     </a>
     <a class="settings-link" href="settings.html" aria-label="Settings" title="Settings">
@@ -446,6 +446,14 @@
         document.getElementById('missionCount').textContent = `${count} MEP${count === 1 ? '' : 's'}`;
       }
       document.getElementById('totalCount').innerText = baseMEPs().length;
+
+      // The room-plan button shows the room we're in: the mission's seating
+      // plan in Mission mode, otherwise the Brussels/Strasbourg plans.
+      const plans = document.getElementById('plansLink');
+      const label = mission.enabled ? 'Mission seating plan' : 'Room plans';
+      plans.href = mission.enabled ? 'mission-seats.html' : 'seating.html?room=strasbourg';
+      plans.title = label;
+      plans.setAttribute('aria-label', label);
     }
     let currentFilter = 'all';
 
