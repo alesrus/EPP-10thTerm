@@ -459,7 +459,7 @@
       const input = document.getElementById('mepSearch');
       input.value = '';
       onSearchInput();
-      input.focus();
+      input.blur(); // also closes the phone keyboard
     }
 
     function getInitials(name) {
