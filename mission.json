@@ -2,7 +2,7 @@
   "enabled": true,
   "name": "Test mission Helsinki",
   "rows": 11,
-  "updated": "2026-11-25T12:11:30.913Z",
+  "updated": "2026-11-25T12:11:45.412Z",
   "meps": [
     {
       "id": 96933,
@@ -68,6 +68,22 @@
       "id": 197492,
       "name": "Bartosz ARŁUKOWICZ",
       "seat": "2L"
+    },
+    {
+      "id": 28390,
+      "name": "Pilar DEL CASTILLO VERA"
+    },
+    {
+      "id": 257237,
+      "name": "Regina DOHERTY"
+    },
+    {
+      "id": 96787,
+      "name": "Herbert DORFMANN"
+    },
+    {
+      "id": 99945,
+      "name": "Lena DÜPONT"
     }
   ]
 }
