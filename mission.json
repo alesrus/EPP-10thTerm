@@ -2,7 +2,7 @@
   "enabled": true,
   "name": "Test mission Helsinki",
   "rows": 11,
-  "updated": "2026-11-25T12:11:45.412Z",
+  "updated": "2026-11-25T12:12:03.340Z",
   "meps": [
     {
       "id": 96933,
@@ -79,7 +79,8 @@
     },
     {
       "id": 96787,
-      "name": "Herbert DORFMANN"
+      "name": "Herbert DORFMANN",
+      "seat": "2R"
     },
     {
       "id": 99945,
