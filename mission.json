@@ -1,8 +1,8 @@
 {
-  "enabled": true,
+  "enabled": false,
   "name": "Test mission Helsinki",
   "rows": 11,
-  "updated": "2026-11-25T10:42:58.370Z",
+  "updated": "2026-11-25T11:57:04.500Z",
   "meps": [
     {
       "id": 96933,
